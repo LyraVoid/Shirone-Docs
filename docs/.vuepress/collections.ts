@@ -42,6 +42,22 @@ const zhGuideDoc = defineCollection({
       items: [
         { text: '介绍', link: 'intro/', icon: 'ri:information-line' },
         { text: '快速开始', link: 'get-started/', icon: 'ri:rocket-line' },
+        {
+          text: '部署',
+          icon: 'ri:cloud-line',
+          prefix: '/guide/deploy/',
+          collapsed: true, // 是否默认折叠
+          items: [
+            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'warning', text: '推荐' } },
+            { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
+            { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: '不推荐' } },
+            { text: 'Cloudflare Pages', link: 'cloudflare/', icon: 'ri:cloud-line' },
+            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'warning', text: '推荐' } },
+            { text: '服务器部署', link: 'server/', icon: 'ri:server-line', badge: { type: 'info', text: '入门' } },
+            { text: 'Docker 部署', link: 'docker/', icon: 'ri:ship-line' },
+            { text: '本地构建', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: '入门' } },
+          ],
+        },
       ],
     },
   ],

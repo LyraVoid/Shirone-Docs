@@ -67,6 +67,7 @@ export default defineUserConfig({
     markdown: {
       collapse: true, // 启用折叠容器 ::: collapse
       table: true, // 启用表格增强容器语法 ::: table
+      mermaid: true, // 启用 mermaid 图表
     },
   }),
 })
