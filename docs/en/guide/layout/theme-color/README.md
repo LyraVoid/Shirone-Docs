@@ -4,7 +4,7 @@ createTime: 2026/08/31 22:31:00
 permalink: /en/guide/layout/theme-color/
 ---
 
-The dynamic color system is a signature capability of Shirone: built upon Google's HCT color space and Material Color Utilities, it derives 8 tonal palettes and over 25 semantic color roles from a single seed hue.
+The dynamic color system is a signature capability of Shirone: built upon Google's ==HCT color space== and Material Color Utilities, it derives 8 tonal palettes and over 25 semantic color roles from a single seed hue.
 
 ## Quick Overview
 

@@ -20,10 +20,10 @@ flowchart TD
     D --> E["Base64URL ciphertext bundle baked into static HTML"]
 ```
 
-- **Authenticated Encryption**: **AES-256-GCM** ensures confidentiality while preventing ciphertext tampering.
-- **Key Derivation Function (KDF)**: **PBKDF2-SHA-256** with **310,000 iterations** (aligned with OWASP recommendations) to withstand offline rainbow table attacks and GPU-accelerated brute forcing.
-- **Scope Integrity (AAD)**: Ciphertexts are cryptographically bound to `shirone-protected-content:1:${slug}` to eliminate cross-post replay vulnerabilities.
-- **Zero Plaintext Leakage**: Build artifacts contain only ciphertext and public salt/IV parameters—**no plaintext passwords or content are ever bundled**.
+- **Authenticated Encryption**: ==**AES-256-GCM**== ensures confidentiality while preventing ciphertext tampering.
+- **Key Derivation Function (KDF)**: ==**PBKDF2-SHA-256**== with ==**310,000 iterations**== (aligned with OWASP recommendations) to withstand offline rainbow table attacks and GPU-accelerated brute forcing.
+- **Scope Integrity (AAD)**: Ciphertexts are cryptographically bound to `shirone-protected-content:1:${slug}` to ==eliminate cross-post replay vulnerabilities==.
+- **Zero Plaintext Leakage**: Build artifacts contain only ciphertext and public salt/IV parameters—==**no plaintext passwords or content are ever bundled**==.
 
 ---
 

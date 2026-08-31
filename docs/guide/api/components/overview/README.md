@@ -4,7 +4,7 @@ createTime: 2026/09/01 01:25:00
 permalink: /guide/api/components/overview/
 ---
 
-Shirone 的组件系统建立在 **Material 3 Expressive (M3E)** 规范与 **Atomic Design** 分层模型之上，服务于动漫风格的现代化静态博客体验。
+Shirone 的组件系统建立在 ==**Material 3 Expressive (M3E)**== 规范与 ==**Atomic Design**== 分层模型之上，服务于动漫风格的现代化静态博客体验。
 
 所有组件在代码实现、样式消费、生命周期管理与无障碍（A11y）上均遵循严格的工程化契约。
 

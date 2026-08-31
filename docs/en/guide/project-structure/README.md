@@ -4,7 +4,7 @@ createTime: 2026/09/01 03:00:00
 permalink: /en/guide/project-structure/
 ---
 
-Shirone is a high-performance modern static blog system powered by **Astro 5 + Svelte 5 + Tailwind CSS + TypeScript**. The project strictly adheres to **Separation of Concerns (SoC)** and **Atomic Design principles**, featuring clear modular boundaries and strongly-typed configuration contracts.
+Shirone is a high-performance modern static blog system powered by ==**Astro 5 + Svelte 5 + Tailwind CSS + TypeScript**==. The project strictly adheres to ==**Separation of Concerns (SoC)**== and ==**Atomic Design principles**==, featuring clear modular boundaries and strongly-typed configuration contracts.
 
 This article explores Shirone's architectural skeleton and component interactions using interactive file trees, code trees, and visual workflows.
 

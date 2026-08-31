@@ -4,7 +4,7 @@ createTime: 2026/09/01 02:15:00
 permalink: /en/guide/writing/organization/folder/
 ---
 
-Folder Mode is the **strongly recommended best practice** for organizing articles in Shirone.
+Folder Mode is the ==**strongly recommended best practice**== for organizing articles in Shirone.
 
 In this layout, each post resides in its own dedicated directory with `index.md` (or `index.mdx`) as the entrypoint, co-locating cover images, screenshots, diagrams, and attachments right beside the article text.
 

@@ -12,7 +12,9 @@ Wrap phrases with double equal signs `==`:
 
 ```markdown
 Use ==primary theme highlights== to emphasize key takeaways in your articles.
-```
+`
+
+**Rendered Preview**: Use ==primary theme highlights== to emphasize key takeaways in your articles.``
 
 ## Semantic Color Suffixes
 

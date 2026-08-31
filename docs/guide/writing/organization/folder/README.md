@@ -4,7 +4,7 @@ createTime: 2026/09/01 02:15:00
 permalink: /guide/writing/organization/folder/
 ---
 
-文件夹方案是 Shirone 博客系统**最为推崇且最佳实践**的文章组织方式。
+文件夹方案是 Shirone 博客系统==**最为推崇且最佳实践**==的文章组织方式。
 
 在此方案中，每篇文章都拥有一个独立的文件夹，以 `index.md`（或 `index.mdx`）作为正文入口，并将文章专属的封面、插图、流程图或静态附件就近存放（Co-location）。
 

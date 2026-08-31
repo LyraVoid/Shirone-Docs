@@ -40,7 +40,7 @@ export const siteConfig = withUserConfig("site", {
 
 ### site 与 base
 
-`site` 必须在部署前设置为你的正式域名，它被 RSS、Sitemap 与社交分享卡片（OG 图）共同消费，填错会导致订阅与分享链接全部指向错误地址。
+`site` ==必须在部署前设置为你的正式域名==，它被 RSS、Sitemap 与社交分享卡片（OG 图）共同消费，填错会导致订阅与分享链接全部指向错误地址。
 
 `base` 仅在「子目录部署」时修改（如 `https://user.github.io/blog/` 对应 `base: "/blog/"`），独立域名部署保持 `/` 即可。详见 [部署到 GitHub Pages](/guide/deploy/github/) 中的 base 说明。
 
@@ -97,7 +97,7 @@ Shirone 的 `src/config/` 与 `src/data/` 有严格分工，修改配置前先�
 例如「时间线页是否显示」写进 `timelineConfig.enable`（Config），而时间线的具体节点内容维护在 `src/data/timeline.ts`（Data）。单项内容的停用通过 Config 中的 `disabledKeys` 列表声明，Data 保持纯净。
 
 ::: tip 零额外负担原则
-可选外部服务与重量级特性默认必须为关闭（`enable: false`）。关闭或未配置时满足「零外部请求、零占位 DOM、零性能损耗、零主包膨胀」——这是全主题配置的统一契约。
+可选外部服务与重量级特性默认必须为关闭（==`enable: false`==）。关闭或未配置时满足「零外部请求、零占位 DOM、零性能损耗、零主包膨胀」——这是全主题配置的统一契约。
 :::
 
 ## 实战示例

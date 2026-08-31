@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:53:00
 permalink: /guide/features/llms/
 ---
 
-Shirone 内置 [llmstxt.org](https://llmstxt.org/) 规范的 AI 友好内容系统：构建期自动生成 `/llms.txt`（结构化索引）与 `/llms-full.txt`（全量正文汇编），让 ChatGPT、Claude、Perplexity、Cursor 等大语言模型与 AI Agent 高效理解你的站点。客户端 JS 主包增加 0 KB，对前台读者零影响。
+Shirone 内置 [llmstxt.org](https://llmstxt.org/) 规范的 AI 友好内容系统：构建期自动生成 `/llms.txt`（结构化索引）与 `/llms-full.txt`（全量正文汇编），让 ChatGPT、Claude、Perplexity、Cursor 等大语言模型与 AI Agent 高效理解你的站点。客户端 JS 主包增加 ==0 KB==，对前台读者零影响。
 
 ## 生成机制
 

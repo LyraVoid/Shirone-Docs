@@ -12,7 +12,7 @@ Shirone is still in its Alpha stage. Before the first stable release, configurat
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) **22.12** or higher
+- [Node.js](https://nodejs.org/) ==**22.12** or higher==
 - [pnpm](https://pnpm.io/) **9.x** (the repo is pinned to `pnpm@9.14.4`)
 - [Git](https://git-scm.com/)
 

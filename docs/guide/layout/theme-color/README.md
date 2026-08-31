@@ -4,7 +4,7 @@ createTime: 2026/08/31 22:31:00
 permalink: /guide/layout/theme-color/
 ---
 
-动态配色是 Shirone 的核心特性：基于 Google 的 HCT 色彩空间与 Material Color Utilities，从一个种子色（hue）派生出 8 大调色板与 25 种以上颜色角色，全站组件（按钮、卡片、代码块、横幅波浪等）统一消费这套角色令牌。
+动态配色是 Shirone 的核心特性：基于 Google 的 ==HCT 色彩空间== 与 Material Color Utilities，从一个种子色（hue）派生出 ==8 大调色板与 25 种以上颜色角色==，全站组件（按钮、卡片、代码块、横幅波浪等）统一消费这套角色令牌。
 
 ## 配置速览
 

@@ -12,7 +12,7 @@ Shirone 目前仍处于 Alpha 阶段，首个稳定版本发布前，配置和�
 
 ## 环境要求
 
-- [Node.js](https://nodejs.org/) **22.12** 或更高版本
+- [Node.js](https://nodejs.org/) ==**22.12** 或更高版本==
 - [pnpm](https://pnpm.io/) **9.x**（仓库锁定为 `pnpm@9.14.4`）
 - [Git](https://git-scm.com/)
 
