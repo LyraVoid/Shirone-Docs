@@ -18,23 +18,55 @@ export default defineUserConfig({
   lang: 'zh-CN',
   locales: {
     '/': {
-      title: 'Shirone-Docs',
+      title: 'Shirone Docs',
       lang: 'zh-CN',
-      description: 'Shirone&#39;s Document Repository',
+      description: 'Shirone 的技术文档站，记录笔记与实践指南',
     },
     '/en/': {
-      title: 'Shirone-Docs',
+      title: 'Shirone Docs',
       lang: 'en-US',
-      description: 'Shirone&#39;s Document Repository',
+      description: 'Shirone\'s technical documentation site, notes and practical guides',
     },
   },
 
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: 'https://theme-plume.vuejs.press/favicon-32x32.png' }],
+    // 配置站点图标
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
   ],
 
   bundler: viteBundler(),
-  shouldPrefetch: false,
+  shouldPrefetch: false, // 站点较大，页面数量较多时，不建议启用
 
-  theme: plumeTheme(),
+  theme: plumeTheme({
+    /* 版权信息 */
+    copyright: true,
+
+    /**
+     * 编译缓存，加快编译速度
+     * @see https://theme-plume.vuejs.press/config/basic/#cache
+     */
+    cache: 'filesystem',
+
+    /* 本地搜索, 默认启用 */
+    search: { provider: 'local' },
+
+    /**
+     * Shiki 代码高亮
+     * @see https://theme-plume.vuejs.press/config/plugins/code-highlight/
+     */
+    codeHighlighter: {
+      twoslash: false, // 禁用 twoslash 避免错误
+      whitespace: false, // 禁用 空格/Tab 高亮
+      lineNumbers: true, // 启用行号
+    },
+
+    /**
+     * markdown 增强
+     * @see https://theme-plume.vuejs.press/config/markdown/
+     */
+    markdown: {
+      collapse: true, // 启用折叠容器 ::: collapse
+      table: true, // 启用表格增强容器语法 ::: table
+    },
+  }),
 })

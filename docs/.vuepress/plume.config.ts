@@ -18,11 +18,15 @@ import { enNavbar, zhNavbar } from './navbar'
  * @see https://theme-plume.vuejs.press/config/theme/
  */
 export default defineThemeConfig({
-  logo: 'https://theme-plume.vuejs.press/plume.png',
+  logo: '/favicon.svg',
 
+  /* 社交链接 */
   social: [
-    { icon: 'github', link: '/' },
+    { icon: 'github', link: 'https://github.com/matsuzaka-yuki' },
   ],
+
+  /* 深色模式 */
+  appearance: true,
 
   locales: {
     '/': {
@@ -30,9 +34,9 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/theme/#profile
        */
       profile: {
-        avatar: 'https://theme-plume.vuejs.press/plume.png',
-        name: 'Shirone-Docs',
-        description: 'Shirone&#39;s Document Repository',
+        avatar: '/favicon.svg',
+        name: 'Shirone',
+        description: '从零开始看世界',
       },
 
       navbar: zhNavbar,
@@ -43,13 +47,19 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/theme/#profile
        */
       profile: {
-        avatar: 'https://theme-plume.vuejs.press/plume.png',
-        name: 'Shirone-Docs',
-        description: 'Shirone&#39;s Document Repository',
+        avatar: '/favicon.svg',
+        name: 'Shirone',
+        description: 'Seeing the world from scratch',
       },
 
       navbar: enNavbar,
       collections: enCollections,
     },
+  },
+
+  /* 过渡动画 @see https://theme-plume.vuejs.press/config/basic/#transition */
+  transition: {
+    page: true, // 启用 页面间跳转过渡动画
+    appearance: 'fade', // 启用 深色模式切换过渡动画, 或配置过渡动画类型
   },
 })

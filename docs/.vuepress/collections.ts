@@ -28,49 +28,55 @@ import { defineCollection, defineCollections } from 'vuepress-theme-plume'
 
 /* =================== locale: zh-CN ======================= */
 
-const zhBlog = defineCollection({
-  type: 'post',
-  dir: 'blog',
-  title: 'Blog',
-  link: '/blog/',
-})
-
-const zhDemoDoc = defineCollection({
+const zhGuideDoc = defineCollection({
   type: 'doc',
-  dir: 'demo',
-  linkPrefix: '/demo',
-  title: 'Demo',
-  sidebar: ['', 'foo', 'bar'],
+  dir: 'guide',
+  linkPrefix: '/guide',
+  title: '文档',
+  sidebar: [
+    {
+      text: '从这里开始',
+      icon: 'ri:book-open-line',
+      prefix: '/guide/',
+      collapsed: false, // 是否默认折叠
+      items: [
+        { text: '介绍', link: 'intro/', icon: 'ri:information-line' },
+        { text: '快速开始', link: 'get-started/', icon: 'ri:rocket-line' },
+      ],
+    },
+  ],
   // 根据文件结构自动生成侧边栏
   // sidebar: 'auto',
 })
 
 export const zhCollections = defineCollections([
-  zhBlog,
-  zhDemoDoc,
+  zhGuideDoc,
 ])
 
 /* =================== locale: en-US ======================= */
 
-const enBlog = defineCollection({
-  type: 'post',
-  dir: 'blog',
-  title: 'Blog',
-  link: '/blog/',
-})
-
-const enDemoDoc = defineCollection({
+const enGuideDoc = defineCollection({
   type: 'doc',
-  dir: 'demo',
-  linkPrefix: '/demo',
-  title: 'Demo',
-  sidebar: ['', 'foo', 'bar'],
+  dir: 'guide',
+  linkPrefix: '/guide',
+  title: 'Docs',
+  sidebar: [
+    {
+      text: 'Getting Started',
+      icon: 'ri:book-open-line',
+      prefix: '/guide/',
+      collapsed: false,
+      items: [
+        { text: 'Introduction', link: 'intro/', icon: 'ri:information-line' },
+        { text: 'Get Started', link: 'get-started/', icon: 'ri:rocket-line' },
+      ],
+    },
+  ],
   // 根据文件结构自动生成侧边栏
   // sidebar: 'auto',
 })
 
 export const enCollections = defineCollections([
-  enBlog,
-  enDemoDoc,
+  enGuideDoc,
 ])
 

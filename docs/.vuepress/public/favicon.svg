@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#0ea5a4"/>
+  <!-- 猫耳 -->
+  <path d="M16 30 L14 14 L26 22 Z" fill="#ffffff"/>
+  <path d="M48 30 L50 14 L38 22 Z" fill="#ffffff"/>
+  <!-- 猫脸 -->
+  <circle cx="32" cy="34" r="16" fill="#ffffff"/>
+  <!-- 眼睛 -->
+  <circle cx="26" cy="32" r="2.2" fill="#0ea5a4"/>
+  <circle cx="38" cy="32" r="2.2" fill="#0ea5a4"/>
+  <!-- 鼻子与嘴 -->
+  <path d="M30.5 38 L33.5 38 L32 40 Z" fill="#f9a8d4"/>
+  <path d="M32 40 Q32 43 28 43 M32 40 Q32 43 36 43" stroke="#0ea5a4" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <!-- 胡须 -->
+  <path d="M12 34 L22 35 M12 39 L22 38 M52 34 L42 35 M52 39 L42 38" stroke="#ffffff" stroke-width="1.4" stroke-linecap="round"/>
+</svg>
