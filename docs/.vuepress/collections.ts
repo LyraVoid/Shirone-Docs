@@ -55,6 +55,20 @@ const zhGuideDoc = defineCollection({
         { text: '自定义字体', link: 'font/', icon: 'ri:font-size-2' },
       ],
     },
+    {
+      text: '编写文章',
+      icon: 'akar-icons:pencil',
+      prefix: '/guide/writing/',
+      collapsed: false,
+      items: [
+        { text: 'Frontmatter 与文章管理', link: 'frontmatter/', icon: 'ri:file-list-3-line' },
+        { text: 'Markdown 基础与增强', link: 'markdown/', icon: 'ri:markdown-line' },
+        { text: '图表与媒体嵌入', link: 'media/', icon: 'ri:image-2-line' },
+        { text: '代码展示', link: 'code/', icon: 'ri:code-s-slash-line' },
+        { text: '图片画廊与文件组织', link: 'gallery/', icon: 'ri:gallery-line' },
+        { text: '文章加密', link: 'encryption/', icon: 'ri:key-line' },
+      ],
+    },
   ],
 })
 
@@ -109,6 +123,20 @@ const enGuideDoc = defineCollection({
         { text: 'Sidebar Layout', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
         { text: 'Footer & Profile', link: 'footer-profile/', icon: 'ri:user-smile-line' },
         { text: 'Custom Fonts', link: 'font/', icon: 'ri:font-size-2' },
+      ],
+    },
+    {
+      text: 'Writing',
+      icon: 'akar-icons:pencil',
+      prefix: '/en/guide/writing/',
+      collapsed: false,
+      items: [
+        { text: 'Frontmatter & Post Management', link: 'frontmatter/', icon: 'ri:file-list-3-line' },
+        { text: 'Markdown Basics & Enhancements', link: 'markdown/', icon: 'ri:markdown-line' },
+        { text: 'Diagrams & Media Embeds', link: 'media/', icon: 'ri:image-2-line' },
+        { text: 'Code Display', link: 'code/', icon: 'ri:code-s-slash-line' },
+        { text: 'Image Gallery & File Organization', link: 'gallery/', icon: 'ri:gallery-line' },
+        { text: 'Post Encryption', link: 'encryption/', icon: 'ri:key-line' },
       ],
     },
   ],
