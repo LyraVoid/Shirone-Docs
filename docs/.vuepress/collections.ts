@@ -190,7 +190,20 @@ const zhGuideDoc = defineCollection({
         },
       ],
     },
-  ],
+  ].sort((left, right) => {
+    const order = [
+      '/guide/',
+      '/guide/layout/',
+      '/guide/article/',
+      '/guide/writing/',
+      '/guide/pages/',
+      '/guide/widgets/',
+      '/guide/features/',
+      '/guide/faq/',
+    ]
+
+    return order.indexOf(left.prefix) - order.indexOf(right.prefix)
+  }),
 })
 
 export const zhCollections = defineCollections([
@@ -381,7 +394,20 @@ const enGuideDoc = defineCollection({
         },
       ],
     },
-  ],
+  ].sort((left, right) => {
+    const order = [
+      '/en/guide/',
+      '/en/guide/layout/',
+      '/en/guide/article/',
+      '/en/guide/writing/',
+      '/en/guide/pages/',
+      '/en/guide/widgets/',
+      '/en/guide/features/',
+      '/en/guide/faq/',
+    ]
+
+    return order.indexOf(left.prefix) - order.indexOf(right.prefix)
+  }),
 })
 
 export const enCollections = defineCollections([
