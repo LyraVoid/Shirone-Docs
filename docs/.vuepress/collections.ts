@@ -2,28 +2,8 @@
  * @see https://theme-plume.vuejs.press/guide/collection/ 查看文档了解配置详情。
  *
  * Collections 配置文件，它在 `.vuepress/plume.config.ts` 中被导入。
- *
- * 请注意，你应该先在这里配置好 Collections，然后再启动 vuepress，主题会在启动 vuepress 时，
- * 读取这里配置的 Collections，然后在与 Collection 相关的 Markdown 文件中，自动生成 permalink。
- *
- * collection 的  type 为 `post` 时，表示为 文档列表类型（即没有侧边导航栏，有文档列表页）
- * 可用于实现如 博客、专栏 等以文章列表聚合形式的文档集合 （内容相对碎片化的）
- *
- * collection 的 type 为 `doc` 时，表示为文档类型（即有侧边导航栏）
- * 可用于实现如 笔记、知识库、文档等以侧边导航栏形式的文档集合 （内容强关联、成体系的）
- * 如果发现 侧边栏没有显示，那么请检查你的配置是否正确，以及 Markdown 文件中的 permalink
- * 是否是以对应的 Collection 配置的 link 的前缀开头。 是否展示侧边栏是根据 页面链接 的前缀 与 `collection.link`
- * 的前缀是否匹配来决定。
  */
 
-/**
- * 在受支持的 IDE 中会智能提示配置项。
- *
- * - `defineCollections` 是用于定义 collection 集合的帮助函数
- * - `defineCollection` 是用于定义单个 collection 配置的帮助函数
- *
- * 通过 `defineCollection` 定义的 collection 配置，应该填入 `defineCollections` 中
- */
 import { defineCollection, defineCollections } from 'vuepress-theme-plume'
 
 /* =================== locale: zh-CN ======================= */
@@ -38,7 +18,7 @@ const zhGuideDoc = defineCollection({
       text: '从这里开始',
       icon: 'ri:book-open-line',
       prefix: '/guide/',
-      collapsed: false, // 是否默认折叠
+      collapsed: false,
       items: [
         { text: '介绍', link: 'intro/', icon: 'ri:information-line' },
         { text: '快速开始', link: 'get-started/', icon: 'ri:rocket-line' },
@@ -46,7 +26,7 @@ const zhGuideDoc = defineCollection({
           text: '部署',
           icon: 'ri:cloud-line',
           prefix: '/guide/deploy/',
-          collapsed: true, // 是否默认折叠
+          collapsed: true,
           items: [
             { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'warning', text: '推荐' } },
             { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
@@ -76,8 +56,6 @@ const zhGuideDoc = defineCollection({
       ],
     },
   ],
-  // 根据文件结构自动生成侧边栏
-  // sidebar: 'auto',
 })
 
 export const zhCollections = defineCollections([
@@ -95,19 +73,47 @@ const enGuideDoc = defineCollection({
     {
       text: 'Getting Started',
       icon: 'ri:book-open-line',
-      prefix: '/guide/',
+      prefix: '/en/guide/',
       collapsed: false,
       items: [
         { text: 'Introduction', link: 'intro/', icon: 'ri:information-line' },
         { text: 'Get Started', link: 'get-started/', icon: 'ri:rocket-line' },
+        {
+          text: 'Deployment',
+          icon: 'ri:cloud-line',
+          prefix: '/en/guide/deploy/',
+          collapsed: true,
+          items: [
+            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'warning', text: 'Recommended' } },
+            { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
+            { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: 'Not Recommended' } },
+            { text: 'Cloudflare Pages', link: 'cloudflare/', icon: 'ri:cloud-line' },
+            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'warning', text: 'Recommended' } },
+            { text: 'Server Deployment', link: 'server/', icon: 'ri:server-line', badge: { type: 'info', text: 'Basic' } },
+            { text: 'Docker', link: 'docker/', icon: 'ri:ship-line' },
+            { text: 'Local Build', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: 'Basic' } },
+          ],
+        },
+      ],
+    },
+    {
+      text: 'Basic Layout',
+      icon: 'ri:layout-2-line',
+      prefix: '/en/guide/layout/',
+      collapsed: false,
+      items: [
+        { text: 'Site Config', link: 'site-config/', icon: 'ri:settings-3-line' },
+        { text: 'Dynamic Color', link: 'theme-color/', icon: 'ri:palette-line', badge: { type: 'warning', text: 'Core' } },
+        { text: 'Banner & Background', link: 'banner/', icon: 'ri:image-line' },
+        { text: 'Navigation Bar', link: 'navbar/', icon: 'ri:menu-line' },
+        { text: 'Sidebar Layout', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
+        { text: 'Footer & Profile', link: 'footer-profile/', icon: 'ri:user-smile-line' },
+        { text: 'Custom Fonts', link: 'font/', icon: 'ri:font-size-2' },
       ],
     },
   ],
-  // 根据文件结构自动生成侧边栏
-  // sidebar: 'auto',
 })
 
 export const enCollections = defineCollections([
   enGuideDoc,
 ])
-
