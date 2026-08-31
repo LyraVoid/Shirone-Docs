@@ -32,9 +32,9 @@ export const sidebarConfig = withUserConfig("sidebar", {
 
 dual 模式的响应式退化是自动的：1024px ~ 1279px 之间优雅退化为单栏（只显主栏），1280px 以下无需任何手动适配。TOC 悬浮 rail 在 dual 模式下自动让位（右侧余量被副栏占据）。
 
-::: info 页框宽度不可手动覆盖
-页框宽度由 `resolvePageWidth()` 按编排自动解析（常量 `PAGE_WIDTH` / `PAGE_WIDTH_DUAL`），不提供手动覆盖配置。
-:::
+> [!NOTE]
+> **页框宽度自动解析**
+> 页框宽度由 `resolvePageWidth()` 根据侧栏编排模式（single / dual）自动计算适配，无需且不提供手动覆盖参数。
 
 ## Widget 清单（components）
 

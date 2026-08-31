@@ -6,6 +6,10 @@ permalink: /guide/features/context-menu/
 
 桌面端右键增强菜单：在浏览器原生右键菜单之外，提供复制选中文字、返回顶部、复制页面链接等快捷操作。由 `contextMenuConfig.ts` 配置。
 
+> [!NOTE]
+> **移动端原生回退**
+> 自定义右键菜单仅在电脑端鼠标右键时触发；在触屏移动设备上自动回退至浏览器系统原生菜单，避免长按手势冲突。
+
 ## 配置
 
 ```ts title="src/config/contextMenuConfig.ts"

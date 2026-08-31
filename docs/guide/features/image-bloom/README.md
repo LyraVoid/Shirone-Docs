@@ -6,6 +6,10 @@ permalink: /guide/features/image-bloom/
 
 Tonal Bloom（色调辉光占位）为全站图片提供**防抖动的尺寸占位与色彩过渡体验**：图片加载完成前，先显示一张与图片主色调同源（HCT 色彩系统）的模糊色块，加载完成后平滑过渡到清晰图片——==消除图片加载时的布局跳动与白块闪烁==。
 
+> [!NOTE]
+> **减少动效自动适配**
+> 图片暗角光晕在系统或站点开启「减少动效」（reduced-motion）时，会自动静止过渡动画以保障低功耗与无障碍体验。
+
 ## 配置
 
 ```ts title="src/config/imageBloomConfig.ts"

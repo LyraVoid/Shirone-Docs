@@ -9,6 +9,10 @@ permalink: /guide/features/umami/
 1. **公开分享统计**：侧栏等位置读取 Umami 公开分享接口的访问数据（需填 `shareUrl`）
 2. **访问采集**：加载 Umami 官方脚本采集访客行为（需同时填 `websiteId` 与 `scriptUrl`）
 
+> [!IMPORTANT]
+> **Umami 域名绑定要求**
+> 确保 Umami 后台配置的 Website Domain 与 `siteConfig.ts` 中的 `site` 域名一致。跨域或未授权域名上的统计脚本会被 Umami 实例策略静默拦截。
+
 ## 配置
 
 ```ts title="src/config/umamiConfig.ts"

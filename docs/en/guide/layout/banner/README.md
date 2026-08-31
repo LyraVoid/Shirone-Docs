@@ -39,9 +39,9 @@ src: {
 - **mobile**: Used exclusively on the homepage for viewports < 1024px. Non-home pages on mobile use a compact header to preserve screen real estate.
 - Array order represents carousel playback order. For a static banner, supply a single image in each array.
 
-::: tip Asset Path Recommended
-Placing images in `src/assets/` and referencing them via relative paths allows build-time automatic generation of responsive AVIF/WebP formats. Leading `/` paths under `public/` and remote URLs remain supported as unmodified pass-throughs.
-:::
+> [!TIP]
+> **Asset Path Recommended**
+> Placing images in `src/assets/` and referencing them via relative paths allows build-time automatic generation of responsive AVIF/WebP formats. Leading `/` paths under `public/` and remote URLs remain supported as unmodified pass-throughs.
 
 ### Crop Focus (position)
 

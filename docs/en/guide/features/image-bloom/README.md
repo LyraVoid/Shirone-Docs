@@ -6,6 +6,10 @@ permalink: /en/guide/features/image-bloom/
 
 Tonal Bloom provides **anti-jank size placeholders with color transitions** for all site images: before an image loads, a blurred placeholder block derived from the same HCT color system as the theme appears; once loaded, it smoothly transitions to the clear image—eliminating layout jumps and white flashes during loading.
 
+> [!NOTE]
+> **Accessibility & Motion Adaptation**
+> Ambient bloom filters automatically disable transition animations when `prefers-reduced-motion` is detected or enabled in Display Settings.
+
 ## Configuration
 
 ```ts title="src/config/imageBloomConfig.ts"

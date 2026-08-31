@@ -53,6 +53,10 @@ rsync -avz --delete dist/ user@your-server:/var/www/shirone/
 scp -r dist/* user@your-server:/var/www/shirone/
 ```
 
+> [!IMPORTANT]
+> **Nginx 缓存策略关键准则**
+> HTML 文件必须配置 `Cache-Control: no-cache`，以便访客能实时拉取最新发布的文章；带哈希指纹的静态资源（`/assets/*`）则配置 1 年永久缓存。
+
 ## 第三步：配置 Nginx
 
 ```nginx title="/etc/nginx/conf.d/shirone.conf"

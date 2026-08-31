@@ -96,9 +96,9 @@ Shirone enforces a strict separation of concerns between `src/config/` and `src/
 
 For example, whether the timeline page is displayed is defined in `timelineConfig.enable` (Config), while timeline milestone entries are maintained in `src/data/timeline.ts` (Data). Deactivating individual items is done declaratively via `disabledKeys` in Config, keeping Data pure and decoupled.
 
-::: tip Zero-Overhead Principle
-Optional external integrations and heavy feature modules are disabled by default (==`enable: false`==). When disabled, they guarantee zero external network requests, zero placeholder DOM nodes, zero runtime performance degradation, and zero bundle bloat.
-:::
+> [!TIP]
+> **Zero-Overhead Principle**
+> Optional external integrations and heavy feature modules are disabled by default (==`enable: false`==). When disabled, they guarantee zero external network requests, zero placeholder DOM nodes, zero runtime performance degradation, and zero bundle bloat.
 
 ## Practical Examples
 

@@ -40,6 +40,10 @@ Create a folder named after your post slug in `src/content/posts/` (or the conte
 
 ---
 
+> [!TIP]
+> **Recommended Organization**
+> Co-locating images inside the post directory alongside `index.md` ensures zero orphaned assets when moving or renaming posts.
+
 ## Relative Asset References
 
 Because images are co-located alongside `index.md`, you can reference them using standard relative paths:

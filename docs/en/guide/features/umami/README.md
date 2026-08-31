@@ -9,6 +9,10 @@ Integrate [Umami](https://umami.is/) (open-source, self-hosted analytics) for si
 1. **Public share stats**: widgets read traffic data from Umami's public share endpoint (requires `shareUrl`)
 2. **Visitor collection**: loads the official Umami script to collect visitor behavior (requires both `websiteId` and `scriptUrl`)
 
+> [!IMPORTANT]
+> **Domain Verification Prerequisite**
+> Ensure the website domain registered in your Umami dashboard matches the production domain configured in `siteConfig.ts`.
+
 ## Configuration
 
 ```ts title="src/config/umamiConfig.ts"

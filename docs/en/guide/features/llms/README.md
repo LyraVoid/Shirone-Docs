@@ -15,6 +15,10 @@ Everything happens at build time—**no manual registry to maintain while writin
 3. **Body cleaning**: `/llms-full.txt` expands `<llm-only>` AI-specific hints and strips `<llm-exclude>` content
 4. **Security isolation**: encrypted posts (`encrypted: true`) and drafts (`draft: true`) are always filtered out
 
+> [!CAUTION]
+> **API Key Protection**
+> Always store LLM API keys in secure server-side environment variables. Never expose private API keys in client-accessible frontend bundles.
+
 ## Configuration
 
 ```ts title="src/config/llmsConfig.ts"

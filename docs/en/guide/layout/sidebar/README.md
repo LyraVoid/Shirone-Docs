@@ -14,6 +14,10 @@ The layout coordinates main content and sidebar columns across viewports:
 - **Dual Column (`arrangement: "dual"`)**: Primary sidebar on one side, secondary sidebar on the other side.
 - **Responsive Adaptability**: Dual-column collapses to single-column on medium tablets, and folds into a bottom navigation drawer on mobile viewports (< 1024px).
 
+> [!NOTE]
+> **Automatic Page Width Calculation**
+> Page width is dynamically resolved according to the sidebar arrangement (single vs dual) to optimize layout margins across resolutions.
+
 ## Single vs Dual Arrangement
 
 ```ts title="src/config/sidebarConfig.ts"

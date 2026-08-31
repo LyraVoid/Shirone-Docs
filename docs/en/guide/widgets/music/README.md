@@ -6,6 +6,10 @@ permalink: /en/guide/widgets/music/
 
 The sidebar music player is Shirone's most complex optional widget, configured in `musicConfig.ts` with four data-source modes. Mounted in the persistent sidebar, Swup in-site navigation **never interrupts playback**.
 
+> [!NOTE]
+> **Persistent Background Audio**
+> The music player operates within Swup's persistent layout context. Navigating across articles and subpages maintains continuous playback without disruption.
+
 ## Triple Enable Condition
 
 The music feature loads and renders only when **all three** conditions hold (otherwise zero DOM, zero requests):

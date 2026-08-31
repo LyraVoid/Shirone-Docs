@@ -8,6 +8,10 @@ Shirone 提供了基于现代浏览器标准 **Web Crypto API** 的文章客户�
 
 ---
 
+> [!CAUTION]
+> **零知识加密与密码不可逆性**
+> Shirone 采用端到端零知识加密体系，密钥仅由您填写的密码实时派生。一旦遗忘密码，内容在数学上无法逆向破解或恢复，请务必妥善保管密码。
+
 ## 密码学标准与安全架构 <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="Zero Plaintext" type="tip" vertical="middle" />
 
 Shirone 的加密机制完全基于现代工业级密码学规范实现：

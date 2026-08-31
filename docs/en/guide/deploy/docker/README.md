@@ -79,6 +79,10 @@ server {
 }
 ```
 
+> [!WARNING]
+> **Memory Allocation for Build Stage**
+> Shirone runs font subsetting and search indexing during build. Allocate at least 4 GB RAM to Docker or pass `--memory=4g` to prevent out-of-memory (OOM) errors.
+
 ## Build and Run
 
 ::: steps

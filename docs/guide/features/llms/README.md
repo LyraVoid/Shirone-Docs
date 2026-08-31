@@ -15,6 +15,10 @@ Shirone 内置 [llmstxt.org](https://llmstxt.org/) 规范的 AI 友好内容系�
 3. **正文清洗**：`/llms-full.txt` 自动展开 `<llm-only>` AI 专属提示，自动剔除 `<llm-exclude>` 内容
 4. **安全隔离**：自动过滤加密文章（`encrypted: true`）与草稿（`draft: true`），绝不泄漏私密内容
 
+> [!CAUTION]
+> **API 密钥安全警报**
+> 大模型 API Key 必须存放在服务端环境变量中，严禁硬编码至公开客户端配置或前端代码中。
+
 ## 配置
 
 ```ts title="src/config/llmsConfig.ts"

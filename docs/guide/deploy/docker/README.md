@@ -101,6 +101,10 @@ server {
 }
 ```
 
+> [!WARNING]
+> **构建阶段内存分配预警**
+> Shirone 构建包含字体子集化与 Pagefind 索引生成，内存峰值较高。请为 Docker 分配至少 4 GB 内存，或在命令中添加 `--memory=4g`。
+
 ## 构建与运行
 
 ::: steps

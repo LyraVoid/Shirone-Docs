@@ -110,9 +110,9 @@ subsetting: {
 - **Dev Environment**: Loads full unsubsetted fonts for instantaneous hot module replacement.
 - **Production Build**: Compresses massive fonts into a compact ~300KB - 1MB payload.
 
-::: warning Rebuild Required on New Content
-Font subsets are generated at build time. Publishing new articles requires running `pnpm build` to include newly introduced glyphs in the font bundle.
-:::
+> [!WARNING]
+> **Rebuild Required on New Content**
+> Font subsets are generated at build time. Publishing new articles requires running `pnpm build` to include newly introduced glyphs in the font bundle.
 
 ## Size Budget (budget)
 

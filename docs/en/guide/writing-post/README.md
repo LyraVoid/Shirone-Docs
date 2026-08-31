@@ -45,6 +45,10 @@ The directory form keeps images next to the post with relative-path referencesâ€
 The file name becomes part of the URL (the slug). Prefer English kebab-case (`my-first-post`); Chinese file names work but the URL gets encoded. The file name and `title` are independentâ€”the title can be as long as you like.
 :::
 
+> [!TIP]
+> **File Naming Best Practices**
+> File names become the URL slug. Use lowercase kebab-case (e.g. `my-first-post`). The filename is decoupled from the post `title`.
+
 ## Drafts and Publishing
 
 ```yaml

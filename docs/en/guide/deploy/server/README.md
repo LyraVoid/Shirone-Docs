@@ -34,6 +34,10 @@ Using `rsync` over SSH:
 rsync -avz --delete dist/ user@your-server-ip:/var/www/shirone/
 ```
 
+> [!IMPORTANT]
+> **Crucial Caching Rule**
+> Set `Cache-Control: no-cache` on HTML pages to ensure updates take effect immediately, while setting 1-year immutable caching on hashed assets under `/assets/*`.
+
 ## Step 3: Nginx Configuration
 
 Create an Nginx configuration file (e.g., `/etc/nginx/conf.d/shirone.conf`):

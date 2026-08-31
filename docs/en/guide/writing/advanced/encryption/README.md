@@ -8,6 +8,10 @@ Shirone provides a robust article encryption system powered by the modern **Web 
 
 ---
 
+> [!CAUTION]
+> **Zero-Knowledge Encryption Irreversibility**
+> Shirone utilizes client-side zero-knowledge encryption where keys are derived directly from your passphrase. If you forget the password, the ciphertext cannot be mathematically decrypted or recovered by any party.
+
 ## Cryptographic Standards & Architecture <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="Zero Plaintext" type="tip" vertical="middle" />
 
 Shirone's encryption is built on industry-standard cryptographic specifications:

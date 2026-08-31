@@ -12,6 +12,10 @@ Cloudflare Pages 提供全球 CDN、免费 SSL 与不限请求数的静态资源
 - 注册 [Cloudflare 账号](https://dash.cloudflare.com/sign-up)（免费计划即可）
 - `src/config/siteConfig.ts` 中的 `site` 已设置为正式域名
 
+> [!IMPORTANT]
+> **Node.js 环境变量设置**
+> Cloudflare Pages 默认构建镜像的 Node 版本较旧。必须在环境变量中添加 `NODE_VERSION = 22`，以满足 Node.js ≥ 22.12 的运行要求。
+
 ## 方式一：Git 集成部署
 
 ::: steps

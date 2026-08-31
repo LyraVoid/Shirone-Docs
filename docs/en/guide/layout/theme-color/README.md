@@ -36,9 +36,9 @@ themeColor: {
 
 The 0-360 range spans the full color wheel: `0` Red, `120` Green, `210` Cyan, `270` Violet. Modifying `hue` requires no other changes—all semantic color roles automatically regenerate.
 
-::: tip Wallpaper Color Extraction
-When banner wallpaper mode is active, the theme can dynamically extract the dominant theme color from the current wallpaper image. The configured seed `hue` serves as the initial baseline before user interaction.
-:::
+> [!TIP]
+> **Wallpaper Color Extraction**
+> When banner wallpaper mode is active, the theme can dynamically extract the dominant theme color from the current wallpaper image. The configured seed `hue` serves as the initial baseline before user interaction.
 
 ## Palette Style
 

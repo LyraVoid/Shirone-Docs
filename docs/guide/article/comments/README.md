@@ -6,6 +6,10 @@ permalink: /guide/article/comments/
 
 评论系统默认全局关闭，由 `commentConfig.ts` 统一管理。当前支持 Twikoo。遵循零额外负担原则：未开启时不产生任何外部请求、零额外 DOM 占位与零包体积膨胀。
 
+> [!TIP]
+> **按需懒加载策略**
+> 建议保持 `lazy: true`。评论客户端脚本仅在访客滚动至文章底部评论区域时才会按需下载并初始化，保证首屏极速加载与零多余网络开销。
+
 ## 配置速览
 
 ```ts title="src/config/commentConfig.ts"

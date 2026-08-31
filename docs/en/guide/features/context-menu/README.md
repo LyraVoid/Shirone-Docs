@@ -6,6 +6,10 @@ permalink: /en/guide/features/context-menu/
 
 The desktop context-menu enhancement adds quick actions—copy selected text, back to top, copy page link—alongside the browser's native context menu. Configured in `contextMenuConfig.ts`.
 
+> [!NOTE]
+> **Mobile Touch Fallback**
+> The custom context menu is tailored for pointer/desktop devices. On mobile touchscreens, native browser menus remain intact to prevent gesture conflicts.
+
 ## Configuration
 
 ```ts title="src/config/contextMenuConfig.ts"

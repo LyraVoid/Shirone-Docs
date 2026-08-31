@@ -6,6 +6,10 @@ permalink: /en/guide/deploy/github/
 
 GitHub Pages allows free hosting integrated directly with your GitHub repository.
 
+> [!IMPORTANT]
+> **Exact Repository Matching**
+> The `base` path must match your GitHub repository name exactly (case-sensitive) and must include leading and trailing slashes (e.g. `/my-blog/`).
+
 ## Step 1: Configure site and base
 
 Edit `src/config/siteConfig.ts`:

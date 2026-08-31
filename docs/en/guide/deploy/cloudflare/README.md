@@ -12,6 +12,10 @@ Cloudflare Pages provides global CDN acceleration, free SSL certificates, and un
 - A Cloudflare account
 - `site` configured in `src/config/siteConfig.ts` with your official domain
 
+> [!IMPORTANT]
+> **Mandatory Node.js Version Variable**
+> Cloudflare Pages build runners default to an older Node.js runtime. You must specify `NODE_VERSION = 22` in project Environment variables to meet engine requirements.
+
 ## Method 1: Git Integration
 
 ::: steps

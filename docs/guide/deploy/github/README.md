@@ -13,6 +13,10 @@ GitHub Pages 可以免费托管站点并与代码仓库天然集成，但对 Shi
 
 如果仍选择 GitHub Pages（例如项目本身就在 GitHub 生态内），按以下步骤操作。
 
+> [!IMPORTANT]
+> **路径严格一致性准则**
+> `base` 路径必须与 GitHub 仓库名（包括大小写）完全保持一致，前后必须包含斜杠（例如 `/my-blog/`）。
+
 ## 第一步：配置 site 与 base
 
 编辑 `src/config/siteConfig.ts`：

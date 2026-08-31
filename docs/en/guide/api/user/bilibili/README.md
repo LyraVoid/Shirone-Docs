@@ -135,9 +135,9 @@ When embedding Bilibili videos in Markdown articles, Shirone uses a lightweight 
   Your Bilibili privacy settings have set your watchlist to private.
   Solution: Add `BILI_SESSDATA="your_sessdata"` to your `.env` file or CI environment variables.
 
-  ::: warning Credential Privacy
-  `SESSDATA` gives access to your Bilibili account. Shirone guarantees credentials are used only during Node execution and never bundled into client JavaScript or output HTML. Never commit your `.env` file to git.
-  :::
+  > [!CAUTION]
+> **Credential Security Warning**
+> `SESSDATA` grants full access to your Bilibili account. Never commit `.env` containing real credentials to public git repositories or client bundles.
 
 - Running the sync command
   ```bash

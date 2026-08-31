@@ -6,6 +6,10 @@ permalink: /en/guide/article/comments/
 
 The comment system is disabled globally by default, managed by `commentConfig.ts`. Twikoo is currently supported. Following the zero-overhead principle: when disabled, no external requests are made, no extra DOM is added, and the bundle does not grow.
 
+> [!TIP]
+> **Lazy Loading Strategy**
+> Keep `lazy: true` enabled by default. Comment scripts load on-demand only when the reader scrolls near the bottom comment section, preserving zero initial bundle overhead.
+
 ## Config Overview
 
 ```ts title="src/config/commentConfig.ts"
