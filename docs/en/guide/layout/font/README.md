@@ -177,11 +177,14 @@ fontFamilies: [
 
 ::: collapse
 - Font displays fallback font after publishing new post
+
   Run `pnpm build` so the subsetting engine extracts the newly introduced characters and updates the `.woff2` font bundle.
 
 - Subsetting build time is long
+
   Subsetting scans content and remote Meting playlists during build. If network is constrained, set `allowRemoteText: false` to speed up local builds.
 
 - How to add custom weights
+
   Add items to the `variants` array specifying `weight: 700` and pointing to the respective weight CSS or font file.
 :::

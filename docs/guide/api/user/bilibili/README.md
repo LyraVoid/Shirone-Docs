@@ -132,14 +132,16 @@ B 站图片服务器（`hdslb.com`）对外部站点有严格的 Referer 防盗�
 
 ::: collapse
 - 追番同步报错 `code: 53013`（权限不足）
+
   你在 B 站的「空间隐私设置」中将追番列表设为了「仅自己可见」。
   解决方式：在项目根目录 `.env`（或 CI 环境变量）中添加 `BILI_SESSDATA="你的SESSDATA"`。
 
   > [!CAUTION]
-> **凭据安全警报**
-> `SESSDATA` 拥有对应 B 站账号的完整会话权限。切勿将含有真实 Cookie 的 `.env` 文件提交至公开 Git 仓库或客户端前端包中。
+  > **凭据安全警报**
+  > `SESSDATA` 拥有对应 B 站账号的完整会话权限。切勿将含有真实 Cookie 的 `.env` 文件提交至公开 Git 仓库或客户端前端包中。
 
 - 同步命令执行方式
+
   ```bash
   pnpm anime:sync --provider bilibili
   ```

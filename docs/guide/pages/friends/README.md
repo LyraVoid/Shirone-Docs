@@ -69,11 +69,14 @@ export const friendsData: FriendItem[] = [
 
 ::: collapse
 - 友链页地址想换
+
   预设 `Friends` 的 `url` 可通过自定义链接覆盖（见[导航栏配置](/guide/layout/navbar/)）；页面文件路径在 `src/pages/friends.astro`，改地址需要同步处理路由。
 
 - 双仓模式下友链数据在哪维护
+
   `friends.ts` 属于 Data 层。内容分离部署时可随内容仓覆盖数据文件，具体边界见主题仓库《内容分离指南》。
 
 - 想去掉筛选栏
+
   筛选栏由 tags 聚合生成——所有条目不写 `tags`（或统一一个标签）时筛选栏自然退化。
 :::

@@ -138,12 +138,14 @@ interface StatsResult {
 
 ::: collapse
 - 如何获取 Share URL
+
   在 Umami 实例控制台中：
   1. 打开 **Settings** → **Websites**。
   2. 找到你的站点，点击 **Edit**。
   3. 切换到 **Share URL** 选项卡，开启分享开关并复制生成的链接。
 
 - 统计数据显示 `--` 没有数值
+
   1. 检查 `shareUrl` 是否在浏览器中能直接访问并看到图表。
   2. 检查控制台是否有跨域（CORS）报错。
   3. 若分享链接刚创建，Umami 数据库需要接收第一条访问后才会产出聚合数据。

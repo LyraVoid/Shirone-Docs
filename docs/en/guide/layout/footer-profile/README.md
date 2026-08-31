@@ -80,11 +80,14 @@ export const footerConfig = withUserConfig("footer", {
 
 ::: collapse
 - Avatar image fails to load
+
   Check if the file path is correct. Local assets under `src/assets` must not begin with a leading slash, while `public` files must begin with `/`.
 
 - Social icon does not display
+
   Ensure the Iconify identifier syntax is accurate. Search and verify icon keys on [icon-sets.iconify.design](https://icon-sets.iconify.design/).
 
 - How to disable the author profile widget
+
   Set `enable: false` for the profile component in `src/config/sidebarConfig.ts`.
 :::

@@ -94,11 +94,14 @@ categories: [
 
 ::: collapse
 - A new project doesn't show
+
   Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `key` hit by `disabledKeys`.
 
 - Where do cover images go
+
   `cover` supports absolute paths relative to `public` (`/assets/projects/xxx.webp`) and similar forms; path rules match post images (see [Image Gallery & File Organization](/en/guide/writing/gallery/)).
 
 - What values does phase take
+
   `"building"` and `"shipped"`, styled differently on the page.
 :::

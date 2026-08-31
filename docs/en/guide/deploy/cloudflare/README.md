@@ -68,5 +68,6 @@ wrangler pages deploy dist --project-name=<your-project-name>
 
 ::: collapse
 - Build Error: Node Version Unsupported
+
   Ensure `NODE_VERSION` is set to `22` in project Environment variables (under **Settings → Environment variables**).
 :::

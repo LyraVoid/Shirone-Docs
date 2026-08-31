@@ -132,14 +132,16 @@ When embedding Bilibili videos in Markdown articles, Shirone uses a lightweight 
 
 ::: collapse
 - Sync error `code: 53013` (Permission Denied)
+
   Your Bilibili privacy settings have set your watchlist to private.
   Solution: Add `BILI_SESSDATA="your_sessdata"` to your `.env` file or CI environment variables.
 
   > [!CAUTION]
-> **Credential Security Warning**
-> `SESSDATA` grants full access to your Bilibili account. Never commit `.env` containing real credentials to public git repositories or client bundles.
+  > **Credential Security Warning**
+  > `SESSDATA` grants full access to your Bilibili account. Never commit `.env` containing real credentials to public git repositories or client bundles.
 
 - Running the sync command
+
   ```bash
   pnpm anime:sync --provider bilibili
   ```

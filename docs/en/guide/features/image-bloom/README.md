@@ -65,11 +65,14 @@ Images then render through the normal loading flow (no placeholder block), which
 
 ::: collapse
 - I still see the blur block after the image loads
+
   That's the transition's mid-state. If it lingers noticeably beyond `transitionDuration`, the image itself is loading slowly (compress large images first).
 
 - The placeholder color doesn't match the image
+
   The placeholder comes from the theme's HCT palette, not per-image color extraction—it's a theme-level unified block. It's a separate mechanism from "extracting a theme color from the banner wallpaper."
 
 - Does it affect performance
+
   The placeholder is a pure CSS blur block with no JavaScript color-extraction cost; disabling leaves zero residue.
 :::

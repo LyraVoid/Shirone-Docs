@@ -130,14 +130,18 @@ defaultMode: "sequence",  // 初始播放模式
 
 ::: collapse
 - 播放器不出现
+
   按三重条件逐层检查：`musicConfig.enable` → 数据源是否有有效曲目/歌单 ID → `sidebarConfig` 中 music 条目 `enable: true`。任一不满足即零 DOM（设计行为）。
 
 - Meting 歌单拉取失败
+
   Meting 依赖第三方 API 服务，接口波动时 `mixed` 模式会自动降级为本地曲目；`meting` 纯云端模式则会暂时无歌单。配置一个有曲目的本地数据源是最稳的兜底。
 
 - 切页后音乐会重头播吗
+
   不会。播放器挂在 Swup 容器外的持久侧栏中，站内导航全程连续播放，进度与状态保持。
 
 - 音量每次刷新都回到默认吗
+
   `defaultVolume` 只作用于首次初始化；访客调整后的音量由播放器运行时持有（会话内保持）。
 :::

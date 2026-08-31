@@ -119,11 +119,14 @@ coscmd upload -rs dist/ /
 
 ::: collapse
 - 构建成功但搜索报 404
+
   产物中缺少 `pagefind/`。原因几乎都是构建命令被换成了 `astro build`。回到 `pnpm build`。
 
 - 本地预览正常、线上异常
+
   对比两个环境的差异：`site`/`base` 配置、部署平台是否完整上传了 `dist/`（含隐藏文件）、平台是否对 HTML 做了额外缓存。
 
 - 想跳过某些构建步骤加速
+
   写作预览用 `pnpm dev` 即可，无需完整构建。只有最终发布才需要 `pnpm build` 的完整链路。
 :::

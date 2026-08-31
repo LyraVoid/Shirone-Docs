@@ -191,9 +191,11 @@ server {
 
 ::: collapse
 - 构建失败：`only-allow pnpm` 或依赖安装报错
+
   使用了 `npm install` 而非 pnpm，或未启用 corepack。严格按 Dockerfile 写法：`corepack enable` + `pnpm install --frozen-lockfile`。
 
 - 构建阶段 OOM
+
   Shirone 构建含字体子集化与 Pagefind 索引，内存峰值较高。为 Docker 分配至少 4 GB 内存，或使用构建参数 `--memory=4g`（docker build）。
 
   **搜索不可用（404 on /pagefind/*）**
@@ -201,5 +203,6 @@ server {
   Pagefind 索引由 `pnpm build` 末尾生成，确认构建阶段命令没有被精简为单独的 `astro build`——那样会跳过索引步骤。
 
 - 镜像里能放评论服务等动态功能吗
+
   不建议。静态容器保持无状态更易维护；评论（Twikoo/Waline 等）作为独立容器部署，Nginx 反代区分路径。
 :::

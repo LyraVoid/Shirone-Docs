@@ -96,11 +96,14 @@ Content begins here.
 
 ::: collapse
 - What happens if frontmatter syntax is wrong
+
   YAML syntax errors fail the build immediately with exact file and line locations. Unknown field names are safely ignored. Run `npx astro check` to validate changes.
 
 - Can I define custom frontmatter fields
+
   Unrecognized fields are ignored by default. If you need custom data in build scripts, store it in content bodies or dedicated data files.
 
 - Relationship between description and opening paragraph
+
   `description` is explicitly prioritized for list cards, SEO meta tags, and RSS feeds. When omitted, the build falls back to extracting the opening paragraph.
 :::

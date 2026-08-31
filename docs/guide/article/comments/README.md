@@ -115,14 +115,18 @@ twikoo: {
 
 ::: collapse
 - 评论组件不出现
+
   按解析规则逐层检查：`enable` → `provider` → `envId` / `scriptUrl` 非空。任一缺失即静默关闭（设计行为，不报错）。
 
 - 评论加载拖慢页面
+
   确认 `lazy: true`（默认已开）。开启后脚本仅在评论区域进入视口时加载。
 
 - envId 用什么格式
+
   两种都可以：完整 URL（如 `https://your-twikoo.vercel.app`，Vercel/Railway 部署常见）或腾讯云环境 ID 字符串。
 
 - 评论语言跟站点不一致
+
   `twikoo.lang` 设为 `"auto"` 时跟随站点语言。强制指定（如 `"zh-CN"`）可覆盖。
 :::

@@ -111,14 +111,18 @@ server {
 
 ::: collapse
 - Build failure: `only-allow pnpm` or dependency installation error
+
   Occurs when running `npm install` instead of pnpm, or when corepack is not enabled. Follow the Dockerfile instructions strictly: run `corepack enable` and `pnpm install --frozen-lockfile`.
 
 - Out of Memory (OOM) during build phase
+
   Shirone performs automated font subsetting and Pagefind search indexing during build, requiring higher peak memory. Allocate at least 4 GB memory to Docker, or pass `--memory=4g` to `docker build`.
 
 - Search feature returns 404 on `/pagefind/*`
+
   Pagefind indexes are compiled at the end of `pnpm build`. Ensure your build command is `pnpm build` and not bare `astro build` (which bypasses search indexing).
 
 - Should dynamic backend features like comments be embedded in this image
+
   Not recommended. Keep the static blog container completely stateless. Deploy dynamic backends (Twikoo, Waline) as separate microservice containers behind an Nginx reverse proxy.
 :::

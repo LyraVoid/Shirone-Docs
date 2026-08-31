@@ -65,11 +65,14 @@ projects | devices | timeline | albums | about | post | categories | tags
 
 ::: collapse
 - 关闭页面后旧链接会怎样
+
   直接访问返回 404。若该页面已被搜索引擎收录，建议配置 301（在托管平台层面处理）。
 
 - 页面能改地址吗
+
   预设中的 `url` 可在自定义链接时覆盖（如把 `/moments/` 改为 `/say/`），详见[导航栏配置](/guide/layout/navbar/)的自定义链接一节。
 
 - 新增自己的独立页面
+
   在 `src/pages/` 下创建 Astro 页面即可，但不会自动获得导航入口与 widget 过滤能力——需要在 `LinkPresets` 登记。
 :::

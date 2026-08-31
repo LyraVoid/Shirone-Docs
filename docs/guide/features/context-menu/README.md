@@ -64,8 +64,10 @@ export const contextMenuConfig = withUserConfig("contextMenu", {
 
 ::: collapse
 - 右键菜单没变化
+
   检查 `enable` 是否被关闭；确认在桌面端浏览器中操作（触屏设备无效）。
 
 - 想自定义菜单动作
+
   当前支持上述三种内置动作，暂不支持自定义动作项。有需求可到主题仓库提 Issue。
 :::

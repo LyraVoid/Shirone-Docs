@@ -79,11 +79,14 @@ docs(config): clarify music provider setup
 
 ::: collapse
 - My Issue got no response
+
   Check whether it's missing reproduction info—maintainers prioritize complete, reproducible reports. Adding environment details and logs often revives it.
 
 - I'd like to contribute translations
+
   UI text goes through the i18n system; new keys must be filled in for all 10 language modules under `src/i18n/languages/`. Doc translations should keep commands, paths, links, and technical meaning accurate.
 
 - My feature proposal was rejected
+
   The theme has a clear direction (expressive, content-first, zero overhead). Rejection doesn't mean the idea is bad—perhaps it doesn't fit; consider a community plugin or your own fork.
 :::

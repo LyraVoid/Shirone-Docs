@@ -60,8 +60,10 @@ url: https://creativecommons.org/licenses/by/4.0/
 
 ::: collapse
 - 想让每篇文章用不同协议怎么办
+
   `licenseConfig` 是全站级的。个别文章需要不同声明时，可在正文末尾手动补充说明文字，或在 `FooterConfig.html` 中附加说明。
 
 - 区块显示了但链接点不开
+
   检查 `url` 是否完整（含 `https://`）。协议名与链接建议保持一致，读者会通过链接核对条款。
 :::

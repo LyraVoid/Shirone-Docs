@@ -88,11 +88,14 @@ sudo certbot --nginx -d your-domain.com
 
 ::: collapse
 - Visiting old content after update
+
   Check in sequence: verify rsync upload succeeded, verify Nginx `root` path points to the new `dist`, and clear browser cache (HTML should have `Cache-Control: no-cache`).
 
 - Can I build directly on the server
+
   Yes (with Node 22 and pnpm installed), but full builds consume significant CPU and memory. Small VPS instances may hit OOM. Building locally or via CI and copying static files to the server is recommended.
 
 - Can I use management panels (1Panel / aaPanel)
+
   Yes. Create a standard static website and place `dist/` contents into the site root directory. Keep the core rules: no-cache on HTML and 1-year immutable caching on hashed assets.
 :::

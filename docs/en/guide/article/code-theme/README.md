@@ -73,11 +73,14 @@ Code block syntax capabilities (file trees, code trees, line decorations, collap
 
 ::: collapse
 - The theme change has no effect
+
   Theme names must exactly match the Shiki registered names (case-sensitive). The build generates styles for both modes—confirm you rebuilt before checking.
 
 - The code block background clashes with the card background
+
   Some styles (like background color) have override logic in `astro.config.mjs` (noted in source comments). If backgrounds mismatch after customizing, check whether the overrides in that file need updating too.
 
 - Can code blocks follow the theme color
+
   Not currently—Shiki themes are static palettes. Workaround: pick a neutral theme (`github-*`, `vitesse-*`) so code blocks look fine under any site color scheme.
 :::

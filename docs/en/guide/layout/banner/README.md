@@ -195,14 +195,18 @@ banner: {
 
 ::: collapse
 - Banner image does not display
+
   Check in sequence: relative path under `src/assets/` or leading `/` under `public/`, file existence, whether `wallpaperMode.defaultMode` is `"none"`, or whether visitor local storage has selected solid background mode.
 
 - Mobile non-home pages have no banner
+
   This is deliberate design: mobile subpages use a compact header to maximize viewport content area.
 
 - Carousel interval below 3000ms does not take effect
+
   A runtime floor of 3000ms is enforced to prevent rapid flickering and excessive GPU overhead.
 
 - Texture is too faint or too strong
+
   Adjust `defaultOpacity` (recommended range 0.05 ~ 0.25). Textures serve as ambient decoration; values above 0.25 may distract from article reading.
 :::

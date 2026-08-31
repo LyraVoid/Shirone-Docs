@@ -115,14 +115,18 @@ twikoo: {
 
 ::: collapse
 - The comment component doesn't appear
+
   Check the resolution rules layer by layer: `enable` → `provider` → non-empty `envId` / `scriptUrl`. Any missing piece silently disables comments (by design, no error).
 
 - Comments slow down the page
+
   Confirm `lazy: true` (on by default). The script loads only when the comment area enters the viewport.
 
 - What format is envId
+
   Both work: a full URL (like `https://your-twikoo.vercel.app`, common for Vercel/Railway deployments) or a Tencent CloudBase environment ID string.
 
 - The comment language doesn't match the site
+
   `twikoo.lang: "auto"` follows the site language. Force a specific value (like `"zh-CN"`) to override.
 :::

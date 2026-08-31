@@ -64,11 +64,14 @@ permalink: /guide/widgets/widgets-overview/
 
 ::: collapse
 - 某个 widget 想只在特定页面显示
+
   用 `pages` 过滤。页面标识清单见[独立页面总览](/guide/pages/pages-overview/)。
 
 - 组件顺序想调整
+
   `components` 数组顺序即渲染顺序（各栏内部按声明顺序），直接重排。
 
 - 侧栏整体不想要了
+
   `sidebarConfig.enable: false`；或单页面隐藏用每条目的 `pages` 白名单控制。
 :::

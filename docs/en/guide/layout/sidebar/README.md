@@ -95,17 +95,22 @@ components: [
 
 ::: collapse
 - How to reorder sidebar widgets
+
   The order of elements in the `components` array directly determines visual rendering order. Move items up or down in the array.
 
 - Behavior of secondary items in single-column mode
+
   `column: "secondary"` is only active when `arrangement: "dual"`. In single mode, secondary widgets automatically render inside the primary column without losing content.
 
 - Category or Tag list is too long
+
   Configure the `collapseAfter` threshold (e.g. `collapseAfter: 5`) to fold excess entries behind an expandable button.
 
 - Sidebar is completely missing
+
   Verify `sidebarConfig.enable: true`, confirm that the current page is included in widget `pages` whitelists, and check viewport width (mobile screens fold sidebars into drawers).
 
 - Does client-side page navigation reset widget state
+
   No. Sidebars belong to Swup's persistent outer framework and are never destroyed between page transitions—preserving music playback and collapse states seamlessly.
 :::

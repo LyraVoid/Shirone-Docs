@@ -83,11 +83,14 @@ export const navbarConfig = withUserConfig("navbar", {
 
 ::: collapse
 - Dropdown menu does not open
+
   Verify that the `children` array contains valid navigation items or LinkPresets.
 
 - External link icon doesn't show
+
   Add `external: true` to indicate external navigation targets.
 
 - Preset text does not change with language
+
   Preset names are automatically translated via i18n dictionary files in `src/i18n/`.
 :::

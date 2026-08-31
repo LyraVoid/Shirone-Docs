@@ -138,12 +138,14 @@ When a request encounters an issue, standard error instances are thrown:
 
 ::: collapse
 - Where do I get the Share URL?
+
   In your Umami instance dashboard:
   1. Go to **Settings** → **Websites**.
   2. Click **Edit** on your website entry.
   3. Open the **Share URL** tab, toggle on sharing, and copy the link.
 
 - Stats component shows `--` with no data
+
   1. Verify that the `shareUrl` opens properly in a browser and displays stats charts.
   2. Check browser dev tools for CORS errors.
   3. If the share link was just created, wait for your first visitor hit to be recorded.

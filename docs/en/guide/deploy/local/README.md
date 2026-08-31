@@ -49,11 +49,14 @@ The Shirone build pipeline performs several automated tasks:
 
 ::: collapse
 - Build succeeds but search returns 404
+
   The output is missing `pagefind/`. This happens when `astro build` is run directly instead of `pnpm build`.
 
 - Local preview works but online site fails
+
   Check differences between environments: `site` / `base` configuration, whether hidden files in `dist/` were uploaded, or whether upstream CDN is incorrectly caching HTML files.
 
 - How to speed up previewing without full builds
+
   Use `pnpm dev` during writing. A complete `pnpm build` is only necessary when building production distribution artifacts.
 :::

@@ -120,14 +120,18 @@ themeColor: {
 
 ::: collapse
 - Hue changed but site colors remain unchanged
+
   The browser has cached the visitor's previous selection in LocalStorage. Clear site LocalStorage or test in an incognito window.
 
 - Relationship between fixed and displaySettings.colorStyle
+
   `fixed: true` locks the theme color and removes the switcher entirely; `displaySettings.colorStyle: false` hides the dialog item while keeping the current style active.
 
 - Does setting spec to 2021 cause issues
+
   No. Color tokens and role sets remain identical, with only the tonal derivation formula changing slightly.
 
 - How is Dark Mode handled
+
   Dark mode colors are derived automatically from the same HCT seed. When toggled, the theme computes dark-role equivalents with no separate CSS maintenance required.
 :::

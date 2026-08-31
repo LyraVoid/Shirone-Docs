@@ -85,11 +85,14 @@ Cloudflare 默认策略对静态站点已足够合理：HTML 短缓存、指纹�
 
 ::: collapse
 - 构建失败：`Unsupported engine` 或语法错误
+
   未设置 `NODE_VERSION=22` 环境变量，或使用了 `npm install` 而非 pnpm。确认构建命令为 `pnpm build`，并启用 corepack（`corepack enable && pnpm build`）以对齐仓库锁定的 pnpm 版本。
 
 - 国内访问速度
+
   Cloudflare 对中国大陆的回源与 Anycast 路由表现不稳定，未备案域名走海外节点延迟波动较大。读者主要在国内时可对比 [EdgeOne Pages](/guide/deploy/edgeone/)。
 
 - 500 次构建额度
+
   免费计划每月 500 次构建。频繁改动时注意 Actions / CI 与 Pages 会各计一次构建；纯内容更新建议合并提交，或改用 Wrangler CLI 按需部署（CLI 上传不消耗构建额度）。
 :::

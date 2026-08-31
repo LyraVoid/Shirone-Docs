@@ -65,14 +65,18 @@ EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、
 
 ::: collapse
 - 构建失败：`npm ERR!` 或 `only-allow pnpm`
+
   构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，在环境变量中固定 `PNPM_VERSION=9` 或使用 `corepack enable && pnpm build`。
 
 - 构建失败：Node 版本不匹配
+
   确认 Node.js 版本设置为 `22`。日志中出现 `SyntaxError`（如 `??` 运算符解析失败）通常就是 Node 版本过低。
 
 - 双仓模式（Shirone-Content）
+
   在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），`content:sync` 会在构建时自动拉取内容仓。也可以参考主题仓库 `deploy.yml.example` 的变体 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
 
 - 搜索不可用
+
   与所有平台同理：Pagefind 索引由 `pnpm build` 生成于 `dist/pagefind/`，若使用自定义 CI 上传产物，务必包含整个 `dist` 目录。
 :::

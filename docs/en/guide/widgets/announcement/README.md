@@ -85,11 +85,14 @@ By default it shows only on the **home page**, pinned at the top of the sidebar.
 
 ::: collapse
 - I changed the content but visitors can't see it
+
   If a visitor dismissed the previous announcement with `closable: true`, the stored memory hides the new one too. Either ask readers to clear their storage, or resend with `closable` off.
 
 - Multilingual announcements
+
   An empty `title` uses i18n; `content` is plain text—multilingual content needs handling on your side.
 
 - Announcement vs. Moments
+
   The announcement is one standing notice in the sidebar (site-level messages); Moments is a dynamic feed (daily records). Different purposes.
 :::

@@ -99,11 +99,14 @@ categories: [
 
 ::: collapse
 - A skill doesn't show
+
   Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `name` hit by `disabledNames`.
 
 - What about duplicate skill names
+
   `disabledNames` matching by name affects all same-named entries. Keep names unique; if you must distinguish them, add a suffix (like `Node.js (Backend)`).
 
 - Where to find icons
+
   Language/framework icons live in the `simple-icons:*` set (already installed); see [icones.js.org](https://icones.js.org/) for the full list.
 :::

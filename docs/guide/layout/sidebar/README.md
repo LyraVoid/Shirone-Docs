@@ -138,17 +138,22 @@ components: [
 
 ::: collapse
 - widget 顺序怎么定
+
   `components` 数组顺序即渲染顺序（各栏内部按声明顺序排列）。调整顺序直接移动数组元素。
 
 - secondary 条目在 single 模式下会怎样
+
   `column: "secondary"` 仅在 `arrangement: "dual"` 时生效，single 模式下该条目自动落回主栏，不会丢失。
 
 - 分类/标签列表太长
+
   用 `collapseAfter` 折叠阈值：超过 N 条时折叠并显示展开按钮。默认分类 5 条、标签 6 条。
 
 - 侧栏完全不显示
+
   检查三层：`sidebarConfig.enable` 总开关、当前页面是否在 widget 的 `pages` 白名单内、视口宽度（移动端侧栏收进抽屉，不并排显示）。
 
 - Swup 切页后侧栏 widget 状态会不会丢
+
   不会。侧栏属于 Swup 的持久外围框架，切页时不重建——音乐播放进度、折叠状态等在站内导航全程保持。页面过滤的显隐通过 `data-current-page` 联动。
 :::

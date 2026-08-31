@@ -133,11 +133,14 @@ YAML keys are deeply merged with TypeScript code defaults (objects recursively m
 
 ::: collapse
 - Type error during build after modifying configuration
+
   Shirone uses strict type checking. Invalid field names or unexpected values will trigger immediate build-time errors. Cross-reference type definitions in `src/types/config.ts` or run `npx astro check` to validate changes.
 
 - Language changed but some copy remains unchanged
+
   UI strings rely on the i18n translation dictionary. Custom strings (such as banner subtitles or announcement text) are static plaintext and do not auto-translate with `lang`.
 
 - Where do title and subtitle appear
+
   `title` renders in the top app bar and browser document title; `subtitle` is primarily used for SEO metadata and social previews. The hero heading displayed in the center of the homepage banner is `banner.homeText.title` (see [Banner & Background](/en/guide/layout/banner/)), which is configured independently.
 :::

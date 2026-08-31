@@ -119,11 +119,14 @@ categories: [
 
 ::: collapse
 - 设备不显示
+
   三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `id` 是否被 `disabledIds` 命中。
 
 - categories 的 description 有什么用
+
   显示在分类 Chips 下方作为分组说明——这是设备页独有的字段（其他展示页的分类没有）。
 
 - status 有哪些取值
+
   数据源以 `active` 表示在用。你可以扩展自定义值（如 `retired` 退役、`planning` 计划中），页面会原样展示；保持简短英文即可。
 :::

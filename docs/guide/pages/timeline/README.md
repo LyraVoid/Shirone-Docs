@@ -114,11 +114,14 @@ disabledTitles: ["某段不想展示的经历"],
 
 ::: collapse
 - 事件不显示
+
   三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `title` 是否被 `disabledTitles` 命中。
 
 - 顺序不对
+
   确认 `order` 取值；同一时间段的多个事件按数据数组顺序渲染，想微调顺序就重排数组。
 
 - links 的图标不显示
+
   `icon` 是 iconify 编码，品牌图标用 `fa6-brands:*`（内置已装），其他集合需先安装。
 :::

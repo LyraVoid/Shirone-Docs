@@ -146,14 +146,18 @@ export const profileConfig = withUserConfig("profile", {
 
 ::: collapse
 - 页脚 HTML 没生效
+
   依次确认：`enable` 是否为 `true`、`FooterConfig.html` 是否位于 `src/config/` 且文件名大小写正确、是否重新构建。Swup 切页时页脚属外围框架，注入内容不会重复插入。
 
 - 头像不显示
+
   检查路径规则：相对 `src` 不带 `/` 前缀、相对 `public` 带 `/` 前缀。远程 URL 也可以用，但不受构建优化。
 
 - 社交图标显示为方块
+
   该图标集未安装。到 [icones.js.org](https://icones.js.org/) 确认图标所属集合名，执行 `pnpm add @iconify-json/<集合名>` 后重新构建。
 
 - 想在页脚放 ICP 备案号
+
   正合适——写入 `FooterConfig.html` 并开启开关即可，主题默认页脚的版权行不会受影响。
 :::

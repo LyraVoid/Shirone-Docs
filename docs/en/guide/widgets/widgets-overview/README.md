@@ -64,11 +64,14 @@ These conventions explain much of the theme's behavior:
 
 ::: collapse
 - Show a widget only on specific pages
+
   Use `pages` filtering. The identifier list is in [Standalone Pages Overview](/en/guide/pages/pages-overview/).
 
 - Reordering widgets
+
   The `components` array order is the render order (within each column)—just reorder the array.
 
 - I don't want the sidebar at all
+
   `sidebarConfig.enable: false`; or hide per-page via each entry's `pages` whitelist.
 :::

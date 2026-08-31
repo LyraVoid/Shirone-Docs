@@ -125,11 +125,14 @@ items: [
 
 ::: collapse
 - 悬浮目录在桌面端不见了
+
   默认 `devices: ["mobile", "tablet"]`——桌面端由侧栏粘性 TOC 承担。需要桌面悬浮目录时把 `desktop` 加入 `devices`。
 
 - comment 按钮没出现
+
   三层检查：`fabConfig` 中按钮 `enable` → `commentConfig.enable` 全局开关（见[评论系统](/guide/article/comments/)）→ 当前页面是否在 `pages` 范围内。评论关闭时按钮零 DOM 是设计行为。
 
 - 返回顶部按钮不出现
+
   滚动位置未超过横幅高度阈值。文章较短、一屏内时按钮保持隐藏。
 :::
