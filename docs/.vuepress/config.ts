@@ -68,6 +68,8 @@ export default defineUserConfig({
       collapse: true, // 启用折叠容器 ::: collapse
       table: true, // 启用表格增强容器语法 ::: table
       mermaid: true, // 启用 mermaid 图表
+      codeTree: true, // 启用 code-tree 代码树容器与导入语法
+      fileTree: true, // 启用 file-tree 文件树容器
     },
   }),
 })

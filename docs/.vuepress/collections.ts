@@ -22,6 +22,7 @@ const zhGuideDoc = defineCollection({
       items: [
         { text: '介绍', link: 'intro/', icon: 'ri:information-line' },
         { text: '快速开始', link: 'get-started/', icon: 'ri:rocket-line', badge: { type: 'tip', text: '起步' } },
+        { text: '项目结构', link: 'project-structure/', icon: 'ri:node-tree', badge: { type: 'info', text: '架构' } },
         {
           text: '部署',
           icon: 'ri:cloud-line',
@@ -282,6 +283,7 @@ const enGuideDoc = defineCollection({
       items: [
         { text: 'Introduction', link: 'intro/', icon: 'ri:information-line' },
         { text: 'Quick Start', link: 'get-started/', icon: 'ri:rocket-line', badge: { type: 'tip', text: 'Start' } },
+        { text: 'Project Structure', link: 'project-structure/', icon: 'ri:node-tree', badge: { type: 'info', text: 'Structure' } },
         {
           text: 'Deployment',
           icon: 'ri:cloud-line',
