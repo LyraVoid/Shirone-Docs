@@ -81,12 +81,24 @@ server {
 
 ## Build and Run
 
-```bash
-# Build Docker image
-docker build -t shirone:latest .
+::: steps
 
-# Run container
-docker run -d -p 8080:80 --name shirone-blog shirone:latest
-```
+1. **Build Production Docker Image**
 
-Visit `http://localhost:8080` to access the site.
+   Leverage multi-stage caching to build the lightweight static image:
+   ```bash
+   docker build -t shirone:latest .
+   ```
+
+2. **Run Container in Background**
+
+   Map container port 80 to host port 8080 with auto-restart policy:
+   ```bash
+   docker run -d -p 8080:80 --name shirone-blog shirone:latest
+   ```
+
+3. **Verify Deployment**
+
+   Open `http://localhost:8080` in your browser to confirm page loading and search indexing.
+
+:::

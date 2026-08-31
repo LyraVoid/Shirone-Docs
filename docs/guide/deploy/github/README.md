@@ -109,17 +109,25 @@ jobs:
 
 ## 第三步：启用 Pages
 
+::: steps
+
 1. 进入仓库 **Settings → Pages**。
 2. **Source** 选择 **GitHub Actions**，保存。
 3. 推送一次 `main`，在 **Actions** 标签页观察构建进度。
+
+:::
 
 完成后访问 `https://<username>.github.io/<repo>` 即可看到站点。
 
 ## 使用自定义域名（可选）
 
+::: steps
+
 1. 在仓库 **Settings → Pages → Custom domain** 填入你的域名。
 2. 在域名服务商处添加 `CNAME` 记录指向 `<username>.github.io`。
 3. 勾选 **Enforce HTTPS**。
+
+:::
 
 使用自定义域名（根域名或子域名）时，`base` 应改回 `/`，`site` 改为自定义域名。
 

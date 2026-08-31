@@ -52,9 +52,13 @@ wrangler pages deploy dist --project-name=<your-project-name>
 
 ## Custom Domains
 
+::: steps
+
 1. Go to your Pages project in Cloudflare Dashboard and select **Custom domains → Set up a custom domain**.
 2. If your DNS is managed on Cloudflare, DNS records and SSL are configured automatically.
 3. If DNS is hosted externally, add a `CNAME` pointing to `<project>.pages.dev`.
+
+:::
 
 ## Troubleshooting
 

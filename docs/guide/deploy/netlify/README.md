@@ -65,9 +65,13 @@ netlify deploy --build --prod   # 构建并部署到生产
 
 ## 自定义域名
 
-1. **Site settings → Domain management → Add a domain**，输入你的域名。
-2. 按提示添加 DNS 记录（Netlify DNS 托管或外部 CNAME 均可）。
-3. SSL 证书由 Let's Encrypt 自动签发与续期，无需手动操作。
+::: steps
+
+1. **添加域名**：进入 **Site settings → Domain management → Add a domain**，输入你的域名。
+2. **配置 DNS**：按提示添加 DNS 记录（Netlify DNS 托管或外部 CNAME 均可）。
+3. **签发 SSL**：SSL 证书由 Let's Encrypt 自动签发与续期，无需手动操作。
+
+:::
 
 ## 常见问题
 

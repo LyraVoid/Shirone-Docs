@@ -57,9 +57,13 @@ CLI 部署跳过了平台构建环节，本地执行 `pnpm build` 时 Pagefind �
 
 ## 自定义域名
 
+::: steps
+
 1. 进入项目 **Custom domains → Set up a custom domain**，输入域名。
 2. 若域名已托管在同一 Cloudflare 账号，DNS 记录自动添加；否则按提示去域名服务商添加 `CNAME` 记录指向 `<name>.pages.dev`。
 3. SSL 证书自动签发，通常数分钟内生效。
+
+:::
 
 ## 缓存策略
 

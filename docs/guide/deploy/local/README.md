@@ -15,18 +15,31 @@ permalink: /guide/deploy/local/
 
 ## 构建流程
 
-```bash
-# 1. 安装依赖（使用 lockfile，保证环境一致）
-pnpm install --frozen-lockfile
+::: steps
 
-# 2. 构建
-pnpm build
+1. **安装依赖环境**
 
-# 3. 本地预览产物
-pnpm preview
-```
+   使用 lockfile 锁定版本，保证依赖与环境严格一致：
+   ```bash
+   pnpm install --frozen-lockfile
+   ```
 
-预览地址为 `http://localhost:4321`。
+2. **执行完整生产构建**
+
+   依次执行内容同步、多尺寸缩略图生成、Astro 静态渲染、字体子集裁剪与 Pagefind 索引构建：
+   ```bash
+   pnpm build
+   ```
+
+3. **本地启动生产预览**
+
+   在本地启动生产环境 HTTP 服务器验证构建产物与路由：
+   ```bash
+   pnpm preview
+   ```
+   浏览器访问 `http://localhost:4321` 进行全面验收。
+
+:::
 
 ::: info pnpm build 内部做了什么
 Shirone 的构建不止 `astro build`，完整链路为：

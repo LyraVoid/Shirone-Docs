@@ -33,12 +33,16 @@ From the theme repository's CONTRIBUTING.md:
 
 A high-quality bug report includes:
 
+::: steps
+
 1. **Title**: one line summarizing the symptom (e.g. "Build fails with PBKDF2-related errors after enabling comments")
 2. **Environment**: Node version, pnpm version, OS, theme version/commit
 3. **Reproduction steps**: from a clean state to triggering the problem, every step
 4. **Expected vs. actual**: what should happen, what actually happened
 5. **Logs**: the complete error output (not just a screenshot fragment), with the lines you think matter marked
 6. **Minimal reproduction**: the smallest config/content snippet that triggers it
+
+:::
 
 ## Before Submitting a PR
 

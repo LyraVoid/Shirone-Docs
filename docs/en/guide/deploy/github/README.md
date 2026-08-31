@@ -98,13 +98,22 @@ jobs:
 
 ## Step 3: Enable Pages
 
+::: steps
+
 1. In repository settings, navigate to **Settings → Pages**.
 2. Under **Build and deployment → Source**, select **GitHub Actions**.
 3. Push to `main` branch to trigger the deployment.
 
+:::
+
 ## Custom Domains
+
+::: steps
 
 1. Set your domain in **Settings → Pages → Custom domain**.
 2. Add a `CNAME` record pointing to `<username>.github.io` at your DNS provider.
 3. Enable **Enforce HTTPS**.
 4. When using a custom domain at root level, set `base` back to `/` and update `site` in `siteConfig.ts`.
+
+
+:::

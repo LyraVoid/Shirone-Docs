@@ -103,19 +103,31 @@ server {
 
 ## 构建与运行
 
-```bash
-# 构建镜像
-docker build -t shirone-blog .
+::: steps
 
-# 运行容器
-docker run -d --name shirone-blog -p 8080:80 --restart unless-stopped shirone-blog
-```
+1. **构建生产 Docker 镜像**
 
-- `-d`：后台运行
-- `-p 8080:80`：主机 8080 端口映射到容器 80 端口
-- `--restart unless-stopped`：容器崩溃或宿主机重启后自动拉起
+   利用多阶段缓存机制在本地或 CI 构建镜像：
+   ```bash
+   docker build -t shirone-blog .
+   ```
 
-访问 `http://localhost:8080` 验证。
+2. **启动并后台运行容器**
+
+   将容器 80 端口映射至宿主机指定端口（如 8080）并启用自动重启策略：
+   ```bash
+   docker run -d --name shirone-blog -p 8080:80 --restart unless-stopped shirone-blog
+   ```
+
+   - `-d`：后台守护进程运行
+   - `-p 8080:80`：主机 8080 端口映射到容器 80 端口
+   - `--restart unless-stopped`：容器崩溃或宿主机重启后自动拉起
+
+3. **验证容器服务**
+
+   在浏览器中访问 `http://localhost:8080`，验证全站页面路由与 Pagefind 离线搜索。
+
+:::
 
 ## 使用 Docker Compose
 

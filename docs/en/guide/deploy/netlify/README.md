@@ -63,9 +63,13 @@ Every push to non-production branches and every pull request generates an isolat
 
 ## Custom Domains
 
+::: steps
+
 1. Navigate to **Site settings → Domain management → Add a domain** and enter your domain name.
 2. Configure DNS records according to the instructions (Netlify DNS or external CNAME).
 3. SSL certificates are automatically provisioned and renewed via Let's Encrypt.
+
+:::
 
 ## Troubleshooting
 
