@@ -60,6 +60,21 @@ const zhGuideDoc = defineCollection({
         },
       ],
     },
+    {
+      text: '基础布局',
+      icon: 'ri:layout-2-line',
+      prefix: '/guide/layout/',
+      collapsed: false,
+      items: [
+        { text: '基础配置', link: 'site-config/', icon: 'ri:settings-3-line' },
+        { text: '动态配色', link: 'theme-color/', icon: 'ri:palette-line', badge: { type: 'warning', text: '核心' } },
+        { text: '横幅与背景', link: 'banner/', icon: 'ri:image-line' },
+        { text: '导航栏配置', link: 'navbar/', icon: 'ri:menu-line' },
+        { text: '侧栏布局', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
+        { text: '页脚与博主资料', link: 'footer-profile/', icon: 'ri:user-smile-line' },
+        { text: '自定义字体', link: 'font/', icon: 'ri:font-size-2' },
+      ],
+    },
   ],
   // 根据文件结构自动生成侧边栏
   // sidebar: 'auto',
