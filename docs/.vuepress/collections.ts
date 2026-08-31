@@ -58,6 +58,19 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: '文章布局',
+      icon: 'ri:file-text-line',
+      prefix: '/guide/article/',
+      collapsed: false,
+      items: [
+        { text: '文章页配置', link: 'article-config/', icon: 'ri:article-line' },
+        { text: '悬浮控制流', link: 'fab/', icon: 'ri:cursor-line', badge: { type: 'info', text: 'FAB' } },
+        { text: '版权声明', link: 'copyright/', icon: 'ri:copyright-line' },
+        { text: '评论系统', link: 'comments/', icon: 'ri:message-3-line' },
+        { text: '代码块主题', link: 'code-theme/', icon: 'ri:code-line' },
+      ],
+    },
+    {
       text: '写作',
       icon: 'ri:quill-pen-line',
       prefix: '/guide/writing/',
@@ -182,6 +195,19 @@ const enGuideDoc = defineCollection({
         { text: 'Sidebar Layout', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
         { text: 'Footer & Profile', link: 'footer-profile/', icon: 'ri:user-smile-line' },
         { text: 'Custom Fonts', link: 'font/', icon: 'ri:font-size-2' },
+      ],
+    },
+    {
+      text: 'Article Layout',
+      icon: 'ri:file-text-line',
+      prefix: '/en/guide/article/',
+      collapsed: false,
+      items: [
+        { text: 'Article Page Config', link: 'article-config/', icon: 'ri:article-line' },
+        { text: 'Floating Controls (FAB)', link: 'fab/', icon: 'ri:cursor-line', badge: { type: 'info', text: 'FAB' } },
+        { text: 'Copyright & License', link: 'copyright/', icon: 'ri:copyright-line' },
+        { text: 'Comment System', link: 'comments/', icon: 'ri:message-3-line' },
+        { text: 'Code Block Themes', link: 'code-theme/', icon: 'ri:code-line' },
       ],
     },
     {
