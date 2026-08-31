@@ -22,7 +22,7 @@ pnpm new-post my-first-post
 
 **单文件（少图文章）**
 
-```text
+```file-tree title="文章存放目录"
 src/content/posts/
 ├── hello-world.md
 └── vue-tips.md
@@ -30,7 +30,7 @@ src/content/posts/
 
 **目录 + index.md（多图/多资源文章）**
 
-```text
+```file-tree title="文章存放目录"
 src/content/posts/
 └── my-gallery/
     ├── index.md            # 文章正文

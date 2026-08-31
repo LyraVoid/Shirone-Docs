@@ -8,7 +8,7 @@ permalink: /guide/pages/moments/
 
 ## 内容位置
 
-```text
+```file-tree title="瞬间内容目录"
 src/content/moments/
 ├── 2026-08-15-welcome.md
 ├── 2026-08-12-riverside.md

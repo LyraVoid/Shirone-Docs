@@ -8,7 +8,7 @@ Moments (`/moments/`) are a lighter dynamic feed than posts—stray thoughts, sc
 
 ## Content Location
 
-```text
+```file-tree title="Moments Content Directory"
 src/content/moments/
 ├── 2026-08-15-welcome.md
 ├── 2026-08-12-riverside.md

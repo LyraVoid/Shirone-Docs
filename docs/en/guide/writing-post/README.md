@@ -22,7 +22,7 @@ All posts live under `src/content/posts/`, in two shapes:
 
 **Single file (few images)**
 
-```text
+```file-tree title="Posts Directory Structure"
 src/content/posts/
 ├── hello-world.md
 └── vue-tips.md
@@ -30,7 +30,7 @@ src/content/posts/
 
 **Directory + index.md (image/resource heavy)**
 
-```text
+```file-tree title="Posts Directory Structure"
 src/content/posts/
 └── my-gallery/
     ├── index.md            # post body

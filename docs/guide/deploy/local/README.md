@@ -43,7 +43,7 @@ Shirone 的构建不止 `astro build`，完整链路为：
 
 ## 产物结构
 
-```text
+```file-tree title="本地构建产物 (dist/)"
 dist/
 ├── index.html          # 首页及各页面 HTML
 ├── pagefind/           # 全文搜索索引（必需）
