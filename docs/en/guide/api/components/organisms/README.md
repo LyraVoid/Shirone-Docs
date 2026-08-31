@@ -139,11 +139,11 @@ interface ProjectSectionProps {
 ### Architecture Flow
 
 ```mermaid
-graph LR
-    A[Build time: AES-256-GCM cipher bundle] --> B[Client: PasswordGate facade]
-    B --> C[User enters passphrase]
-    C --> D[Web Crypto API derives key & decrypts]
-    D --> E[Dynamically mounts decrypted content & media]
+flowchart LR
+    A["Build time: AES-256-GCM cipher bundle"] --> B["Client: PasswordGate facade"]
+    B --> C["User enters passphrase"]
+    C --> D["Web Crypto API derives key & decrypts"]
+    D --> E["Dynamically mounts decrypted content & media"]
 ```
 
 - **Zero-Plaintext Guarantee**: Static HTML contains only Base64 ciphertext and IV; no decrypted content exists in the DOM until authenticated.

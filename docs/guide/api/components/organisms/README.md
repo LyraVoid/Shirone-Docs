@@ -139,11 +139,11 @@ interface ProjectSectionProps {
 ### 架构流程
 
 ```mermaid
-graph LR
-    A[构建期: AES-256-GCM 密文打包] --> B[客户端: 渲染 PasswordGate 门面]
-    B --> C[用户输入密码]
-    C --> D[Web Crypto API 派生密钥解密]
-    D --> E[动态挂载真实内容与图片]
+flowchart LR
+    A["构建期: AES-256-GCM 密文打包"] --> B["客户端: PasswordGate 解锁门面"]
+    B --> C["访客输入文章密码"]
+    C --> D["Web Crypto API 派生密钥并解密"]
+    D --> E["动态挂载解密正文与富媒体"]
 ```
 
 - **零明文泄露**：加密文章在静态 HTML 中仅包含 Base64 密文与 IV，未输入正确密码前绝对不输出解密内容。

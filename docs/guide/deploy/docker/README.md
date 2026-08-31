@@ -11,8 +11,8 @@ permalink: /guide/deploy/docker/
 Shirone 是纯静态站点，容器化采用经典的**多阶段构建**：
 
 ```mermaid
-graph LR
-    A[node:22-alpine<br/>构建阶段] -->|仅拷贝 dist/| B[nginx:alpine<br/>运行阶段]
+flowchart LR
+    A["node:22-alpine<br/>构建阶段"] -->|仅拷贝 dist/| B["nginx:alpine<br/>运行阶段"]
 ```
 
 - **构建阶段**：Node 22 + pnpm 环境执行完整 `pnpm build`（含 Pagefind 索引）

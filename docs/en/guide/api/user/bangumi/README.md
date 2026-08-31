@@ -107,13 +107,13 @@ Shirone fetches detailed subject information in concurrency batches of 6.
 ## Synchronization Workflow
 
 ```mermaid
-graph TD
-    A[Run pnpm anime:sync --provider bangumi] --> B[Read userId from animeConfig]
-    B --> C[Fetch 5 collection statuses: watching, completed, planned, onHold, dropped]
-    C --> D[Fetch subject details in concurrent batches]
-    D --> E[Sanitize and format items]
-    E --> F[Write to src/data/anime-snapshots/bangumi.json]
-    F --> G[Local snapshot ready]
+flowchart TD
+    A["Run pnpm anime:sync --provider bangumi"] --> B["Read userId from animeConfig"]
+    B --> C["Fetch 5 collection statuses: watching, completed, planned, onHold, dropped"]
+    C --> D["Fetch subject details in concurrent batches"]
+    D --> E["Sanitize and format items"]
+    E --> F["Write to src/data/anime-snapshots/bangumi.json"]
+    F --> G["Local snapshot ready"]
 ```
 
 Run the sync command:

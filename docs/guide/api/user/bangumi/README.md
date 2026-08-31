@@ -107,13 +107,13 @@ Shirone 以 **6 并发分批** 调用条目详情接口，深度提取制作方�
 ## 同步执行流程
 
 ```mermaid
-graph TD
-    A[执行 pnpm anime:sync --provider bangumi] --> B[读取 animeConfig 中的 userId]
-    B --> C[遍历 5 类收藏状态: watching / completed / planned / onHold / dropped]
-    C --> D[分批并发获取条目详情]
-    D --> E[清洗字段并组装标准条目数据]
-    E --> F[写入 src/data/anime-snapshots/bangumi.json]
-    F --> G[生成本地快照完成]
+flowchart TD
+    A["执行 pnpm anime:sync --provider bangumi"] --> B["从 animeConfig 读取 userId"]
+    B --> C["拉取 5 类追番状态列表: 想看/在看/看过/搁置/抛弃"]
+    C --> D["按批次并发获取条目详细元数据"]
+    D --> E["清洗与结构化序列化"]
+    E --> F["写入 src/data/anime-snapshots/bangumi.json"]
+    F --> G["本地数据快照就绪"]
 ```
 
 执行命令生成快照：

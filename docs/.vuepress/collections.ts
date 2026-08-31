@@ -200,6 +200,15 @@ const zhGuideDoc = defineCollection({
           ],
         },
         {
+          text: '高级',
+          icon: 'ri:settings-3-line',
+          prefix: 'advanced/',
+          collapsed: false,
+          items: [
+            { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line' },
+          ],
+        },
+        {
           text: '代码块',
           icon: 'ri:code-box-line',
           prefix: 'codeblock/',
@@ -448,6 +457,15 @@ const enGuideDoc = defineCollection({
           items: [
             { text: 'Single File Mode', link: 'file/', icon: 'ri:file-text-line' },
             { text: 'Folder Mode', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: 'Recommended' } },
+          ],
+        },
+        {
+          text: 'Advanced',
+          icon: 'ri:settings-3-line',
+          prefix: 'advanced/',
+          collapsed: false,
+          items: [
+            { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line' },
           ],
         },
         {
