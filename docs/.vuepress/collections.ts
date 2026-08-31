@@ -190,6 +190,16 @@ const zhGuideDoc = defineCollection({
           ],
         },
         {
+          text: '组织',
+          icon: 'ri:folder-settings-line',
+          prefix: 'organization/',
+          collapsed: false,
+          items: [
+            { text: '单文件方案', link: 'file/', icon: 'ri:file-text-line' },
+            { text: '文件夹方案', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: '推荐' } },
+          ],
+        },
+        {
           text: '代码块',
           icon: 'ri:code-box-line',
           prefix: 'codeblock/',
@@ -428,6 +438,16 @@ const enGuideDoc = defineCollection({
             { text: 'Code Tabs', link: 'tabs/', icon: 'material-symbols:tab-outline-rounded', badge: { type: 'warning', text: 'New' } },
             { text: 'Image Grid & Media', link: 'image-grid/', icon: 'ri:image-line' },
             { text: 'File Include', link: 'include/', icon: 'ri:file-copy-2-line' },
+          ],
+        },
+        {
+          text: 'Organization',
+          icon: 'ri:folder-settings-line',
+          prefix: 'organization/',
+          collapsed: false,
+          items: [
+            { text: 'Single File Mode', link: 'file/', icon: 'ri:file-text-line' },
+            { text: 'Folder Mode', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: 'Recommended' } },
           ],
         },
         {
