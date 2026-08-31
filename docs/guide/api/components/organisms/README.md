@@ -8,7 +8,7 @@ permalink: /guide/api/components/organisms/
 
 ---
 
-## AnimeSection
+## AnimeSection <Badge text="Hybrid SSR" color="#bc52ee" vertical="middle" /> <Badge text="Tab Filter" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/AnimeSection.svelte`  
 **职责**：番剧页核心渲染模块，消费本地 `src/data/anime.ts` 或 Bangumi / Bilibili 离线快照，提供状态分类切换、评分条与进度展示。
@@ -40,7 +40,7 @@ interface AnimeSectionProps {
 
 ---
 
-## MomentSection
+## MomentSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Timeline" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/MomentSection.svelte`  
 **职责**：瞬间（说说）瀑布流模块，支持多图网格、全屏图片预览（Lightbox）、相对时间转换（如“3小时前”）与文本排版。
@@ -64,7 +64,7 @@ interface MomentSectionProps {
 
 ---
 
-## FriendSection
+## FriendSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Grid" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/FriendSection.svelte`  
 **职责**：友链页面展示模块，提供分组标签过滤、头像加载失败优雅降级、随机乱序与访问链接外链保护（`rel="noopener noreferrer"`）。
@@ -89,7 +89,7 @@ interface FriendSectionProps {
 
 ---
 
-## ProjectSection
+## ProjectSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Cards" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/ProjectSection.svelte`  
 **职责**：开源项目与个人作品卡片网格，展示项目图标、技术栈徽标、GitHub Stars 统计与在线 Demo 入口。
@@ -115,7 +115,7 @@ interface ProjectSectionProps {
 
 ---
 
-## SkillSection & DeviceSection
+## SkillSection & DeviceSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" />
 
 **文件**：`src/components/organisms/SkillSection.svelte` & `DeviceSection.svelte`  
 **职责**：
@@ -124,14 +124,14 @@ interface ProjectSectionProps {
 
 ---
 
-## TimelineSection
+## TimelineSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Chronological" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/TimelineSection.svelte`  
 **职责**：个人建站大事记与履历时间轴，支持垂直时间线吸顶年份指示器与里程碑高亮。
 
 ---
 
-## 内容加密与保护体系
+## 内容加密与保护体系 <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="PasswordGate" type="danger" vertical="middle" />
 
 **组件集**：`EncryptedContent.astro`, `PasswordGate.svelte`, `ProtectedPost.svelte`, `ProtectedAlbum.svelte`  
 **职责**：构建文章与相册的客户端加密解密防线。

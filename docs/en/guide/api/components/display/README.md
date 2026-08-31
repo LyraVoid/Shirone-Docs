@@ -8,7 +8,7 @@ Display and feedback atoms provide structural card containers, visual accents, b
 
 ---
 
-## Card
+## Card <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Surface" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/display/Card.svelte`  
 **Purpose**: Official M3E card container primitive, providing three visual variants and automatically resolving into link cards (`<a>`), clickable action cards (`<button>`), or static containers (`<div>`).
@@ -39,7 +39,7 @@ interface CardProps {
 
 ---
 
-## Avatar
+## Avatar <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Image/Fallback" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/display/Avatar.svelte`  
 **Purpose**: Profile and author avatar primitive supporting lazy loading, text fallback, and dynamic color bloom rings.
@@ -58,7 +58,7 @@ interface AvatarProps {
 
 ---
 
-## Icon & MetaIcon
+## Icon & MetaIcon <Badge text="Iconify" color="#1ba1e2" vertical="middle" /> <Badge text="A11y" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/display/Icon.svelte` & `MetaIcon.astro`  
 **Purpose**:
@@ -67,7 +67,7 @@ interface AvatarProps {
 
 ---
 
-## Badge & BadgedBox
+## Badge & BadgedBox <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Notification" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/display/Badge.svelte` & `BadgedBox.svelte`  
 **Purpose**: Status badges and attached indicator counters for unread counts, tags, and pin flags.
@@ -85,7 +85,7 @@ interface BadgeProps {
 
 ---
 
-## Skeleton
+## Skeleton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Loading State" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/display/Skeleton.svelte`  
 **Purpose**: Placeholder loading skeleton featuring gentle Material 3 shimmer animations.
@@ -104,7 +104,7 @@ interface SkeletonProps {
 
 ---
 
-## LoadingIndicator
+## LoadingIndicator <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="CSS Animation" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/feedback/LoadingIndicator.svelte`  
 **Purpose**: Expressive morphing loader based on `loadingShapes.ts` cubic bezier interpolation between star, polygon, square, and circle shapes.
@@ -121,7 +121,7 @@ interface LoadingIndicatorProps {
 
 ---
 
-## ProgressIndicator
+## ProgressIndicator <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Linear/Circular" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/feedback/ProgressIndicator.svelte`  
 **Purpose**: Linear and circular progress bars supporting both determinate (0–100) and indeterminate animation modes.

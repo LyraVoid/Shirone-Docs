@@ -13,7 +13,7 @@ Shirone's Umami integration separates capabilities into two clean layers:
 1. **Public Share Stats Layer (Public Share API)**: Securely reads site-wide and per-page PV/UV metrics on the frontend via a public share link (`shareUrl`), without requiring admin tokens or sensitive credentials.
 2. **Visitor Tracking Layer**: Injects the lightweight official tracking script (`scriptUrl` + `websiteId`) to record visitor analytics.
 
-## Configuration
+## Configuration <Badge text="src/config/siteConfig.ts" type="info" vertical="middle" />
 
 Configure Umami in `src/config/umamiConfig.ts` (or `config/umami.yaml` in dual-repo setup):
 

@@ -8,7 +8,7 @@ permalink: /guide/api/components/blog-atoms/
 
 ---
 
-## PostCard
+## PostCard <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Zero-JS" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/PostCard.astro`  
 **职责**：文章摘要卡片，支持封面图自适应裁剪、置顶徽标、加密锁定提示、分类标签与悬浮微动效。
@@ -47,7 +47,7 @@ interface Props {
 
 ---
 
-## PostMeta
+## PostMeta <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Metadata" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/PostMeta.astro`  
 **职责**：文章详情页与卡片内的元信息条，负责展示日期、分类、字数与阅读时长。
@@ -71,7 +71,7 @@ interface Props {
 
 ---
 
-## TocList
+## TocList <Badge text="IntersectionObserver" color="#059669" vertical="middle" /> <Badge text="Active Track" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/TocList.astro`  
 **职责**：文章目录导航树，支持深度层级（H2/H3/H4）、当前阅读位置高亮、平滑锚点定位与侧栏自动跟随滚动。
@@ -98,28 +98,28 @@ interface Props {
 
 ---
 
-## TagBadge & TagList
+## TagBadge & TagList <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Taxonomy" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/TagBadge.astro` & `TagList.astro`  
 **职责**：文章标签徽标与标签云集合，支持动态计算文章数量并带有多彩色调映射。
 
 ---
 
-## CategoryList
+## CategoryList <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Taxonomy" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/CategoryList.astro`  
 **职责**：文章分类导航树，支持展示分类名称、包含文章计数与当前路由激活高亮。
 
 ---
 
-## PagePagination
+## PagePagination <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Navigation" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/PagePagination.astro`  
 **职责**：列表底部分页导航组件，支持首页、上一页、数字页码省略折叠、下一页与尾页。
 
 ---
 
-## SearchPanel
+## SearchPanel <Badge text="Pagefind" color="#f59e0b" vertical="middle" /> <Badge text="WASM Index" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/blog/SearchPanel.svelte`  
 **职责**：站内全文搜索引擎面板，与 Pagefind 静态索引深度集成，支持实时分词高亮、键盘上下选择与直接路由跳转。

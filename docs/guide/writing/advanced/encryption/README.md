@@ -8,7 +8,7 @@ Shirone 提供了基于现代浏览器标准 **Web Crypto API** 的文章客户�
 
 ---
 
-## 密码学标准与安全架构
+## 密码学标准与安全架构 <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="Zero Plaintext" type="tip" vertical="middle" />
 
 Shirone 的加密机制完全基于现代工业级密码学规范实现：
 
@@ -27,7 +27,7 @@ flowchart TD
 
 ---
 
-## 使用配置
+## 使用配置 <Badge text="Frontmatter" type="info" vertical="middle" />
 
 在文章的 Frontmatter 中声明加密配置：
 
@@ -56,10 +56,10 @@ hideHomeContent: true
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `encrypted` | `boolean` | 否 | `false` | 显式标记文章为加密文章 |
-| `password` | `string` | **是** | `""` | 文章解锁密码（支持中英文字符与特殊符号） |
-| `passwordHint` | `string` | 否 | `""` | 密码提示信息，展示在密码输入框下方 |
-| `hideHomeContent` | `boolean` | 否 | `false` | 是否在首页卡片中隐藏正文摘要（替换为安全提示文案） |
+| `encrypted` | `boolean` | <Badge text="可选" type="info" /> | `false` | 显式标记文章为加密文章 |
+| `password` | `string` | <Badge text="必填" type="danger" /> | `""` | 文章解锁密码（支持中英文字符与特殊符号） |
+| `passwordHint` | `string` | <Badge text="可选" type="info" /> | `""` | 密码提示信息，展示在密码输入框下方 |
+| `hideHomeContent` | `boolean` | <Badge text="推荐" type="tip" /> | `false` | 是否在首页卡片中隐藏正文摘要（替换为安全提示文案） |
 
 ---
 

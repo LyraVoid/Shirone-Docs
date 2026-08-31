@@ -8,7 +8,7 @@ Input and selection atoms govern text entry, state toggles, scalar adjustments, 
 
 ---
 
-## TextField
+## TextField <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="State Layer" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/input/TextField.svelte`  
 **Purpose**: Versatile text entry field supporting Filled and Outlined variants, floating labels, leading/trailing icons, character counter, and validation states.
@@ -47,7 +47,7 @@ interface TextFieldProps {
 
 ---
 
-## Select
+## Select <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Accessible" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/input/Select.svelte`  
 **Purpose**: Dropdown selection menu with keyboard navigation and option customization.
@@ -74,7 +74,7 @@ interface SelectProps {
 
 ---
 
-## SearchBar
+## SearchBar <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Pagefind" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/input/SearchBar.svelte`  
 **Purpose**: Global search field featuring debouncing, keyboard shortcuts (`/` or `Ctrl+K`), and one-click clear button.
@@ -94,7 +94,7 @@ interface SearchBarProps {
 
 ---
 
-## Switch
+## Switch <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="M3 Token" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/selection/Switch.svelte`  
 **Purpose**: Binary state toggle adhering to M3 thumb and track geometric specifications with optional inline icons.
@@ -114,7 +114,7 @@ interface SwitchProps {
 
 ---
 
-## Slider
+## Slider <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Continuous" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/selection/Slider.svelte`  
 **Purpose**: Continuous or discrete value range slider used for audio volume, playback seeking, and typography scaling.
@@ -135,7 +135,7 @@ interface SliderProps {
 
 ---
 
-## SegmentedButton
+## SegmentedButton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Selection" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/selection/SegmentedButton.svelte`  
 **Purpose**: Connected pill toggle control for view modes (grid/list) and archive timescale filtering.

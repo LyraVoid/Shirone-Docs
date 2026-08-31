@@ -8,7 +8,7 @@ permalink: /guide/api/components/actions/
 
 ---
 
-## Button
+## Button <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="M3 Expressive" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/action/Button.svelte`  
 **职责**：官方 M3E 按钮移植，支持五种官方变体、五种尺寸及原生链接语义自适应。
@@ -64,7 +64,7 @@ interface ButtonProps {
 
 ---
 
-## IconButton
+## IconButton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Client" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/action/IconButton.svelte`  
 **职责**：紧凑型图标触发器，适用于顶部栏工具、浮动控制流及音乐播放器快捷按钮。
@@ -96,7 +96,7 @@ interface IconButtonProps {
 
 ---
 
-## FAB (Floating Action Button)
+## FAB (Floating Action Button) <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Motion" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/action/FAB.svelte`  
 **职责**：悬浮操作按钮，用于全站全局动作（如回到顶部、快捷搜索、夜间模式切换）。
@@ -123,7 +123,7 @@ interface FABProps {
 
 ---
 
-## Chip & Chips
+## Chip & Chips <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Interactive" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/action/Chip.astro` & `Chips.svelte`  
 **职责**：提供静态标签胶囊（Astro 零 JS 静态直出）与多选/单选交互过滤栏（Svelte 水合）。

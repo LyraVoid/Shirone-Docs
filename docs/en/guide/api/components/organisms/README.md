@@ -8,7 +8,7 @@ Organisms and page sections serve as the core feature containers for Shirone's s
 
 ---
 
-## AnimeSection
+## AnimeSection <Badge text="Hybrid SSR" color="#bc52ee" vertical="middle" /> <Badge text="Tab Filter" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/AnimeSection.svelte`  
 **Purpose**: Primary renderer for the anime page, consuming local data from `src/data/anime.ts` or Bangumi/Bilibili offline snapshots.
@@ -40,7 +40,7 @@ interface AnimeSectionProps {
 
 ---
 
-## MomentSection
+## MomentSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Timeline" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/MomentSection.svelte`  
 **Purpose**: Micro-blogging moments stream supporting multi-image grids, full-screen lightbox viewing, and relative timestamp conversions.
@@ -64,7 +64,7 @@ interface MomentSectionProps {
 
 ---
 
-## FriendSection
+## FriendSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Grid" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/FriendSection.svelte`  
 **Purpose**: Friends list grid with tag filtering, avatar error fallbacks, randomization, and secure external link attributes (`rel="noopener noreferrer"`).
@@ -89,7 +89,7 @@ interface FriendSectionProps {
 
 ---
 
-## ProjectSection
+## ProjectSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Cards" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/ProjectSection.svelte`  
 **Purpose**: Project portfolio cards showing tech stack badges, GitHub Star counts, and live preview links.
@@ -115,7 +115,7 @@ interface ProjectSectionProps {
 
 ---
 
-## SkillSection & DeviceSection
+## SkillSection & DeviceSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" />
 
 **Path**: `src/components/organisms/SkillSection.svelte` & `DeviceSection.svelte`  
 **Purpose**:
@@ -124,7 +124,7 @@ interface ProjectSectionProps {
 
 ---
 
-## TimelineSection
+## TimelineSection <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Chronological" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/TimelineSection.svelte`  
 **Purpose**: Personal history and site milestone timeline with sticky year indicators.

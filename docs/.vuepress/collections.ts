@@ -28,11 +28,11 @@ const zhGuideDoc = defineCollection({
           prefix: '/guide/deploy/',
           collapsed: true,
           items: [
-            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'warning', text: '推荐' } },
+            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'tip', text: '推荐' } },
             { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
             { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: '不推荐' } },
             { text: 'Cloudflare Pages', link: 'cloudflare/', icon: 'ri:cloud-line' },
-            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'warning', text: '推荐' } },
+            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'tip', text: '推荐' } },
             { text: '服务器部署', link: 'server/', icon: 'ri:server-line', badge: { type: 'info', text: '入门' } },
             { text: 'Docker 部署', link: 'docker/', icon: 'ri:ship-line' },
             { text: '本地构建', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: '入门' } },
@@ -95,7 +95,7 @@ const zhGuideDoc = defineCollection({
       items: [
         { text: '组件总览', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
         { text: '公告组件', link: 'announcement/', icon: 'ri:notification-3-line' },
-        { text: '音乐播放器', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'warning', text: '推荐' } },
+        { text: '音乐播放器', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'tip', text: '推荐' } },
         { text: '基础组件', link: 'basic-widgets/', icon: 'ri:stack-line' },
       ],
     },
@@ -173,7 +173,7 @@ const zhGuideDoc = defineCollection({
             { text: '扩展与属性', link: 'attributes/', icon: 'ri:code-s-line' },
             { text: '原生表情与图标', link: 'emoji-icons/', icon: 'ri:emotion-line' },
             { text: '数学公式', link: 'math/', icon: 'ri:functions' },
-            { text: '响应式表格', link: 'table/', icon: 'ri:table-line', badge: { type: 'warning', text: '新' } },
+            { text: '响应式表格', link: 'table/', icon: 'ri:table-line', badge: { type: 'tip', text: '新' } },
             { text: '马克笔高亮', link: 'marker/', icon: 'ri:mark-pen-line' },
             { text: '隐秘文本', link: 'spoiler/', icon: 'ri:eye-close-line' },
             { text: '缩写词悬浮', link: 'abbreviations/', icon: 'ri:chat-quote-line' },
@@ -183,8 +183,8 @@ const zhGuideDoc = defineCollection({
             { text: '卡片与字段组', link: 'cards/', icon: 'ri:id-card-line' },
             { text: '步骤引导', link: 'steps/', icon: 'ri:list-ordered' },
             { text: '文件树', link: 'file-tree/', icon: 'ri:node-tree' },
-            { text: '代码树', link: 'code-tree/', icon: 'ri:file-code-line', badge: { type: 'warning', text: '新' } },
-            { text: '代码选项组', link: 'tabs/', icon: 'material-symbols:tab-outline-rounded', badge: { type: 'warning', text: '新' } },
+            { text: '代码树', link: 'code-tree/', icon: 'ri:file-code-line', badge: { type: 'tip', text: '新' } },
+            { text: '代码选项组', link: 'tabs/', icon: 'material-symbols:tab-outline-rounded', badge: { type: 'tip', text: '新' } },
             { text: '图片画廊与排版', link: 'image-grid/', icon: 'ri:image-line' },
             { text: '文件片段导入', link: 'include/', icon: 'ri:file-copy-2-line' },
           ],
@@ -196,7 +196,7 @@ const zhGuideDoc = defineCollection({
           collapsed: true,
           items: [
             { text: '单文件方案', link: 'file/', icon: 'ri:file-text-line' },
-            { text: '文件夹方案', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: '推荐' } },
+            { text: '文件夹方案', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'tip', text: '推荐' } },
           ],
         },
         {
@@ -205,7 +205,7 @@ const zhGuideDoc = defineCollection({
           prefix: 'advanced/',
           collapsed: true,
           items: [
-            { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line' },
+            { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: '可选' } },
           ],
         },
         {
@@ -288,11 +288,11 @@ const enGuideDoc = defineCollection({
           prefix: '/en/guide/deploy/',
           collapsed: true,
           items: [
-            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'warning', text: 'Recommended' } },
+            { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'tip', text: 'Recommended' } },
             { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
             { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: 'Not Recommended' } },
             { text: 'Cloudflare Pages', link: 'cloudflare/', icon: 'ri:cloud-line' },
-            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'warning', text: 'Recommended' } },
+            { text: 'EdgeOne Pages', link: 'edgeone/', icon: 'ri:cloud-line', badge: { type: 'tip', text: 'Recommended' } },
             { text: 'Server Deployment', link: 'server/', icon: 'ri:server-line', badge: { type: 'info', text: 'Basic' } },
             { text: 'Docker', link: 'docker/', icon: 'ri:ship-line' },
             { text: 'Local Build', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: 'Basic' } },
@@ -355,7 +355,7 @@ const enGuideDoc = defineCollection({
       items: [
         { text: 'Widgets Overview', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
         { text: 'Announcement', link: 'announcement/', icon: 'ri:notification-3-line' },
-        { text: 'Music Player', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'warning', text: 'Recommended' } },
+        { text: 'Music Player', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'tip', text: 'Recommended' } },
         { text: 'Basic Widgets', link: 'basic-widgets/', icon: 'ri:stack-line' },
       ],
     },
@@ -433,7 +433,7 @@ const enGuideDoc = defineCollection({
             { text: 'Attributes & Directives', link: 'attributes/', icon: 'ri:code-s-line' },
             { text: 'Emojis & Icons', link: 'emoji-icons/', icon: 'ri:emotion-line' },
             { text: 'Math & Formulas', link: 'math/', icon: 'ri:functions' },
-            { text: 'Responsive Tables', link: 'table/', icon: 'ri:table-line', badge: { type: 'warning', text: 'New' } },
+            { text: 'Responsive Tables', link: 'table/', icon: 'ri:table-line', badge: { type: 'tip', text: 'New' } },
             { text: 'Marker Highlights', link: 'marker/', icon: 'ri:mark-pen-line' },
             { text: 'Inline Spoiler', link: 'spoiler/', icon: 'ri:eye-close-line' },
             { text: 'Abbreviations', link: 'abbreviations/', icon: 'ri:chat-quote-line' },
@@ -443,8 +443,8 @@ const enGuideDoc = defineCollection({
             { text: 'Cards & Fields', link: 'cards/', icon: 'ri:id-card-line' },
             { text: 'Step Guides', link: 'steps/', icon: 'ri:list-ordered' },
             { text: 'File Tree', link: 'file-tree/', icon: 'ri:node-tree' },
-            { text: 'Code Tree', link: 'code-tree/', icon: 'ri:file-code-line', badge: { type: 'warning', text: 'New' } },
-            { text: 'Code Tabs', link: 'tabs/', icon: 'material-symbols:tab-outline-rounded', badge: { type: 'warning', text: 'New' } },
+            { text: 'Code Tree', link: 'code-tree/', icon: 'ri:file-code-line', badge: { type: 'tip', text: 'New' } },
+            { text: 'Code Tabs', link: 'tabs/', icon: 'material-symbols:tab-outline-rounded', badge: { type: 'tip', text: 'New' } },
             { text: 'Image Grid & Media', link: 'image-grid/', icon: 'ri:image-line' },
             { text: 'File Include', link: 'include/', icon: 'ri:file-copy-2-line' },
           ],
@@ -456,7 +456,7 @@ const enGuideDoc = defineCollection({
           collapsed: true,
           items: [
             { text: 'Single File Mode', link: 'file/', icon: 'ri:file-text-line' },
-            { text: 'Folder Mode', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: 'Recommended' } },
+            { text: 'Folder Mode', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'tip', text: 'Recommended' } },
           ],
         },
         {
@@ -465,7 +465,7 @@ const enGuideDoc = defineCollection({
           prefix: 'advanced/',
           collapsed: true,
           items: [
-            { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line' },
+            { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: 'Optional' } },
           ],
         },
         {

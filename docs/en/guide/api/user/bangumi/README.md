@@ -8,7 +8,7 @@ Bangumi ([bgm.tv](https://bgm.tv/)) is an ACG database and community. Shirone's 
 
 Shirone adopts a **Dual-Plane Model**: external API requests occur exclusively during the explicit offline synchronization phase (`scripts/anime/providers/bangumi.mjs`), generating sanitized local JSON snapshots. The runtime page and production build consume this snapshot directly, **making zero requests to Bangumi during visitor browsing**.
 
-## Configuration
+## Configuration <Badge text="src/config/animeConfig.ts" type="info" vertical="middle" />
 
 Configure the Bangumi provider in `src/config/animeConfig.ts`:
 

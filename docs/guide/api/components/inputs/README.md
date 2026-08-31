@@ -8,7 +8,7 @@ permalink: /guide/api/components/inputs/
 
 ---
 
-## TextField
+## TextField <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="State Layer" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/input/TextField.svelte`  
 **职责**：文本输入框，支持 Filled 与 Outlined 两种官方形态、浮动标签、首尾图标、字数统计与校验错误提示。
@@ -47,7 +47,7 @@ interface TextFieldProps {
 
 ---
 
-## Select
+## Select <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Accessible" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/input/Select.svelte`  
 **职责**：下拉选择框，支持单选、预设高亮、自定义 Option 渲染与键盘上下键导航。
@@ -78,7 +78,7 @@ interface SelectProps {
 
 ---
 
-## SearchBar
+## SearchBar <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Pagefind" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/input/SearchBar.svelte`  
 **职责**：站内全局与面板搜索输入框，内置防抖、快捷键监听（如 `/` 或 `Ctrl+K`）与一键清空按钮。
@@ -101,7 +101,7 @@ interface SearchBarProps {
 
 ---
 
-## Switch
+## Switch <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="M3 Token" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/selection/Switch.svelte`  
 **职责**：二元状态开关，遵循 M3 触点（Thumb）与轨道（Track）几何规范，支持可选内嵌图标。
@@ -124,7 +124,7 @@ interface SwitchProps {
 
 ---
 
-## Slider
+## Slider <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Continuous" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/selection/Slider.svelte`  
 **职责**：连续与离散数值调节滑块（用于音乐播放器进度/音量调节、阅读字号缩放）。
@@ -150,7 +150,7 @@ interface SliderProps {
 
 ---
 
-## SegmentedButton
+## SegmentedButton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Selection" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/selection/SegmentedButton.svelte`  
 **职责**：胶囊分段单选控制器，用于视图模式切换（网格/列表）与归档时间轴跨度选择。

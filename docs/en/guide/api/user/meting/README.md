@@ -8,7 +8,7 @@ The Meting API is a universal music metadata aggregator. Shirone's sidebar music
 
 In Shirone, Meting API interactions are handled by `src/utils/music/meting.ts` and work seamlessly in both pure cloud mode (`meting`) and hybrid mode (`mixed`).
 
-## Configuration
+## Configuration <Badge text="src/config/musicConfig.ts" type="info" vertical="middle" />
 
 Configure the Meting source in `src/config/musicConfig.ts`:
 

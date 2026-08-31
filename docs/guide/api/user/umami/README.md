@@ -6,14 +6,14 @@ permalink: /guide/api/user/umami/
 
 [Umami](https://umami.is/) 是一个开源、自托管且保护用户隐私的现代网站分析统计服务。在 Shirone 中，Umami 统计由底层 [`oddmisc`](https://www.npmjs.com/package/oddmisc) 客户端驱动，提供了基于公开分享链接的无鉴权数据读取与官方访问数据上报能力。
 
-## 核心能力层
+## 核心能力层 <Badge text="oddmisc" color="#6366f1" vertical="middle" /> <Badge text="Zero Token" type="tip" vertical="middle" />
 
 Shirone 的 Umami API 架构划分为两个独立能力层：
 
 1. **公开分享统计层（Public Share API）**：无需提供任何管理员密钥或登录凭证，直接通过 Umami 生成的公开分享链接（`shareUrl`）在前端安全读取站点与单页面的 PV / UV 数据。
 2. **访问采集上报层（Visitor Tracking）**：通过注入官方轻量采集脚本（`scriptUrl` + `websiteId`）记录访客行为。
 
-## 配置规范
+## 配置规范 <Badge text="src/config/umamiConfig.ts" type="info" vertical="middle" />
 
 在 `src/config/umamiConfig.ts`（或内容仓 `config/umami.yaml`）中配置：
 

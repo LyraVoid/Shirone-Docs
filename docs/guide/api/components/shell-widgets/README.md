@@ -8,7 +8,7 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## TopAppBar
+## TopAppBar <Badge text="Global Header" color="#3b82f6" vertical="middle" /> <Badge text="Scroll Elevation" type="tip" vertical="middle" />
 
 **文件**：`src/components/organisms/TopAppBar.astro`  
 **职责**：全局顶部导航应用栏，包含站点品牌 Logo、主导航链接组、全局搜索唤起按钮、深色模式切换与移动端汉堡抽屉触发器。
@@ -20,7 +20,7 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## SideBar
+## SideBar <Badge text="Global Sidebar" color="#3b82f6" vertical="middle" /> <Badge text="Widget Host" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/SideBar.astro`  
 **职责**：持久化侧边栏插槽容器，根据 `sidebarConfig.ts` 动态装配博主资料（Profile）、音乐播放器、分类/标签列表、公告栏与站点访问统计。
@@ -32,7 +32,7 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## MusicSidebar & MusicSidebarClient
+## MusicSidebar & MusicSidebarClient <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Global Audio" type="tip" vertical="middle" />
 
 **文件**：`src/components/organisms/music/MusicSidebar.astro` & `MusicSidebarClient.svelte`  
 **职责**：侧栏音乐播放器模块。外层 Astro 容器提供 SSR 静态占位骨架，内层 Svelte 客户端单例管理音频播放生命周期与 Meting 云端曲库拉取。
@@ -45,7 +45,7 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## UmamiStats & UmamiRuntime
+## UmamiStats & UmamiRuntime <Badge text="Analytics" color="#6366f1" vertical="middle" /> <Badge text="Swup Listeners" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/UmamiStats.astro` & `src/components/system/UmamiRuntime.astro`  
 **职责**：
@@ -54,7 +54,7 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## DisplaySettings & LightDarkSwitch
+## DisplaySettings & LightDarkSwitch <Badge text="Dynamic Color" color="#ec4899" vertical="middle" /> <Badge text="Theme Engine" type="warning" vertical="middle" />
 
 **文件**：`src/components/organisms/DisplaySettings.svelte` & `LightDarkSwitch.svelte`  
 **职责**：
@@ -63,14 +63,14 @@ permalink: /guide/api/components/shell-widgets/
 
 ---
 
-## ContextMenu
+## ContextMenu <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Custom Context" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/ContextMenu.svelte`  
 **职责**：右键增强菜单，接管浏览器默认右键菜单，提供快速复制、分享、返回顶部、跳转随机文章与夜间模式切换。
 
 ---
 
-## RouteProgress
+## RouteProgress <Badge text="Swup Progress" color="#10b981" vertical="middle" /> <Badge text="Top Bar" type="info" vertical="middle" />
 
 **文件**：`src/components/organisms/RouteProgress.svelte`  
 **职责**：页面顶部加载进度条，深度绑定 Swup 生命周期，在页面跳转时展现 Material 3 强调减速动效。

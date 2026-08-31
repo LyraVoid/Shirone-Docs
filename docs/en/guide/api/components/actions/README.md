@@ -8,7 +8,7 @@ Action atoms drive all primary user triggers across the site, strictly adhering 
 
 ---
 
-## Button
+## Button <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="M3 Expressive" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/action/Button.svelte`  
 **Purpose**: Official M3E button primitive, supporting five variants, five size scales, and automatic link semantics.
@@ -61,7 +61,7 @@ interface ButtonProps {
 
 ---
 
-## IconButton
+## IconButton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Client" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/action/IconButton.svelte`  
 **Purpose**: Compact circular icon trigger for toolbars, floating controls, and audio player triggers.
@@ -85,7 +85,7 @@ interface IconButtonProps {
 
 ---
 
-## FAB (Floating Action Button)
+## FAB (Floating Action Button) <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Motion" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/action/FAB.svelte`  
 **Purpose**: Elevated floating action button for global screen-level triggers (back to top, search, dark mode).
@@ -108,7 +108,7 @@ interface FABProps {
 
 ---
 
-## Chip & Chips
+## Chip & Chips <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Interactive" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/action/Chip.astro` & `Chips.svelte`  
 **Purpose**: Static link capsule (zero-JS Astro SSR) alongside interactive multi/single-select filter bars (Svelte).

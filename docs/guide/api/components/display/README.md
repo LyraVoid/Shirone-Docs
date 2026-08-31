@@ -8,7 +8,7 @@ permalink: /guide/api/components/display/
 
 ---
 
-## Card
+## Card <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Surface" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/display/Card.svelte`  
 **职责**：官方 M3E 卡片容器原子，提供三种视觉变体，根据传入属性智能渲染为链接卡片（`<a>`）、可点击操作卡片（`<button>`）或普通静态容器（`<div>`）。
@@ -40,7 +40,7 @@ interface CardProps {
 
 ---
 
-## Avatar
+## Avatar <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Image/Fallback" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/display/Avatar.svelte`  
 **职责**：博主与用户头像原子，支持图片懒加载、加载失败文字占位降级与动态光效圈。
@@ -64,7 +64,7 @@ interface AvatarProps {
 
 ---
 
-## Icon & MetaIcon
+## Icon & MetaIcon <Badge text="Iconify" color="#1ba1e2" vertical="middle" /> <Badge text="A11y" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/display/Icon.svelte` & `MetaIcon.astro`  
 **职责**：
@@ -73,7 +73,7 @@ interface AvatarProps {
 
 ---
 
-## Badge & BadgedBox
+## Badge & BadgedBox <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Notification" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/display/Badge.svelte` & `BadgedBox.svelte`  
 **职责**：状态角标与附着徽标，用于展示未读消息数、标签统计计数或置顶提示。
@@ -95,7 +95,7 @@ interface BadgeProps {
 
 ---
 
-## Skeleton
+## Skeleton <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Loading State" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/display/Skeleton.svelte`  
 **职责**：内容加载骨架屏占位，内置 Material 3 柔和闪烁动效（Shimmer），有效降低用户等待感知。
@@ -116,7 +116,7 @@ interface SkeletonProps {
 
 ---
 
-## LoadingIndicator
+## LoadingIndicator <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="CSS Animation" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/feedback/LoadingIndicator.svelte`  
 **职责**：Material 3 异形变形加载指示器，基于 `loadingShapes.ts` 贝塞尔平滑插值算法在星形、方形、圆形之间平滑形变过渡。
@@ -136,7 +136,7 @@ interface LoadingIndicatorProps {
 
 ---
 
-## ProgressIndicator
+## ProgressIndicator <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Linear/Circular" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/feedback/ProgressIndicator.svelte`  
 **职责**：线性（Linear）与环形（Circular）进度条，支持确定性数值（0~100）与无限循环加载（Indeterminate）模式。

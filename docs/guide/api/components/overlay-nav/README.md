@@ -8,7 +8,7 @@ permalink: /guide/api/components/overlay-nav/
 
 ---
 
-## Menu
+## Menu <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Focus Trap" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/navigation/Menu.svelte`  
 **职责**：下拉浮动菜单，支持基于锚点元素的精确定位、键盘方向键导航与快捷键触发。
@@ -39,7 +39,7 @@ interface MenuProps {
 
 ---
 
-## Tabs
+## Tabs <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Spring Indicator" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/navigation/Tabs.svelte`  
 **职责**：导航选项卡组，带有基于 CSS 变量计算的平滑滑动指示线（Indicator）与横向滚动支持。
@@ -66,7 +66,7 @@ interface TabsProps {
 
 ---
 
-## Dialog & AlertDialog
+## Dialog & AlertDialog <Badge text="HTMLDialog" color="#8b5cf6" vertical="middle" /> <Badge text="Modal" type="warning" vertical="middle" />
 
 **文件**：`src/components/atoms/overlay/Dialog.svelte` & `AlertDialog.svelte`  
 **职责**：模态对话框与确认警示弹窗，遵循 M3 28px 超大圆角（`--shape-corner-xl`）与 Level 3 阴影层级。
@@ -97,7 +97,7 @@ interface DialogProps {
 
 ---
 
-## Snackbar
+## Snackbar <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Feedback" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/overlay/Snackbar.svelte`  
 **职责**：屏幕底部全局轻量消息浮条，用于异步操作完成反馈（如复制链接成功、切换主题提示）。
@@ -119,7 +119,7 @@ interface SnackbarProps {
 
 ---
 
-## Tooltip
+## Tooltip <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Positioning" type="info" vertical="middle" />
 
 **文件**：`src/components/atoms/overlay/Tooltip.svelte`  
 **职责**：悬浮说明气泡，用于解释图标按钮含义、社交链接及 Mermaid 图表缩放按钮。
@@ -140,7 +140,7 @@ interface TooltipProps {
 
 ---
 
-## BottomSheet & NavigationDrawer
+## BottomSheet & NavigationDrawer <Badge text="Responsive" type="tip" vertical="middle" />
 
 **文件**：`src/components/atoms/overlay/BottomSheet.svelte` & `NavigationDrawer.svelte`  
 **职责**：移动端底部弹板与全屏抽屉，支持手势下拉关闭与弹性阻尼动效。

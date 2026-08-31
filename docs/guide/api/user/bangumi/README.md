@@ -8,7 +8,7 @@ Bangumi（番组计划，[bgm.tv](https://bgm.tv/)）是一个专注于动漫、
 
 在架构上，Shirone 采用**双平面模型（Dual-Plane Model）**：API 交互仅发生在显式的离线同步阶段（`scripts/anime/providers/bangumi.mjs`），生成本地脱敏 JSON 快照；页面运行时与生产构建直接消费快照，**绝不对 Bangumi 发起任何运行时请求**。
 
-## 配置方式
+## 配置方式 <Badge text="src/config/animeConfig.ts" type="info" vertical="middle" />
 
 在 `src/config/animeConfig.ts` 中配置 Bangumi 数据源：
 

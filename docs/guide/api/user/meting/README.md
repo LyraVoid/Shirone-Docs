@@ -8,7 +8,7 @@ Meting API 是一个通用的音乐元数据聚合接口，Shirone 的侧栏音�
 
 在 Shirone 中，Meting API 的调用由 `src/utils/music/meting.ts` 处理，支持在纯云端模式（`meting`）或混合模式（`mixed`）下无缝工作。
 
-## 配置方式
+## 配置方式 <Badge text="src/config/musicConfig.ts" type="info" vertical="middle" />
 
 在 `src/config/musicConfig.ts` 中配置 Meting 数据源：
 

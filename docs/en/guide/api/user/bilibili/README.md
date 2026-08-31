@@ -15,7 +15,7 @@ Bilibili is a major video and ACG streaming platform. In Shirone, Bilibili integ
 
 Shirone's sync script fetches follow lists via Bilibili's public user space API.
 
-### Configuration
+### Configuration <Badge text="src/config/animeConfig.ts" type="info" vertical="middle" />
 
 Configure the Bilibili provider in `src/config/animeConfig.ts`:
 

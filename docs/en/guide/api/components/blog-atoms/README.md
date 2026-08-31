@@ -8,7 +8,7 @@ Blog-specific atoms are purpose-built for reading workflows, content indexing, c
 
 ---
 
-## PostCard
+## PostCard <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Zero-JS" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/PostCard.astro`  
 **Purpose**: Post preview card supporting responsive cover image cropping, pinned badges, encryption locks, category tags, and subtle hover animations.
@@ -36,7 +36,7 @@ interface Props {
 
 ---
 
-## PostMeta
+## PostMeta <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Metadata" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/PostMeta.astro`  
 **Purpose**: Metadata display bar across articles and cards, showing publication date, last update, category, tags, and reading estimates.
@@ -59,7 +59,7 @@ interface Props {
 
 ---
 
-## TocList
+## TocList <Badge text="IntersectionObserver" color="#059669" vertical="middle" /> <Badge text="Active Track" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/TocList.astro`  
 **Purpose**: Table of Contents navigation tree supporting multi-level headings (H2/H3/H4), active scroll position tracking, and smooth anchor scrolling.
@@ -84,28 +84,28 @@ interface Props {
 
 ---
 
-## TagBadge & TagList
+## TagBadge & TagList <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Taxonomy" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/TagBadge.astro` & `TagList.astro`  
 **Purpose**: Tag pills and tag clouds with dynamic article counts and tonal hue mapping.
 
 ---
 
-## CategoryList
+## CategoryList <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Taxonomy" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/CategoryList.astro`  
 **Purpose**: Category hierarchy navigation showing category labels, post tallies, and active route markers.
 
 ---
 
-## PagePagination
+## PagePagination <Badge text="Astro SSR" color="#bc52ee" vertical="middle" /> <Badge text="Navigation" type="info" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/PagePagination.astro`  
 **Purpose**: List pagination supporting first, previous, folded page numbers, next, and last page navigation.
 
 ---
 
-## SearchPanel
+## SearchPanel <Badge text="Pagefind" color="#f59e0b" vertical="middle" /> <Badge text="WASM Index" type="tip" vertical="middle" />
 
 **Path**: `src/components/atoms/blog/SearchPanel.svelte`  
 **Purpose**: Full-text search panel integrated with Pagefind indexing, featuring keyword highlighting, arrow-key navigation, and direct route transitions.

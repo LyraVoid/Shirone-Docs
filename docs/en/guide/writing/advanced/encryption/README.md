@@ -8,7 +8,7 @@ Shirone provides a robust article encryption system powered by the modern **Web 
 
 ---
 
-## Cryptographic Standards & Architecture
+## Cryptographic Standards & Architecture <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="Zero Plaintext" type="tip" vertical="middle" />
 
 Shirone's encryption is built on industry-standard cryptographic specifications:
 
@@ -27,7 +27,7 @@ flowchart TD
 
 ---
 
-## Frontmatter Configuration
+## Frontmatter Configuration <Badge text="Frontmatter" type="info" vertical="middle" />
 
 Enable encryption in your post's frontmatter:
 
@@ -56,10 +56,10 @@ Congratulations on entering the correct passphrase! Everything here is decrypted
 
 | Field | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `encrypted` | `boolean` | No | `false` | Explicitly marks the post as encrypted |
-| `password` | `string` | **Yes** | `""` | Passphrase required to unlock the post |
-| `passwordHint` | `string` | No | `""` | Optional hint displayed under the password input field |
-| `hideHomeContent` | `boolean` | No | `false` | When `true`, replaces card excerpts with a secure placeholder string |
+| `encrypted` | `boolean` | <Badge text="Optional" type="info" /> | `false` | Explicitly marks the post as encrypted |
+| `password` | `string` | <Badge text="Required" type="danger" /> | `""` | Passphrase required to unlock the post |
+| `passwordHint` | `string` | <Badge text="Optional" type="info" /> | `""` | Optional hint displayed under the password input field |
+| `hideHomeContent` | `boolean` | <Badge text="Recommended" type="tip" /> | `false` | When `true`, replaces card excerpts with a secure placeholder string |
 
 ---
 

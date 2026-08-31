@@ -15,7 +15,7 @@ Bilibili（哔哩哔哩）是中国广受欢迎的弹幕视频与动画社区。
 
 Shirone 的追番同步脚本（`scripts/anime/providers/bilibili.mjs`）通过 Bilibili 空间追番接口批量拉取追番数据。
 
-### 配置方式
+### 配置方式 <Badge text="src/config/animeConfig.ts" type="info" vertical="middle" />
 
 在 `src/config/animeConfig.ts` 中配置 Bilibili 提供方：
 

@@ -8,7 +8,7 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## TopAppBar
+## TopAppBar <Badge text="Global Header" color="#3b82f6" vertical="middle" /> <Badge text="Scroll Elevation" type="tip" vertical="middle" />
 
 **Path**: `src/components/organisms/TopAppBar.astro`  
 **Purpose**: Primary navigation bar containing site logo, main navigation routes, search modal trigger, dark mode toggle, and mobile navigation drawer trigger.
@@ -20,7 +20,7 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## SideBar
+## SideBar <Badge text="Global Sidebar" color="#3b82f6" vertical="middle" /> <Badge text="Widget Host" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/SideBar.astro`  
 **Purpose**: Persistent sidebar container dynamically assembling profile cards, music player, categories, tags, announcements, and Umami statistics based on `sidebarConfig.ts`.
@@ -32,7 +32,7 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## MusicSidebar & MusicSidebarClient
+## MusicSidebar & MusicSidebarClient <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Global Audio" type="tip" vertical="middle" />
 
 **Path**: `src/components/organisms/music/MusicSidebar.astro` & `MusicSidebarClient.svelte`  
 **Purpose**: Sidebar audio player subsystem. The outer Astro shell outputs an SSR skeleton while the inner Svelte singleton manages audio lifecycles and Meting cloud playlist fetching.
@@ -45,7 +45,7 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## UmamiStats & UmamiRuntime
+## UmamiStats & UmamiRuntime <Badge text="Analytics" color="#6366f1" vertical="middle" /> <Badge text="Swup Listeners" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/UmamiStats.astro` & `src/components/system/UmamiRuntime.astro`  
 **Purpose**:
@@ -54,7 +54,7 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## DisplaySettings & LightDarkSwitch
+## DisplaySettings & LightDarkSwitch <Badge text="Dynamic Color" color="#ec4899" vertical="middle" /> <Badge text="Theme Engine" type="warning" vertical="middle" />
 
 **Path**: `src/components/organisms/DisplaySettings.svelte` & `LightDarkSwitch.svelte`  
 **Purpose**:
@@ -63,14 +63,14 @@ Global shell and sidebar widgets form the persistent backbone of the Shirone sit
 
 ---
 
-## ContextMenu
+## ContextMenu <Badge text="Svelte 5" color="#ff3e00" vertical="middle" /> <Badge text="Custom Context" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/ContextMenu.svelte`  
 **Purpose**: Enhanced right-click context menu offering shortcuts for copying, sharing, back-to-top, random article jump, and theme toggling.
 
 ---
 
-## RouteProgress
+## RouteProgress <Badge text="Swup Progress" color="#10b981" vertical="middle" /> <Badge text="Top Bar" type="info" vertical="middle" />
 
 **Path**: `src/components/organisms/RouteProgress.svelte`  
 **Purpose**: Top loading progress bar synchronized with Swup navigation lifecycle events with Material 3 emphasized deceleration curves.
