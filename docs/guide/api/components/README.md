@@ -4,16 +4,15 @@ createTime: 2026/09/01 01:20:00
 permalink: /guide/api/components/
 ---
 
-此处为 Shirone 组件级 API 与二次开发接口文档框架。
+Shirone 组件库遵循 Material 3 Expressive 规范与 Atomic Design 原则，为全站提供高可复用、高可访问性与统一动效的 UI 支撑。
 
-## 规划结构
+## 模块导航
 
-本目录用于承载 Shirone 各个核心 UI 组件、侧边栏小部件与 Markdown 扩展组件的对外导出接口、事件钩子及 Props 规范：
-
-- **侧栏组件 API**（音乐播放器、公告栏、博主信息等）
-- **页面组件 API**（番剧网格、瞬间瀑布流、项目卡片等）
-- **Markdown 扩展组件 API**（哔哩哔哩门面、画廊网格等）
-
-::: tip 编写中
-组件 API 正在整理与完善中，敬请期待后续更新。
-:::
+- [组件设计规范与架构契约](/guide/api/components/overview/)：分层体系、Token 约定、Svelte 5 Runes、SSR 边界与 Swup 适配
+- [操作与交互原子 (Actions)](/guide/api/components/actions/)：Button、IconButton、FAB、Chip、Chips 等
+- [输入与选择控制原子 (Inputs)](/guide/api/components/inputs/)：TextField、Select、SearchBar、Switch、Slider 等
+- [展示与反馈原子 (Display & Feedback)](/guide/api/components/display/)：Card、Avatar、Icon、Skeleton、LoadingIndicator、ProgressIndicator 等
+- [导航与浮层原子 (Navigation & Overlay)](/guide/api/components/overlay-nav/)：Menu、Tabs、Dialog、Snackbar、Tooltip、BottomSheet 等
+- [博客专用原子 (Blog Atoms)](/guide/api/components/blog-atoms/)：PostCard、PostMeta、TagBadge、CategoryList、TocList、SearchPanel 等
+- [业务实体与页面模块 (Organisms)](/guide/api/components/organisms/)：AnimeSection、MomentSection、FriendSection、ProjectSection、加密保护门面等
+- [全局外壳与侧栏小部件 (Shell & Widgets)](/guide/api/components/shell-widgets/)：TopAppBar、SideBar、MusicSidebar、UmamiStats、ContextMenu 等

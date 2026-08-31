@@ -111,7 +111,7 @@ const zhGuideDoc = defineCollection({
         { text: 'LLM 友好内容', link: 'llms/', icon: 'ri:robot-line' },
       ],
     },
-    {
+        {
       text: 'API',
       icon: 'ri:code-s-slash-line',
       prefix: '/guide/api/',
@@ -135,7 +135,14 @@ const zhGuideDoc = defineCollection({
           prefix: 'components/',
           collapsed: false,
           items: [
-            { text: '组件 API 概览', link: '', icon: 'ri:dashboard-line', badge: { type: 'info', text: '待定' } },
+            { text: '设计规范与契约', link: 'overview/', icon: 'ri:book-read-line', badge: { type: 'warning', text: '核心' } },
+            { text: '操作交互原子', link: 'actions/', icon: 'ri:cursor-line' },
+            { text: '输入与选择原子', link: 'inputs/', icon: 'ri:edit-box-line' },
+            { text: '展示与反馈原子', link: 'display/', icon: 'ri:layout-grid-line' },
+            { text: '导航与浮层原子', link: 'overlay-nav/', icon: 'ri:window-line' },
+            { text: '博客专用原子', link: 'blog-atoms/', icon: 'ri:quill-pen-line' },
+            { text: '业务实体与页面模块', link: 'organisms/', icon: 'ri:pages-line' },
+            { text: '全局外壳与侧栏部件', link: 'shell-widgets/', icon: 'ri:dashboard-line' },
           ],
         },
       ],
@@ -345,7 +352,7 @@ const enGuideDoc = defineCollection({
         { text: 'LLM-Friendly Content', link: 'llms/', icon: 'ri:robot-line' },
       ],
     },
-    {
+        {
       text: 'API',
       icon: 'ri:code-s-slash-line',
       prefix: '/en/guide/api/',
@@ -369,7 +376,14 @@ const enGuideDoc = defineCollection({
           prefix: 'components/',
           collapsed: false,
           items: [
-            { text: 'Overview', link: '', icon: 'ri:dashboard-line', badge: { type: 'info', text: 'TBD' } },
+            { text: 'Design Contract', link: 'overview/', icon: 'ri:book-read-line', badge: { type: 'warning', text: 'Core' } },
+            { text: 'Action Atoms', link: 'actions/', icon: 'ri:cursor-line' },
+            { text: 'Input & Selection', link: 'inputs/', icon: 'ri:edit-box-line' },
+            { text: 'Display & Feedback', link: 'display/', icon: 'ri:layout-grid-line' },
+            { text: 'Navigation & Overlay', link: 'overlay-nav/', icon: 'ri:window-line' },
+            { text: 'Blog-Specific Atoms', link: 'blog-atoms/', icon: 'ri:quill-pen-line' },
+            { text: 'Organisms & Sections', link: 'organisms/', icon: 'ri:pages-line' },
+            { text: 'Shell & Widgets', link: 'shell-widgets/', icon: 'ri:dashboard-line' },
           ],
         },
       ],
