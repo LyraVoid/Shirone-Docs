@@ -100,6 +100,18 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: '特色功能',
+      icon: 'ri:magic-line',
+      prefix: '/guide/features/',
+      collapsed: false,
+      items: [
+        { text: '右键增强菜单', link: 'context-menu/', icon: 'ri:cursor-line' },
+        { text: '图片色调辉光', link: 'image-bloom/', icon: 'ri:blur-off-line' },
+        { text: 'Umami 统计', link: 'umami/', icon: 'ri:bar-chart-2-line' },
+        { text: 'LLM 友好内容', link: 'llms/', icon: 'ri:robot-line' },
+      ],
+    },
+    {
       text: '写作',
       icon: 'ri:quill-pen-line',
       prefix: '/guide/writing/',
@@ -266,6 +278,18 @@ const enGuideDoc = defineCollection({
         { text: 'Announcement', link: 'announcement/', icon: 'ri:notification-3-line' },
         { text: 'Music Player', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'warning', text: 'Recommended' } },
         { text: 'Basic Widgets', link: 'basic-widgets/', icon: 'ri:stack-line' },
+      ],
+    },
+    {
+      text: 'Special Features',
+      icon: 'ri:magic-line',
+      prefix: '/en/guide/features/',
+      collapsed: false,
+      items: [
+        { text: 'Context Menu', link: 'context-menu/', icon: 'ri:cursor-line' },
+        { text: 'Image Tonal Bloom', link: 'image-bloom/', icon: 'ri:blur-off-line' },
+        { text: 'Umami Analytics', link: 'umami/', icon: 'ri:bar-chart-2-line' },
+        { text: 'LLM-Friendly Content', link: 'llms/', icon: 'ri:robot-line' },
       ],
     },
     {
