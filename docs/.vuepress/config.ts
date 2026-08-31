@@ -68,8 +68,22 @@ export default defineUserConfig({
       collapse: true, // 启用折叠容器 ::: collapse
       table: true, // 启用表格增强容器语法 ::: table
       mermaid: true, // 启用 mermaid 图表
-      codeTree: true, // 启用 code-tree 代码树容器与导入语法
-      fileTree: true, // 启用 file-tree 文件树容器
+      codeTree: true, // 启用 code-tree 代码树
+      fileTree: true, // 启用 file-tree 文件树
+      codeTabs: { icon: true }, // 启用 code-tabs 代码选项组
+      field: true, // 启用 field 字段容器
+      npmTo: true, // 启用 npmTo 包管理器切换
+      timeline: true, // 启用 timeline 时间线
+      bilibili: true, // 启用 bilibili 视频嵌入
+      youtube: true, // 启用 youtube 视频嵌入
+      audioReader: true, // 启用 audioReader 音频朗读
+      abbr: true, // 启用缩写词悬浮
+      annotation: true, // 启用内容注释
+      mark: 'eager', // 启用马克笔高亮
+      icon: { provider: 'iconify' }, // 启用图标解析
+      caniuse: true, // 启用 caniuse 特性嵌入
+      qrcode: true, // 启用 qrcode 二维码
+      chat: true, // 启用 chat 对话气泡
     },
   }),
 })
