@@ -88,6 +88,18 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: '侧边栏组件',
+      icon: 'ri:window-line',
+      prefix: '/guide/widgets/',
+      collapsed: false,
+      items: [
+        { text: '组件总览', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
+        { text: '公告组件', link: 'announcement/', icon: 'ri:notification-3-line' },
+        { text: '音乐播放器', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'warning', text: '推荐' } },
+        { text: '基础组件', link: 'basic-widgets/', icon: 'ri:stack-line' },
+      ],
+    },
+    {
       text: '写作',
       icon: 'ri:quill-pen-line',
       prefix: '/guide/writing/',
@@ -242,6 +254,18 @@ const enGuideDoc = defineCollection({
         { text: 'Devices', link: 'devices/', icon: 'ri:computer-line' },
         { text: 'Timeline', link: 'timeline/', icon: 'ri:time-line' },
         { text: 'Anime Page', link: 'anime/', icon: 'ri:tv-line' },
+      ],
+    },
+    {
+      text: 'Sidebar Widgets',
+      icon: 'ri:window-line',
+      prefix: '/en/guide/widgets/',
+      collapsed: false,
+      items: [
+        { text: 'Widgets Overview', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
+        { text: 'Announcement', link: 'announcement/', icon: 'ri:notification-3-line' },
+        { text: 'Music Player', link: 'music/', icon: 'ri:music-2-line', badge: { type: 'warning', text: 'Recommended' } },
+        { text: 'Basic Widgets', link: 'basic-widgets/', icon: 'ri:stack-line' },
       ],
     },
     {
