@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @see https://theme-plume.vuejs.press/guide/collection/ 查看文档了解配置详情。
  *
  * Collections 配置文件，它在 `.vuepress/plume.config.ts` 中被导入。
@@ -112,6 +112,35 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: 'API',
+      icon: 'ri:code-s-slash-line',
+      prefix: '/guide/api/',
+      collapsed: false,
+      items: [
+        {
+          text: '用户',
+          icon: 'ri:user-line',
+          prefix: 'user/',
+          collapsed: false,
+          items: [
+            { text: 'Meting API', link: 'meting/', icon: 'ri:music-2-line' },
+            { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line' },
+            { text: 'Bilibili API', link: 'bilibili/', icon: 'ri:bilibili-line' },
+            { text: 'Umami API', link: 'umami/', icon: 'ri:bar-chart-2-line' },
+          ],
+        },
+        {
+          text: '组件',
+          icon: 'ri:apps-line',
+          prefix: 'components/',
+          collapsed: false,
+          items: [
+            { text: '组件 API 概览', link: '', icon: 'ri:dashboard-line', badge: { type: 'info', text: '待定' } },
+          ],
+        },
+      ],
+    },
+    {
       text: '常见问题',
       icon: 'ri:question-line',
       prefix: '/guide/faq/',
@@ -199,6 +228,7 @@ const zhGuideDoc = defineCollection({
       '/guide/pages/',
       '/guide/widgets/',
       '/guide/features/',
+      '/guide/api/',
       '/guide/faq/',
     ]
 
@@ -316,6 +346,35 @@ const enGuideDoc = defineCollection({
       ],
     },
     {
+      text: 'API',
+      icon: 'ri:code-s-slash-line',
+      prefix: '/en/guide/api/',
+      collapsed: false,
+      items: [
+        {
+          text: 'User',
+          icon: 'ri:user-line',
+          prefix: 'user/',
+          collapsed: false,
+          items: [
+            { text: 'Meting API', link: 'meting/', icon: 'ri:music-2-line' },
+            { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line' },
+            { text: 'Bilibili API', link: 'bilibili/', icon: 'ri:bilibili-line' },
+            { text: 'Umami API', link: 'umami/', icon: 'ri:bar-chart-2-line' },
+          ],
+        },
+        {
+          text: 'Components',
+          icon: 'ri:apps-line',
+          prefix: 'components/',
+          collapsed: false,
+          items: [
+            { text: 'Overview', link: '', icon: 'ri:dashboard-line', badge: { type: 'info', text: 'TBD' } },
+          ],
+        },
+      ],
+    },
+    {
       text: 'FAQ',
       icon: 'ri:question-line',
       prefix: '/en/guide/faq/',
@@ -403,6 +462,7 @@ const enGuideDoc = defineCollection({
       '/en/guide/pages/',
       '/en/guide/widgets/',
       '/en/guide/features/',
+      '/en/guide/api/',
       '/en/guide/faq/',
     ]
 
