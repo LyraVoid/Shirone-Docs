@@ -110,18 +110,16 @@ images:
 
 ## 常见问题
 
-**瞬间不显示**
+::: collapse
+- 瞬间不显示
+  检查 `published` 是否为合法的完整时间戳（含时区偏移）；文件是否在 `src/content/moments/` 下。
 
-检查 `published` 是否为合法的完整时间戳（含时区偏移）；文件是否在 `src/content/moments/` 下。
+- images 的图片不显示
+  `src` 以 `/` 开头时相对 `public` 目录——确认图片确实放在 `public/images/moments/…` 下；远程 URL 需带 `https://`。
 
-**images 的图片不显示**
+- mood 图标显示为方块
+  图标集未安装。到 [icones.js.org](https://icones.js.org/) 确认集合名，安装 `@iconify-json/<集合名>` 后重新构建。
 
-`src` 以 `/` 开头时相对 `public` 目录——确认图片确实放在 `public/images/moments/…` 下；远程 URL 需带 `https://`。
-
-**mood 图标显示为方块**
-
-图标集未安装。到 [icones.js.org](https://icones.js.org/) 确认集合名，安装 `@iconify-json/<集合名>` 后重新构建。
-
-**能发纯文字瞬间吗**
-
-可以——`images` 是可选字段，省略即纯文字动态。
+- 能发纯文字瞬间吗
+  可以——`images` 是可选字段，省略即纯文字动态。
+:::

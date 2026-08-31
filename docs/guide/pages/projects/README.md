@@ -92,14 +92,13 @@ categories: [
 
 ## 常见问题
 
-**新项目不显示**
+::: collapse
+- 新项目不显示
+  三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `key` 是否被 `disabledKeys` 命中。
 
-三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `key` 是否被 `disabledKeys` 命中。
+- 封面图放哪里
+  `cover` 支持相对 `public` 的绝对路径（`/assets/projects/xxx.webp`）等写法，路径规则同文章图片（见[图片画廊与文件组织](/guide/writing/gallery/)）。
 
-**封面图放哪里**
-
-`cover` 支持相对 `public` 的绝对路径（`/assets/projects/xxx.webp`）等写法，路径规则同文章图片（见[图片画廊与文件组织](/guide/writing/gallery/)）。
-
-**phase 有哪些取值**
-
-`"building"`（构建中）与 `"shipped"`（已发布），页面用不同样式区分。
+- phase 有哪些取值
+  `"building"`（构建中）与 `"shipped"`（已发布），页面用不同样式区分。
+:::

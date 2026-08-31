@@ -80,14 +80,13 @@ The repository root includes `vercel.json` to customize platform behavior, such 
 
 ## Troubleshooting
 
-**Build Failure: Unsupported Node Version**
+::: collapse
+- Build Failure: Unsupported Node Version
+  If the log reports `Unsupported engine` or syntax errors, verify that `NODE_VERSION` is set to `22` in environment variables.
 
-If the log reports `Unsupported engine` or syntax errors, verify that `NODE_VERSION` is set to `22` in environment variables.
+- Build Timeout
+  Shirone build includes content synchronization, icon generation, thumbnail rendering, font subsetting, and Pagefind indexing. If builds timeout, enable build cache in Vercel settings or use GitHub Actions to build and deploy artifacts via `vercel deploy dist --prod`.
 
-**Build Timeout**
-
-Shirone build includes content synchronization, icon generation, thumbnail rendering, font subsetting, and Pagefind indexing. If builds timeout, enable build cache in Vercel settings or use GitHub Actions to build and deploy artifacts via `vercel deploy dist --prod`.
-
-**Search Unavailable**
-
-Pagefind indices are generated at `dist/pagefind/` at the end of `pnpm build`. Ensure this directory is included in your deployed artifacts.
+- Search Unavailable
+  Pagefind indices are generated at `dist/pagefind/` at the end of `pnpm build`. Ensure this directory is included in your deployed artifacts.
+:::

@@ -129,14 +129,13 @@ pnpm anime:sync --provider bangumi
 
 ## FAQ
 
-**HTTP 404 Not Found during sync**
+::: collapse
+- HTTP 404 Not Found during sync
+  Verify that your `userId` is correct. You can provide your custom Bangumi username (e.g. `sai`) or numeric UID. Private profiles cannot be queried via public endpoints.
 
-Verify that your `userId` is correct. You can provide your custom Bangumi username (e.g. `sai`) or numeric UID. Private profiles cannot be queried via public endpoints.
+- Rate limited by Bangumi (HTTP 429 Too Many Requests)
+  Increase `request.minDelayMs` (e.g. to `500`) to introduce longer pauses between pagination batches.
 
-**Rate limited by Bangumi (HTTP 429 Too Many Requests)**
-
-Increase `request.minDelayMs` (e.g. to `500`) to introduce longer pauses between pagination batches.
-
-**Studio name is missing on certain items**
-
-Some community wiki entries on Bangumi do not have production company fields populated. Shirone handles missing fields gracefully without breaking the layout.
+- Studio name is missing on certain items
+  Some community wiki entries on Bangumi do not have production company fields populated. Shirone handles missing fields gracefully without breaking the layout.
+:::

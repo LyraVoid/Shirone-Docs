@@ -44,3 +44,16 @@ The Shirone build pipeline performs several automated tasks:
 | `pnpm build` | Compiles full production static site into `dist/` |
 | `pnpm preview` | Serves local `dist/` directory on port 4321 |
 | `npx astro check` | Runs TypeScript and Astro component type checks |
+
+## FAQ
+
+::: collapse
+- Build succeeds but search returns 404
+  The output is missing `pagefind/`. This happens when `astro build` is run directly instead of `pnpm build`.
+
+- Local preview works but online site fails
+  Check differences between environments: `site` / `base` configuration, whether hidden files in `dist/` were uploaded, or whether upstream CDN is incorrectly caching HTML files.
+
+- How to speed up previewing without full builds
+  Use `pnpm dev` during writing. A complete `pnpm build` is only necessary when building production distribution artifacts.
+:::

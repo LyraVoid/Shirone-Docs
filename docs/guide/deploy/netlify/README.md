@@ -75,21 +75,20 @@ netlify deploy --build --prod   # 构建并部署到生产
 
 ## 常见问题
 
-**构建失败：pnpm 版本不符**
+::: collapse
+- 构建失败：pnpm 版本不符
+  Netlify 内置的 pnpm 版本可能与仓库锁定的 `pnpm@9.14.4` 不一致。通过环境变量固定版本：
 
-Netlify 内置的 pnpm 版本可能与仓库锁定的 `pnpm@9.14.4` 不一致。通过环境变量固定版本：
+  ```toml
+  [build.environment]
+    NODE_VERSION = "22"
+  ```
 
-```toml
-[build.environment]
-  NODE_VERSION = "22"
-```
+  若仍报 pnpm 相关错误，可在构建命令中显式启用 corepack：`corepack enable && pnpm build`。
 
-若仍报 pnpm 相关错误，可在构建命令中显式启用 corepack：`corepack enable && pnpm build`。
+- 构建产物体积超限
+  Netlify 单次部署限制产物 10k 文件、站点总大小视套餐而定。Shirone 的字体子集化与缩略图机制已尽量控制体积，若仍超限，检查 `public/` 中是否误放了原始大图。
 
-**构建产物体积超限**
-
-Netlify 单次部署限制产物 10k 文件、站点总大小视套餐而定。Shirone 的字体子集化与缩略图机制已尽量控制体积，若仍超限，检查 `public/` 中是否误放了原始大图。
-
-**国内访问速度**
-
-Netlify 在中国大陆的访问质量不稳定。若你的主要读者在国内，建议优先考虑 [EdgeOne Pages](/guide/deploy/edgeone/)。
+- 国内访问速度
+  Netlify 在中国大陆的访问质量不稳定。若你的主要读者在国内，建议优先考虑 [EdgeOne Pages](/guide/deploy/edgeone/)。
+:::

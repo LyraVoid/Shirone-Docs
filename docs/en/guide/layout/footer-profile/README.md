@@ -1,81 +1,90 @@
 ---
 title: Footer & Profile
-createTime: 2026/08/31 22:35:00
+createTime: 2026/08/31 22:40:00
 permalink: /en/guide/layout/footer-profile/
 ---
 
-`footerConfig.ts` controls custom HTML injection into the site footer, while `profileConfig.ts` defines avatar, author name, biography, and social links.
+This guide covers footer customization (`footerConfig.ts`) and the author profile widget (`profileConfig.ts`).
 
 ## Footer Custom HTML (footerConfig)
 
+`footerConfig.ts` controls custom HTML, ICP filing numbers, security badges, and uptime counters rendered in the site footer:
+
 ```ts title="src/config/footerConfig.ts"
 export const footerConfig = withUserConfig("footer", {
-  enable: false,
+  enable: true,
+  html: `
+    <div class="footer-custom">
+      <p>© 2026 Shirone. Built with passion & Astro.</p>
+    </div>
+  `,
 })
 ```
 
-- When enabled, reads `src/config/FooterConfig.html` and injects its contents above the copyright section.
-- When disabled, produces zero DOM nodes and zero runtime overhead.
-
-### Usage Steps
-
-::: steps
-
-1. Create `src/config/FooterConfig.html` with your custom HTML markup:
-
-   ```html title="src/config/FooterConfig.html"
-   <div style="text-align: center; margin-bottom: 8px;">
-     <span>Powered by <a href="https://astro.build/">Astro</a></span>
-     ·
-     <a href="/rss.xml">RSS Feed</a>
-   </div>
-   ```
-
-2. Set `footerConfig.enable: true`.
-
-3. Rebuild to view injected content in the footer.
-
-:::
-
 ## Author Profile (profileConfig)
+
+`profileConfig.ts` powers the author avatar card displayed in the primary sidebar:
 
 ```ts title="src/config/profileConfig.ts"
 export const profileConfig = withUserConfig("profile", {
-  avatar: "assets/images/demo-avatar.webp",
-  name: "Shirone",
-  bio: "The rain remembers what the sky forgot to say.",
+  avatar: "assets/images/avatar.webp", // Avatar image path
+  name: "Shirone",                    // Display name
+  bio: "Anime fan & Web Developer",   // Short bio
   links: [
-    {
-      name: "Twitter",
-      icon: "fa6-brands:twitter",
-      url: "https://twitter.com",
-    },
-    {
-      name: "Steam",
-      icon: "fa6-brands:steam",
-      url: "https://store.steampowered.com",
-    },
     {
       name: "GitHub",
       icon: "fa6-brands:github",
-      url: "https://github.com/LyraVoid/Shirone",
+      url: "https://github.com/your-name",
+    },
+    {
+      name: "Bilibili",
+      icon: "fa6-brands:bilibili",
+      url: "https://space.bilibili.com/your-uid",
+    },
+    {
+      name: "RSS",
+      icon: "fa6-solid:rss",
+      url: "/rss.xml",
     },
   ],
 })
 ```
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `avatar` | `string` | Avatar image path (relative to `src` or `/public`) |
-| `name` | `string` | Author name displayed on sidebar profile and RSS metadata |
-| `bio` | `string` | Short personal bio |
-| `links` | `array` | Social links array |
+### Avatar Path Rules
 
-### Avatar Path Conventions
+- **Local Asset (Recommended)**: Store under `src/assets/images/` and use relative paths like `"assets/images/avatar.webp"` for automated WebP optimization.
+- **Public Directory**: Store under `public/` and start with a leading slash `"/avatar.png"`.
+- **Remote URL**: Use `"https://cdn.example.com/avatar.webp"`.
 
-- `assets/images/avatar.webp` — Relative to `src/` (processed and optimized during build).
-- `/avatar.png` — Leading slash relative to `/public` (served raw).
+### Social Icons
 
-### Social Links
+Social icons use [Iconify](https://iconify.design/) naming format (e.g. `fa6-brands:github`, `tabler:brand-twitter`, `ri:mastodon-line`).
 
-Icons use Iconify naming conventions (from [icones.js.org](https://icones.js.org/)). Additional icon sets can be installed via `pnpm add @iconify-json/<icon-set-name>`.
+## Practical Examples
+
+**Footer with ICP Filing and Uptime Badge**
+
+```ts title="src/config/footerConfig.ts"
+export const footerConfig = withUserConfig("footer", {
+  enable: true,
+  html: `
+    <div style="font-size: 0.875rem; opacity: 0.8;">
+      <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">粤ICP备00000000号</a></p>
+      <p>Site running smoothly since 2026</p>
+    </div>
+  `,
+})
+```
+
+## FAQ
+
+::: collapse
+- Avatar image fails to load
+  Check if the file path is correct. Local assets under `src/assets` must not begin with a leading slash, while `public` files must begin with `/`.
+
+- Social icon does not display
+  Ensure the Iconify identifier syntax is accurate. Search and verify icon keys on [icon-sets.iconify.design](https://icon-sets.iconify.design/).
+
+- How to disable the author profile widget
+  Set `enable: false` for the profile component in `src/config/sidebarConfig.ts`.
+:::

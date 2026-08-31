@@ -117,14 +117,13 @@ categories: [
 
 ## FAQ
 
-**A device doesn't show**
+::: collapse
+- A device doesn't show
+  Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `id` hit by `disabledIds`.
 
-Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `id` hit by `disabledIds`.
+- What is categories' description for
+  It shows under the category chips as group notes—a field unique to the devices page (other showcase pages' categories don't have it).
 
-**What is categories' description for**
-
-It shows under the category chips as group notes—a field unique to the devices page (other showcase pages' categories don't have it).
-
-**What values does status take**
-
-The data source uses `active` for in-use gear. You can extend with custom values (like `retired` or `planning`)—the page displays them as-is; keep them short.
+- What values does status take
+  The data source uses `active` for in-use gear. You can extend with custom values (like `retired` or `planning`)—the page displays them as-is; keep them short.
+:::

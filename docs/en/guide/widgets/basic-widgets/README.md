@@ -90,18 +90,16 @@ Six widgets aggregate data automatically and need no dedicated config file: Cate
 
 ## FAQ
 
-**The categories/tags lists are empty**
+::: collapse
+- The categories/tags lists are empty
+  Data aggregates from posts. Content appears after publishing at least one post with `category` / `tags`.
 
-Data aggregates from posts. Content appears after publishing at least one post with `category` / `tags`.
+- Where does the "running days" stat come from
+  It's a memoized metric computed from site data (like the site creation date), updating automatically with posts and time.
 
-**Where does the "running days" stat come from**
+- A calendar month has no highlights
+  No posts were published that month. The calendar only reflects the `published` date distribution.
 
-It's a memoized metric computed from site data (like the site creation date), updating automatically with posts and time.
-
-**A calendar month has no highlights**
-
-No posts were published that month. The calendar only reflects the `published` date distribution.
-
-**Why can't I see the sidebar TOC on mobile**
-
-The sidebar folds into a drawer on mobile, and the TOC is served by the FAB floating panel—a designed complementary mechanism. See [Floating Controls](/en/guide/article/fab/).
+- Why can't I see the sidebar TOC on mobile
+  The sidebar folds into a drawer on mobile, and the TOC is served by the FAB floating panel—a designed complementary mechanism. See [Floating Controls](/en/guide/article/fab/).
+:::

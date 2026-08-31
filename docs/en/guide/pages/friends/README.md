@@ -67,14 +67,13 @@ The page displays randomly by default, so visitors see different orders and frie
 
 ## FAQ
 
-**I want to change the page URL**
+::: collapse
+- I want to change the page URL
+  The `Friends` preset `url` can be overridden via a custom link (see [Navigation Bar](/en/guide/layout/navbar/)); the page file lives at `src/pages/friends.astro`—routing needs to be handled together.
 
-The `Friends` preset `url` can be overridden via a custom link (see [Navigation Bar](/en/guide/layout/navbar/)); the page file lives at `src/pages/friends.astro`—routing needs to be handled together.
+- Where does friends data live in dual-repo mode
+  `friends.ts` belongs to the Data layer. In content-separation deployments it can be overridden along with the content repo—see the Content Separation guide in the theme repository for boundaries.
 
-**Where does friends data live in dual-repo mode**
-
-`friends.ts` belongs to the Data layer. In content-separation deployments it can be overridden along with the content repo—see the Content Separation guide in the theme repository for boundaries.
-
-**How to remove the filter bar**
-
-The bar is generated from tags—omit `tags` on all entries (or use one uniform tag) and it naturally goes away.
+- How to remove the filter bar
+  The bar is generated from tags—omit `tags` on all entries (or use one uniform tag) and it naturally goes away.
+:::

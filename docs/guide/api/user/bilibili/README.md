@@ -130,17 +130,17 @@ B 站图片服务器（`hdslb.com`）对外部站点有严格的 Referer 防盗�
 
 ## 常见问题
 
-**追番同步报错 `code: 53013`（权限不足）**
+::: collapse
+- 追番同步报错 `code: 53013`（权限不足）
+  你在 B 站的「空间隐私设置」中将追番列表设为了「仅自己可见」。
+  解决方式：在项目根目录 `.env`（或 CI 环境变量）中添加 `BILI_SESSDATA="你的SESSDATA"`。
 
-你在 B 站的「空间隐私设置」中将追番列表设为了「仅自己可见」。
-解决方式：在项目根目录 `.env`（或 CI 环境变量）中添加 `BILI_SESSDATA="你的SESSDATA"`。
+  ::: warning 凭据安全
+  `SESSDATA` 属于敏感登录凭据。Shirone 的设计严格保证：凭据仅在 Node 同步进程中读取，快照生成后绝对不会被打包进前端代码或静态 HTML。请勿将 `.env` 提交至公开 Git 仓库！
+  :::
 
-::: warning 凭据安全
-`SESSDATA` 属于敏感登录凭据。Shirone 的设计严格保证：凭据仅在 Node 同步进程中读取，快照生成后绝对不会被打包进前端代码或静态 HTML。请勿将 `.env` 提交至公开 Git 仓库！
+- 同步命令执行方式
+  ```bash
+  pnpm anime:sync --provider bilibili
+  ```
 :::
-
-**同步命令执行方式**
-
-```bash
-pnpm anime:sync --provider bilibili
-```

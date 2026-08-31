@@ -80,14 +80,13 @@ CLI 直接上传的是源码仓，Vercel 仍会在云端执行构建。如果你
 
 ## 常见问题
 
-**构建失败：Node 版本过低**
+::: collapse
+- 构建失败：Node 版本过低
+  日志中出现 `Unsupported engine` 或语法错误时，确认环境变量 `NODE_VERSION` 已设为 `22`。
 
-日志中出现 `Unsupported engine` 或语法错误时，确认环境变量 `NODE_VERSION` 已设为 `22`。
+- 构建超时
+  Shirone 构建包含内容同步、图标生成、缩略图、字体子集化与 Pagefind 索引等多个步骤。若频繁超时，可在 Vercel 项目设置中开启构建缓存，或参考主题仓库的 `deploy.yml.example` 改用 GitHub Actions 构建后通过 `vercel deploy dist --prod` 仅交付产物。
 
-**构建超时**
-
-Shirone 构建包含内容同步、图标生成、缩略图、字体子集化与 Pagefind 索引等多个步骤。若频繁超时，可在 Vercel 项目设置中开启构建缓存，或参考主题仓库的 `deploy.yml.example` 改用 GitHub Actions 构建后通过 `vercel deploy dist --prod` 仅交付产物。
-
-**搜索不可用**
-
-Pagefind 索引在 `pnpm build` 末尾生成于 `dist/pagefind/`。若搜索失效，检查部署的产物中是否包含该目录——使用自定义 CI 时最容易遗漏这一步。
+- 搜索不可用
+  Pagefind 索引在 `pnpm build` 末尾生成于 `dist/pagefind/`。若搜索失效，检查部署的产物中是否包含该目录——使用自定义 CI 时最容易遗漏这一步。
+:::

@@ -1,96 +1,93 @@
 ---
-title: Navigation Bar
-createTime: 2026/08/31 22:33:00
+title: Navbar Configuration
+createTime: 2026/08/31 22:38:00
 permalink: /en/guide/layout/navbar/
 ---
 
-The navigation bar is configured centrally in `navBarConfig.ts`, driving both the desktop header dropdown menus and the mobile navigation drawer.
+`navbarConfig.ts` configures the top application bar, preset navigation entries, and custom navigation menus.
 
 ## Presets Table (LinkPresets)
 
-Shirone includes 15 built-in presets:
+Shirone provides type-safe presets for standard pages:
 
-| Preset | URL | Description |
+| Preset Identifier | Target Route | Description |
 | --- | --- | --- |
-| `Home` | `/` | Home |
-| `Archive` | `/archive/` | Archives |
-| `Friends` | `/friends/` | Friend Links |
-| `Moments` | `/moments/` | Moments |
-| `Anime` | `/anime/` | Anime Watchlist |
-| `Compass` | `/compass/` | Compass / Discovery |
-| `Skills` | `/skills/` | Skills Radar |
-| `Projects` | `/projects/` | Project Showcase |
-| `Devices` | `/devices/` | Hardware Devices |
-| `Timeline` | `/timeline/` | Growth Timeline |
-| `Albums` | `/albums/` | Photo Albums |
-| `Categories` | `/categories/` | Post Categories |
-| `Tags` | `/tags/` | Post Tags |
-| `About` | `/about/` | About Me |
-| `GitHub` | External | Theme Repository |
-
-Each preset contains localized labels and Material Symbols icons.
+| `LinkPresets.Home` | `/` | Blog homepage |
+| `LinkPresets.Archive` | `/archive/` | Chronological archive |
+| `LinkPresets.Friends` | `/friends/` | Friend links page |
+| `LinkPresets.Moments` | `/moments/` | Microblogging / status stream |
+| `LinkPresets.Anime` | `/anime/` | Bangumi / anime watchlist |
+| `LinkPresets.About` | `/about/` | About page |
 
 ## Navigation Structure (links)
 
-```ts title="src/config/navBarConfig.ts"
-const defaultNavBarConfig: NavBarConfig = {
+```ts title="src/config/navbarConfig.ts"
+export const navbarConfig = withUserConfig("navbar", {
   links: [
     LinkPresets.Home,
     LinkPresets.Archive,
-    LinkPresets.Friends,
-    LinkPresets.Moments,
-    LinkPresets.Anime,
-    LinkPresets.Compass,
-    LinkPresets.Albums,
     {
-      name: i18n(I18nKey.more),
-      icon: "material-symbols:apps-rounded",
+      name: "Pages",
+      icon: "material-symbols:widgets-outline",
       children: [
-        ...(timelineConfig.enable ? [LinkPresets.Timeline] : []),
-        ...(projectsConfig.enable ? [LinkPresets.Projects] : []),
-        ...(devicesConfig.enable ? [LinkPresets.Devices] : []),
-        ...(skillsConfig.enable ? [LinkPresets.Skills] : []),
+        LinkPresets.Friends,
+        LinkPresets.Moments,
+        LinkPresets.Anime,
         LinkPresets.About,
-        LinkPresets.GitHub,
       ],
     },
   ],
-}
+})
 ```
-
-- **Order**: Items render in the order specified in the `links` array.
-- **Dropdowns**: Items containing `children` become dropdown menus on desktop and sub-lists in the mobile drawer.
-- **Conditional Visibility**: Links inside the `more` dropdown check `enable` flags from their respective config domains.
 
 ## Custom Links
 
-```ts title="src/config/navBarConfig.ts"
-links: [
-  LinkPresets.Home,
-  LinkPresets.Archive,
-  {
-    name: "Custom Site",
-    url: "https://example.com",
-    icon: "fa6-brands:github",  // Any Iconify icon name
-    external: true,             // Opens in new tab
-  },
-]
+You can insert custom external or internal navigation items:
+
+```ts
+{
+  name: "Documentation",
+  url: "https://docs.example.com/",
+  icon: "material-symbols:menu-book-outline",
+  external: true,
+}
 ```
 
 ## Content Repo Overlay (Dual-Repo Mode)
 
-In dual-repository setups, configure `config/nav-bar.yaml` in your content repository:
+In dual-repo setups, create `config/navbar.yaml` in the content repo:
 
-```yaml title="config/nav-bar.yaml"
+```yaml title="config/navbar.yaml"
 links:
-  - preset: Home
-  - preset: Archive
-  - name: "$t:friends"        # Prefix with $t: to reference i18n keys
-    url: /friends/
-  - name: Collections
-    children:
-      - preset: Anime
-      - preset: Albums
-      - name: "$t:about"
-        preset: About
+  - Home
+  - Archive
+  - name: Docs
+    url: https://docs.example.com/
 ```
+
+## Practical Examples
+
+**Compact Navigation**
+
+```ts title="src/config/navbarConfig.ts"
+export const navbarConfig = withUserConfig("navbar", {
+  links: [
+    LinkPresets.Home,
+    LinkPresets.Archive,
+    LinkPresets.About,
+  ],
+})
+```
+
+## FAQ
+
+::: collapse
+- Dropdown menu does not open
+  Verify that the `children` array contains valid navigation items or LinkPresets.
+
+- External link icon doesn't show
+  Add `external: true` to indicate external navigation targets.
+
+- Preset text does not change with language
+  Preset names are automatically translated via i18n dictionary files in `src/i18n/`.
+:::

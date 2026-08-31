@@ -131,14 +131,13 @@ YAML 键与代码默认值深合并（对象递归合并、数组整体替换）
 
 ## 常见问题
 
-**修改配置后构建报类型错误**
+::: collapse
+- 修改配置后构建报类型错误
+  Shirone 是强类型配置，字段名与取值写错会在构建时直接报错。对照 `src/types/config.ts` 中的类型定义修正，或在修改后运行 `npx astro check` 校验。
 
-Shirone 是强类型配置，字段名与取值写错会在构建时直接报错。对照 `src/types/config.ts` 中的类型定义修正，或在修改后运行 `npx astro check` 校验。
+- 语言切换了但部分文案没变
+  界面文案依赖 i18n 词条。自定义文案（如横幅副标题、公告内容）是纯文本，不随 `lang` 翻译；需要多语言的地方应使用主题的 i18n 机制。
 
-**语言切换了但部分文案没变**
-
-界面文案依赖 i18n 词条。自定义文案（如横幅副标题、公告内容）是纯文本，不随 `lang` 翻译；需要多语言的地方应使用主题的 i18n 机制。
-
-**title 和 subtitle 在哪里显示**
-
-`title` 显示在顶栏与浏览器标签页；`subtitle` 主要用于 SEO 与元数据。首页横幅中央的大字标题是 `banner.homeText.title`（见 [横幅与背景](/guide/layout/banner/)），与本处 `title` 相互独立。
+- title 和 subtitle 在哪里显示
+  `title` 显示在顶栏与浏览器标签页；`subtitle` 主要用于 SEO 与元数据。首页横幅中央的大字标题是 `banner.homeText.title`（见 [横幅与背景](/guide/layout/banner/)），与本处 `title` 相互独立。
+:::

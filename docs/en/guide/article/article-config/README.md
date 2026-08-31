@@ -117,14 +117,13 @@ share: { enable: false, includeCover: false },
 
 ## FAQ
 
-**Recommendations look irrelevant**
+::: collapse
+- Recommendations look irrelevant
+  `related` matches on tag/category overlap. Check whether the `tags` / `category` in your posts are too broad (e.g. one shared "Essays" category sitewide)—refining them improves recommendation quality significantly.
 
-`related` matches on tag/category overlap. Check whether the `tags` / `category` in your posts are too broad (e.g. one shared "Essays" category sitewide)—refining them improves recommendation quality significantly.
+- Do random posts change on every refresh
+  No. Sampling is based on the post identity and stays stable within a build; results may change only after a rebuild.
 
-**Do random posts change on every refresh**
-
-No. Sampling is based on the post identity and stays stable within a build; results may change only after a rebuild.
-
-**Why doesn't the update notice appear**
-
-Check in order: does the post have `updated` → does the age gap reach `minimumAgeDays` → is `lastUpdated.enable` off.
+- Why doesn't the update notice appear
+  Check in order: does the post have `updated` → does the age gap reach `minimumAgeDays` → is `lastUpdated.enable` off.
+:::

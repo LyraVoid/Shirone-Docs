@@ -4,191 +4,103 @@ createTime: 2026/08/31 23:10:00
 permalink: /en/guide/frontmatter/
 ---
 
-Every post is a Markdown (or MDX) file under `src/content/posts/`, with YAML frontmatter at the top defining its metadata. This page is the reference manual for all fields; for creation workflows and file organization see [Writing Posts](/en/guide/writing-post/).
+Every post is a Markdown (or MDX) file under `src/content/posts/`. The YAML frontmatter block at the top defines post-level metadata. This document is a complete reference for all supported fields. For post creation workflows and directory conventions, see [Writing Posts](/en/guide/writing-post/).
 
 ## What Is Frontmatter
 
-Frontmatter is a YAML configuration block at the top of a Markdown file, wrapped by `---` delimiters. Body content starts after the second `---`:
+Frontmatter is a YAML-formatted configuration block enclosed by triple-dash `---` dividers at the very top of a Markdown file. Article content begins immediately following the second `---`:
 
 ```yaml title="src/content/posts/my-first-post.md"
 ---
 title: My First Post
 published: 2026-08-26
-description: A short summary shown in the post list and metadata.
+description: A short summary displayed in post lists and metadata cards.
 image: ./cover.webp
 tags: [Astro, Notes]
 category: Writing
 draft: false
 ---
 
-Body content starts here.
+Content begins here.
 ```
 
 ## Field Reference
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `title` | `string` | Yes | Post title |
-| `published` | `date` | Yes | Publish date, used for sorting and display |
-| `description` | `string` | No | Summary shown in post list cards and metadata |
-| `image` | `string` | No | Cover image. Relative path (`./cover.webp`), `public` absolute path (`/img/x.webp`), or remote URL |
-| `tags` | `array` | No | Tags, powering the tags page and sidebar tag cloud |
-| `category` | `string` | No | Category, powering the categories page and sidebar widget |
-| `draft` | `boolean` | No | `true` marks the post as a draft, invisible to visitors |
-| `updated` | `date` | No | Update time, triggering the "last updated" notice |
-| `pinned` | `boolean` | No | `true` pins the post to the top of the list |
-| `lang` | `string` | No | Declares the post language (e.g. `en`, `zh_CN`) |
-| `comment` | `boolean` | No | Disable comments for this post (requires the comment system enabled) |
-| `encrypted` | `boolean` | No | Marks the post as encrypted |
-| `password` | `string` | No | Encryption password; setting it implicitly enables encryption |
-| `passwordHint` | `string` | No | Hint displayed under the password input |
-| `hideHomeContent` | `boolean` | No | Used with encrypted posts: hides the summary and word count on index/archive/RSS |
+| `title` | `string` | Yes | Post title displayed in listings and header |
+| `published` | `date` | Yes | Publication date used for chronological sorting and display |
+| `description` | `string` | No | Summary shown on post cards and in SEO metadata |
+| `image` | `string` | No | Cover image: relative path (`./cover.webp`), `public` path (`/img/x.webp`), or remote URL |
+| `tags` | `array` | No | Tags powering the tag archive and tag cloud widget |
+| `category` | `string` | No | Category powering the category archive and sidebar |
+| `draft` | `boolean` | No | `true` marks as draft (hidden in production builds) |
+| `updated` | `date` | No | Last updated date, triggers the "Last updated" banner |
+| `pinned` | `boolean` | No | `true` pins the post to the top of listings |
+| `lang` | `string` | No | Declares post language code (e.g. `en`, `zh_CN`) |
+| `comment` | `boolean` | No | Disable comments for this single post |
+| `encrypted` | `boolean` | No | Flag indicating encrypted status |
+| `password` | `string` | No | Encryption password (implicitly enables encryption) |
+| `passwordHint` | `string` | No | Hint text displayed beneath the password input |
+| `hideHomeContent` | `boolean` | No | Conceals summary and word count on homepage, archive, and RSS |
 
 ## Field Groups
 
-### Basic Metadata
+### Core Metadata
 
-`title` and `published` are the only required fields: the title appears in lists and on the post page, and the publish date determines ordering. When `description` is omitted, list cards fall back to a body excerpt—fill it in explicitly for controlled presentation.
+`title` and `published` are the only required fields: the title appears on cards and headers, while the publish date controls chronological ordering. When `description` is omitted, the post card automatically extracts the initial content sentences as a summary.
 
-### Content Association
+### Content Relations
 
-`image`, `tags`, and `category` together shape the post's appearance and entry points:
+`image`, `tags`, and `category` shape post navigation and visual presentation:
 
-- The cover image appears on post cards; without one, the default style is used
-- A post can have multiple tags but only one category; both are aggregated automatically across all posts—no separate registry to maintain
+- Cover images render on post cards; missing images fallback to clean typography
+- A post may have multiple tags but only one category; both are automatically aggregated across the site
 
-### State Control
+### Lifecycle & State
 
-| Field | Effect |
+| Field | Behavior |
 | --- | --- |
-| `draft: true` | Draft: excluded from production builds, visible in dev |
-| `pinned: true` | Pinned: placed at the top of the post list |
-| `updated` | Shows a "last updated" notice on the post page |
-| `lang` | Declares the post language; does not affect the UI language |
-| `comment: false` | Disables comments for this post |
+| `draft: true` | Draft state: excluded from production builds, visible in dev mode |
+| `pinned: true` | Pinned: displayed at the top of the post archive |
+| `updated` | Displays "Last updated at" banner on the article page |
+| `lang` | Explicitly specifies post language |
+| `comment: false` | Disables comment box for this specific post |
 
-### Encryption Fields
+### Client-Side Encryption Fields
 
-`encrypted` / `password` / `passwordHint` / `hideHomeContent` serve the post encryption system. Setting `password` implicitly enables encryption—no need to also write `encrypted: true`.
+`encrypted`, `password`, `passwordHint`, and `hideHomeContent` configure the zero-knowledge encryption pipeline. Setting `password` implicitly activates encryption.
 
 ## Image Path Rules
 
-`image` and body images support three forms:
+`image` and body images support three formats:
 
-| Form | Example | Behavior |
+| Format | Example | Behavior |
 | --- | --- | --- |
-| Relative path | `./cover.webp` | Resolved relative to the post file, eligible for build optimization (recommended) |
-| Absolute path | `/images/x.webp` | Relative to the `public` directory, output as-is |
-| Remote URL | `https://cdn.example.com/x.webp` | Referenced as-is |
+| Relative path | `./cover.webp` | Resolved relative to the post file with build optimization (recommended) |
+| Absolute path | `/images/x.webp` | Resolved relative to `public/`, served as-is |
+| Remote URL | `https://cdn.example.com/x.webp` | Loaded directly from external CDN |
 
 ## Time and Timezone
 
-`published` / `updated` are interpreted and displayed according to the site's `timeZone` setting (see [Site Config](/en/guide/layout/site-config/)). A plain date (`2026-08-26`) is usually enough; write a full timestamp when you need precision.
+`published` and `updated` are formatted according to `siteConfig.timeZone` (see [Site Configuration](/en/guide/layout/site-config/)). Specifying a date (`2026-08-26`) is sufficient; full timestamps with timezone offsets are also supported.
 
 ## YAML Syntax Notes
 
-- A space is required after the colon: `title: correct`; `title:wrong` is treated as a string
-- Quote values containing special characters: `password: "my-secret"`
-- Two list forms are equivalent: `tags: [A, B]` or line-by-line `- A` `- B`, with consistent indentation
-- Field names are case-sensitive: `Title` is not `title`
+- Colons must be followed by a space: `title: Correct` (`title:Wrong` will be treated as invalid)
+- Wrap strings with special characters in quotes: `password: "my-secret"`
+- Both array formats are equivalent: `tags: [A, B]` or line-by-line `- A` / `- B`
+- Field names are case-sensitive: `Title` is not recognized as `title`
 
 ## FAQ
 
-**What happens if frontmatter is written wrong**
+::: collapse
+- What happens if frontmatter syntax is wrong
+  YAML syntax errors fail the build immediately with exact file and line locations. Unknown field names are safely ignored. Run `npx astro check` to validate changes.
 
-YAML syntax errors fail the build with the file and line number; misspelled field names are silently ignored (the field falls back to its default). Run `npx astro check` after changes.
+- Can I define custom frontmatter fields
+  Unrecognized fields are ignored by default. If you need custom data in build scripts, store it in content bodies or dedicated data files.
 
-**Can I add custom fields**
-
-Fields the theme doesn't recognize are ignored (no error). If you need them for build scripts, put the data in body text or a data file instead.
-
-**description vs. the first paragraph**
-
-`description` takes priority for list cards, SEO meta, and RSS; without it, a body excerpt is used. They serve different purposes: description is the reader-facing preview, the first paragraph is content.
----
-title: Frontmatter & Post Management
-createTime: 2026/08/31 23:10:00
-permalink: /en/guide/frontmatter/
----
-
-Every post is a Markdown (or MDX) file under `src/content/posts/`, with YAML frontmatter at the top defining its metadata. This page covers all fields, draft and pinning management, and the post creation workflow.
-
-## Creating a Post
-
-```bash
-pnpm new-post my-first-post
-```
-
-The command generates a template file with basic frontmatter under `src/content/posts/`.
-
-## Frontmatter Field Reference
-
-```yaml title="src/content/posts/my-first-post.md"
----
-title: My First Post
-published: 2026-08-26
-description: A short summary shown in the post list and metadata.
-image: ./cover.webp
-tags: [Astro, Notes]
-category: Writing
-draft: false
----
-```
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `title` | `string` | Yes | Post title |
-| `published` | `date` | Yes | Publish date, used for sorting and display |
-| `description` | `string` | No | Summary shown in post list cards and metadata |
-| `image` | `string` | No | Cover image. Relative path (`./cover.webp`), `public` absolute path (`/img/x.webp`), or remote URL |
-| `tags` | `array` | No | Tags, powering the tags page and sidebar tag cloud |
-| `category` | `string` | No | Category, powering the categories page and sidebar widget |
-| `draft` | `boolean` | No | `true` marks the post as a draft, invisible to visitors |
-| `updated` | `date` | No | Update time, triggering the last updated notice on the post page |
-| `pinned` | `boolean` | No | `true` pins the post to the top of the list |
-| `lang` | `string` | No | Declares the post language (e.g. `en`, `zh_CN`) |
-| `comment` | `boolean` | No | Disable comments for this post |
-| `encrypted` | `boolean` | No | Marks the post as encrypted |
-| `password` | `string` | No | Encryption password; setting it implicitly enables encryption |
-| `passwordHint` | `string` | No | Hint displayed under the password input |
-| `hideHomeContent` | `boolean` | No | Used with encrypted posts: hides the summary and word count on index/archive/RSS |
-
-## Draft Management
-
-```yaml
-draft: true
-```
-
-Posts with `draft: true` are in draft state: excluded from production builds and invisible to visitors. Drafts remain visible in the local dev server for previewing.
-
-To publish, change to `draft: false`.
-
-## Pinning
-
-```yaml
-pinned: true
-```
-
-Pinned posts are placed at the top of the post list.
-
-## Categories and Tags
-
-```yaml
-tags: [Astro, Svelte, Notes]
-category: Tech
-```
-
-- One category per post (`category`), multiple tags allowed (`tags`).
-- Both are aggregated automatically from post content.
-
-## Image Path Rules
-
-| Form | Example | Behavior |
-| --- | --- | --- |
-| Relative path | `./cover.webp` | Resolved relative to the post file, eligible for build optimization |
-| Absolute path | `/images/x.webp` | Relative to the `public` directory, output as-is |
-| Remote URL | `https://cdn.example.com/x.webp` | Referenced as-is |
-
-## Time and Timezone
-
-`published` / `updated` are interpreted and displayed according to the site's `timeZone` setting (see [Site Config](/en/guide/layout/site-config/)).
+- Relationship between description and opening paragraph
+  `description` is explicitly prioritized for list cards, SEO meta tags, and RSS feeds. When omitted, the build falls back to extracting the opening paragraph.
+:::

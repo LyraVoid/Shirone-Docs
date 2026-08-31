@@ -117,3 +117,15 @@ jobs:
 
 
 :::
+## FAQ
+
+::: collapse
+- Blank page or 404 on asset files
+  Ensure `base` in `siteConfig.ts` matches your GitHub repository name exactly (including casing).
+
+- GitHub Actions workflow timeout
+  Incorporate build cache into your workflow (refer to `.github/workflows/deploy.yml.example` caching `.astro` and thumbnail directories) to accelerate subsequent builds.
+
+- How to deploy in Dual-Repo mode
+  Refer to `.github/workflows/deploy.yml.example` variant B: content repo triggers theme repo builds via `repository_dispatch`.
+:::

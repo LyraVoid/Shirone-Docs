@@ -72,14 +72,13 @@ shareUrl: https://umami.example.com/share/xxxx
 
 ## FAQ
 
-**The stats area shows no data**
+::: collapse
+- The stats area shows no data
+  Check that `shareUrl` is filled and correct—it's the only data source for public share stats; when missing, everything silently disables (by design).
 
-Check that `shareUrl` is filled and correct—it's the only data source for public share stats; when missing, everything silently disables (by design).
+- No visitor data at all
+  Confirm `websiteId` and `scriptUrl` are filled as a pair and correct; use browser dev tools to verify the script loaded and is sending requests; check whether the Umami dashboard sees your own visits.
 
-**No visitor data at all**
-
-Confirm `websiteId` and `scriptUrl` are filled as a pair and correct; use browser dev tools to verify the script loaded and is sending requests; check whether the Umami dashboard sees your own visits.
-
-**Does it slow the page**
-
-No. Collection and data pulls are async and on-demand; with `enable: false` (the default) nothing loads at all.
+- Does it slow the page
+  No. Collection and data pulls are async and on-demand; with `enable: false` (the default) nothing loads at all.
+:::

@@ -97,14 +97,13 @@ categories: [
 
 ## 常见问题
 
-**技能不显示**
+::: collapse
+- 技能不显示
+  三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `name` 是否被 `disabledNames` 命中。
 
-三层检查：页面 `enable` → `category` 是否引用了 `categories` 中已有的 key → `name` 是否被 `disabledNames` 命中。
+- 重复名称的技能怎么办
+  `disabledNames` 按名称命中会同时影响同名条目。技能名称应保持唯一；确需区分时在名称中加入后缀（如 `Node.js (Backend)`）。
 
-**重复名称的技能怎么办**
-
-`disabledNames` 按名称命中会同时影响同名条目。技能名称应保持唯一；确需区分时在名称中加入后缀（如 `Node.js (Backend)`）。
-
-**图标哪里找**
-
-编程语言/框架图标优先用 `simple-icons:*` 集合（内置已装），完整清单见 [icones.js.org](https://icones.js.org/)。
+- 图标哪里找
+  编程语言/框架图标优先用 `simple-icons:*` 集合（内置已装），完整清单见 [icones.js.org](https://icones.js.org/)。
+:::

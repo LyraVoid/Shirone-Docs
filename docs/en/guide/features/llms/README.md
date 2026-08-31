@@ -93,14 +93,13 @@ Try it: paste "Read https://your-site.com/llms.txt and summarize this site" into
 
 ## FAQ
 
-**Could private content leak to AI**
+::: collapse
+- Could private content leak to AI
+  No. Encrypted posts and drafts are filtered at build time; public posts hitting `excludeTags` / `excludeCategories` are stripped too. Note: **public posts that are neither encrypted nor blacklisted are accessible to anyone anyway**—the LLM endpoint just offers a more structured way to read them.
 
-No. Encrypted posts and drafts are filtered at build time; public posts hitting `excludeTags` / `excludeCategories` are stripped too. Note: **public posts that are neither encrypted nor blacklisted are accessible to anyone anyway**—the LLM endpoint just offers a more structured way to read them.
+- Does llms.txt update when posts change
+  Yes. Both endpoints are statically generated at build time and rebuilt with every build.
 
-**Does llms.txt update when posts change**
-
-Yes. Both endpoints are statically generated at build time and rebuilt with every build.
-
-**Does it slow builds or affect readers**
-
-No. It's pure server-side static text generation—0 KB added to the client bundle and zero impact on readers.
+- Does it slow builds or affect readers
+  No. It's pure server-side static text generation—0 KB added to the client bundle and zero impact on readers.
+:::

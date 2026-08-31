@@ -59,14 +59,13 @@ The About page renders as ordinary Markdown, meaning you can use:
 
 ## FAQ
 
-**About page vs. profileConfig**
+::: collapse
+- About page vs. profileConfig
+  `profileConfig` (avatar/name/bio) powers the sidebar card, footer, RSS author, and other global spots; the About page is the long-form introduction. They complement each other—the sidebar card links here.
 
-`profileConfig` (avatar/name/bio) powers the sidebar card, footer, RSS author, and other global spots; the About page is the long-form introduction. They complement each other—the sidebar card links here.
+- How to show it in the navigation
+  A `About` preset (`/about/`) already exists in `LinkPresets`; reference it in `navBarConfig`'s `links` (mounted in the "More" group by default).
 
-**How to show it in the navigation**
-
-A `About` preset (`/about/`) already exists in `LinkPresets`; reference it in `navBarConfig`'s `links` (mounted in the "More" group by default).
-
-**Can I change the URL**
-
-Yes—override `url` via a custom link (see [Navigation Bar](/en/guide/layout/navbar/)); the file path stays fixed at `src/content/spec/about.md`.
+- Can I change the URL
+  Yes—override `url` via a custom link (see [Navigation Bar](/en/guide/layout/navbar/)); the file path stays fixed at `src/content/spec/about.md`.
+:::

@@ -128,18 +128,16 @@ If a snapshot file is lost or fails to parse, the page automatically falls back 
 
 ## FAQ
 
-**Snapshot sync failed**
+::: collapse
+- Snapshot sync failed
+  Check network reachability, account ID correctness, and whether SESSDATA is configured and unexpired for private lists. Sync commands have rate-limit parameters (`minDelayMs`)—increase them if throttled.
 
-Check network reachability, account ID correctness, and whether SESSDATA is configured and unexpired for private lists. Sync commands have rate-limit parameters (`minDelayMs`)—increase them if throttled.
+- The page didn't change after switching sources
+  Confirm `source.kind` is switched, the snapshot file exists (`src/data/anime-snapshots/`), and the sync command completed successfully.
 
-**The page didn't change after switching sources**
+- Can I hand-edit synced data
+  Yes. Snapshots are plain JSON and fine for small tweaks; but the next `anime:sync` regenerates and overwrites them—for lasting changes, use local mode or fold edits into your publish workflow after each sync.
 
-Confirm `source.kind` is switched, the snapshot file exists (`src/data/anime-snapshots/`), and the sync command completed successfully.
-
-**Can I hand-edit synced data**
-
-Yes. Snapshots are plain JSON and fine for small tweaks; but the next `anime:sync` regenerates and overwrites them—for lasting changes, use local mode or fold edits into your publish workflow after each sync.
-
-**Will credentials end up in the build output**
-
-No. `BILI_SESSDATA` is read only while the sync command runs; after the snapshot is generated, credentials play no part in the build output.
+- Will credentials end up in the build output
+  No. `BILI_SESSDATA` is read only while the sync command runs; after the snapshot is generated, credentials play no part in the build output.
+:::

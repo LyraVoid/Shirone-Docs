@@ -73,10 +73,10 @@ Every push to non-production branches and every pull request generates an isolat
 
 ## Troubleshooting
 
-**Build Failure: Package Manager Mismatch**
+::: collapse
+- Build Failure: Package Manager Mismatch
+  Ensure `NODE_VERSION = 22` is defined in environment variables. If necessary, update the build command to explicitly enable corepack: `corepack enable && pnpm build`.
 
-Ensure `NODE_VERSION = 22` is defined in environment variables. If necessary, update the build command to explicitly enable corepack: `corepack enable && pnpm build`.
-
-**Artifact Size Limits**
-
-Netlify limits deployments to 10,000 files. Shirone performs font subsetting and thumbnail compression automatically. If file count remains high, check `public/` for unoptimized raw assets.
+- Artifact Size Limits
+  Netlify limits deployments to 10,000 files. Shirone performs font subsetting and thumbnail compression automatically. If file count remains high, check `public/` for unoptimized raw assets.
+:::

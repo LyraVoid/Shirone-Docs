@@ -110,18 +110,16 @@ Three new wallpapers—my desktop got brighter, and so did my mood for coding.
 
 ## FAQ
 
-**A moment doesn't show**
+::: collapse
+- A moment doesn't show
+  Check that `published` is a valid full timestamp (with timezone offset) and that the file is under `src/content/moments/`.
 
-Check that `published` is a valid full timestamp (with timezone offset) and that the file is under `src/content/moments/`.
+- images don't show
+  A `src` starting with `/` is relative to the `public` directory—confirm the image exists under `public/images/moments/…`; remote URLs need `https://`.
 
-**images don't show**
+- The mood icon renders as a square
+  The icon set isn't installed. Confirm the set at [icones.js.org](https://icones.js.org/), install `@iconify-json/<set>`, and rebuild.
 
-A `src` starting with `/` is relative to the `public` directory—confirm the image exists under `public/images/moments/…`; remote URLs need `https://`.
-
-**The mood icon renders as a square**
-
-The icon set isn't installed. Confirm the set at [icones.js.org](https://icones.js.org/), install `@iconify-json/<set>`, and rebuild.
-
-**Can I post a text-only moment**
-
-Yes—`images` is optional; omit it for a plain-text post.
+- Can I post a text-only moment
+  Yes—`images` is optional; omit it for a plain-text post.
+:::

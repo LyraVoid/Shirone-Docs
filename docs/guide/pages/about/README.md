@@ -59,14 +59,13 @@ src/content/spec/about.md
 
 ## 常见问题
 
-**关于页和 profileConfig 什么关系**
+::: collapse
+- 关于页和 profileConfig 什么关系
+  `profileConfig`（头像/名称/一句话简介）用于侧栏卡片、页脚、RSS 作者等全局位置；关于页是长文介绍。两者互补——侧栏卡片链接过来就是关于页。
 
-`profileConfig`（头像/名称/一句话简介）用于侧栏卡片、页脚、RSS 作者等全局位置；关于页是长文介绍。两者互补——侧栏卡片链接过来就是关于页。
+- 想让关于页出现在导航
+  `LinkPresets` 中已有 `About` 预设（`/about/`），在 `navBarConfig` 的 `links` 中引用即可（默认已挂载在「更多」分组）。
 
-**想让关于页出现在导航**
-
-`LinkPresets` 中已有 `About` 预设（`/about/`），在 `navBarConfig` 的 `links` 中引用即可（默认已挂载在「更多」分组）。
-
-**能改地址吗**
-
-可以。通过自定义链接覆盖 `url`（见[导航栏配置](/guide/layout/navbar/)）；但页面文件路径固定在 `src/content/spec/about.md`。
+- 能改地址吗
+  可以。通过自定义链接覆盖 `url`（见[导航栏配置](/guide/layout/navbar/)）；但页面文件路径固定在 `src/content/spec/about.md`。
+:::

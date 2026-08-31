@@ -112,14 +112,13 @@ disabledTitles: ["An experience I don't show"],
 
 ## FAQ
 
-**An event doesn't show**
+::: collapse
+- An event doesn't show
+  Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `title` hit by `disabledTitles`.
 
-Check three layers: page `enable` → does `category` reference an existing key in `categories` → is the `title` hit by `disabledTitles`.
+- The order is wrong
+  Verify the `order` value; events in the same period render in data array order—reorder the array for fine-tuning.
 
-**The order is wrong**
-
-Verify the `order` value; events in the same period render in data array order—reorder the array for fine-tuning.
-
-**A link's icon doesn't show**
-
-`icon` is an iconify code; brand icons use `fa6-brands:*` (already installed), other sets need installation first.
+- A link's icon doesn't show
+  `icon` is an iconify code; brand icons use `fa6-brands:*` (already installed), other sets need installation first.
+:::

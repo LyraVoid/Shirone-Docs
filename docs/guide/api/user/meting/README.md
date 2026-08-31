@@ -124,14 +124,13 @@ docker run -d --name meting-api -p 3000:3000 injahow/meting-api
 
 ## 常见问题
 
-**网易云/QQ 音乐部分歌曲无法播放**
+::: collapse
+- 网易云/QQ 音乐部分歌曲无法播放
+  受音乐平台版权限制（VIP 歌曲、付费无损、地区限制），API 可能无法解析真实音频 URL 或只返回试听片段。建议歌单尽量选取非 VIP 免费曲目，或在本地维护一份重要曲目的兜底。
 
-受音乐平台版权限制（VIP 歌曲、付费无损、地区限制），API 可能无法解析真实音频 URL 或只返回试听片段。建议歌单尽量选取非 VIP 免费曲目，或在本地维护一份重要曲目的兜底。
+- 如何获取网易云歌单 ID
+  在网页版网易云音乐打开你的歌单页面，URL 形如 `https://music.163.com/#/playlist?id=14164869977`，其中的数字即为 `id`。
 
-**如何获取网易云歌单 ID**
-
-在网页版网易云音乐打开你的歌单页面，URL 形如 `https://music.163.com/#/playlist?id=14164869977`，其中的数字即为 `id`。
-
-**出现跨域（CORS）报错**
-
-若自建 API，请确保服务器响应头包含 `Access-Control-Allow-Origin: *`。默认内置的公共 API 已开启 CORS 支持。
+- 出现跨域（CORS）报错
+  若自建 API，请确保服务器响应头包含 `Access-Control-Allow-Origin: *`。默认内置的公共 API 已开启 CORS 支持。
+:::

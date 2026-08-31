@@ -63,14 +63,13 @@ All page URLs are registered in the `LinkPresets` table. The default navbar moun
 
 ## FAQ
 
-**What happens to old links after disabling a page**
+::: collapse
+- What happens to old links after disabling a page
+  Direct visits return 404. If the page was indexed by search engines, configure 301 redirects at the hosting platform level.
 
-Direct visits return 404. If the page was indexed by search engines, configure 301 redirects at the hosting platform level.
+- Can I change a page's URL
+  The `url` in presets can be overridden via custom links (e.g. `/moments/` → `/say/`), see the custom links section in [Navigation Bar](/en/guide/layout/navbar/).
 
-**Can I change a page's URL**
-
-The `url` in presets can be overridden via custom links (e.g. `/moments/` → `/say/`), see the custom links section in [Navigation Bar](/en/guide/layout/navbar/).
-
-**Adding my own standalone page**
-
-Create an Astro page under `src/pages/`—but it won't automatically get navigation entries or widget filtering; register it in `LinkPresets`.
+- Adding my own standalone page
+  Create an Astro page under `src/pages/`—but it won't automatically get navigation entries or widget filtering; register it in `LinkPresets`.
+:::

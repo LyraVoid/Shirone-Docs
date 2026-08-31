@@ -120,18 +120,16 @@ themeColor: {
 
 ## 常见问题
 
-**改了 hue 但颜色没变**
+::: collapse
+- 改了 hue 但颜色没变
+  浏览器缓存了访客侧的显示设置选择。清除站点本地存储（LocalStorage）或使用无痕窗口验证。
 
-浏览器缓存了访客侧的显示设置选择。清除站点本地存储（LocalStorage）或使用无痕窗口验证。
+- fixed 和 displaySettings.colorStyle 是什么关系
+  `fixed: true` 隐藏的是配色风格选择器本身（等同于强制 `colorStyle: false` 且锁定当前 style）；`displaySettings.colorStyle: false` 只是隐藏面板项，当前风格仍然生效。两者同时设置最彻底。
 
-**fixed 和 displaySettings.colorStyle 是什么关系**
+- spec 设为 2021 会有问题吗
+  不会，角色集一致，仅派生算法不同。可以都试一下，保留你喜欢的观感。
 
-`fixed: true` 隐藏的是配色风格选择器本身（等同于强制 `colorStyle: false` 且锁定当前 style）；`displaySettings.colorStyle: false` 只是隐藏面板项，当前风格仍然生效。两者同时设置最彻底。
-
-**spec 设为 2021 会有问题吗**
-
-不会，角色集一致，仅派生算法不同。可以都试一下，保留你喜欢的观感。
-
-**深色模式怎么配**
-
-深色模式由同一套 HCT 角色自动派生（同一 hue 在暗色下生成另一组角色），无需单独配置。访客可在显示设置中切换明暗，主题也会跟随系统偏好。
+- 深色模式怎么配
+  深色模式由同一套 HCT 角色自动派生（同一 hue 在暗色下生成另一组角色），无需单独配置。访客可在显示设置中切换明暗，主题也会跟随系统偏好。
+:::

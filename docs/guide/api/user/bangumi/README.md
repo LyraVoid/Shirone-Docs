@@ -129,14 +129,13 @@ pnpm anime:sync --provider bangumi
 
 ## 常见问题
 
-**同步时提示 404 Not Found**
+::: collapse
+- 同步时提示 404 Not Found
+  检查 `userId` 是否正确。支持 Bangumi 的个性域名用户名（如 `sai`）或纯数字 UID。若用户主页设置为完全私密，未公开的收藏无法通过公开 API 抓取。
 
-检查 `userId` 是否正确。支持 Bangumi 的个性域名用户名（如 `sai`）或纯数字 UID。若用户主页设置为完全私密，未公开的收藏无法通过公开 API 抓取。
+- 频繁同步被 Bangumi 限流（429 Too Many Requests）
+  适当增加 `request.minDelayMs`（例如调整为 `500`），降低单次抓取的并发节奏。
 
-**频繁同步被 Bangumi 限流（429 Too Many Requests）**
-
-适当增加 `request.minDelayMs`（例如调整为 `500`），降低单次抓取的并发节奏。
-
-**部分条目制作公司显示为空**
-
-部分冷门条目的 Bangumi Infobox 维基数据中未录入制作公司字段，Shirone 会优雅略过该属性，不影响其他信息的展示。
+- 部分条目制作公司显示为空
+  部分冷门条目的 Bangumi Infobox 维基数据中未录入制作公司字段，Shirone 会优雅略过该属性，不影响其他信息的展示。
+:::

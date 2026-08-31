@@ -124,14 +124,13 @@ Configure your reverse proxy URL accordingly.
 
 ## FAQ
 
-**Why do some tracks fail to play?**
+::: collapse
+- Why do some tracks fail to play?
+  Copyright restrictions (VIP tracks, lossless exclusivity, geo-blocks) may prevent third-party APIs from obtaining playable direct URLs. Choose public playlists with non-VIP tracks or host crucial songs locally.
 
-Copyright restrictions (VIP tracks, lossless exclusivity, geo-blocks) may prevent third-party APIs from obtaining playable direct URLs. Choose public playlists with non-VIP tracks or host crucial songs locally.
+- How to find a NetEase playlist ID?
+  Open the playlist on the NetEase web player. The URL is `https://music.163.com/#/playlist?id=14164869977`, where the numeric portion is your `id`.
 
-**How to find a NetEase playlist ID?**
-
-Open the playlist on the NetEase web player. The URL is `https://music.163.com/#/playlist?id=14164869977`, where the numeric portion is your `id`.
-
-**CORS errors when requesting the API**
-
-Ensure your self-hosted server returns `Access-Control-Allow-Origin: *`. The built-in default endpoint has CORS enabled by default.
+- CORS errors when requesting the API
+  Ensure your self-hosted server returns `Access-Control-Allow-Origin: *`. The built-in default endpoint has CORS enabled by default.
+:::

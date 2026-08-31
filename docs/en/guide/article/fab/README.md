@@ -123,14 +123,13 @@ items: [
 
 ## FAQ
 
-**The floating TOC is missing on desktop**
+::: collapse
+- The floating TOC is missing on desktop
+  The default `devices` is `["mobile", "tablet"]`—desktop relies on the sticky sidebar TOC. Add `desktop` to `devices` if you want the floating TOC there too.
 
-The default `devices` is `["mobile", "tablet"]`—desktop relies on the sticky sidebar TOC. Add `desktop` to `devices` if you want the floating TOC there too.
+- The comment button doesn't appear
+  Check three layers: the button's `enable` in `fabConfig` → the global `commentConfig.enable` (see [Comment System](/en/guide/article/comments/)) → whether the current page is within `pages`. Zero DOM when comments are off is by design.
 
-**The comment button doesn't appear**
-
-Check three layers: the button's `enable` in `fabConfig` → the global `commentConfig.enable` (see [Comment System](/en/guide/article/comments/)) → whether the current page is within `pages`. Zero DOM when comments are off is by design.
-
-**The back-to-top button doesn't appear**
-
-The scroll position hasn't passed the banner height threshold. On short posts that fit one screen, the button stays hidden.
+- The back-to-top button doesn't appear
+  The scroll position hasn't passed the banner height threshold. On short posts that fit one screen, the button stays hidden.
+:::

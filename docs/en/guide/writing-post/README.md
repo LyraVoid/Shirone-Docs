@@ -86,18 +86,16 @@ category: Tech
 
 ## FAQ
 
-**Post not showing**
+::: collapse
+- Post not showing
+  Check in order: is `draft` `true` → is the frontmatter YAML valid (space after colons, consistent indentation) → is the file under `src/content/posts/` → did you rebuild.
 
-Check in order: is `draft` `true` → is the frontmatter YAML valid (space after colons, consistent indentation) → is the file under `src/content/posts/` → did you rebuild.
+- Want to preview a draft locally without publishing
+  Keep `draft: true` and preview with `pnpm dev`—dev mode shows drafts, build output excludes them.
 
-**Want to preview a draft locally without publishing**
+- Tags and categories pages are empty
+  Those pages are aggregated from post data. Content appears once at least one post has `tags` / `category`.
 
-Keep `draft: true` and preview with `pnpm dev`—dev mode shows drafts, build output excludes them.
-
-**Tags and categories pages are empty**
-
-Those pages are aggregated from post data. Content appears once at least one post has `tags` / `category`.
-
-**Does the new-post file name matter**
-
-It determines the URL slug. English kebab-case is the safest; renaming a file changes the post's address—be cautious with indexed posts.
+- Does the new-post file name matter
+  It determines the URL slug. English kebab-case is the safest; renaming a file changes the post's address—be cautious with indexed posts.
+:::

@@ -58,10 +58,10 @@ Desktop only—long-press behavior on touch devices is handled by the browser an
 
 ## FAQ
 
-**The context menu didn't change**
+::: collapse
+- The context menu didn't change
+  Check that `enable` isn't off, and that you're on a desktop browser (touch devices are unaffected).
 
-Check that `enable` isn't off, and that you're on a desktop browser (touch devices are unaffected).
-
-**Can I add custom actions**
-
-Only the three built-in actions are supported for now; custom action items aren't supported yet. File an Issue in the theme repository if needed.
+- Can I add custom actions
+  Only the three built-in actions are supported for now; custom action items aren't supported yet. File an Issue in the theme repository if needed.
+:::

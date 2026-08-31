@@ -124,18 +124,16 @@ These two fields only define the **first initialization**. Once mounted, the per
 
 ## FAQ
 
-**The player doesn't appear**
+::: collapse
+- The player doesn't appear
+  Check the triple condition layer by layer: `musicConfig.enable` → valid tracks/playlist ID in the source → `enable: true` on the music entry in `sidebarConfig`. Any miss means zero DOM (by design).
 
-Check the triple condition layer by layer: `musicConfig.enable` → valid tracks/playlist ID in the source → `enable: true` on the music entry in `sidebarConfig`. Any miss means zero DOM (by design).
+- The Meting playlist fails to load
+  Meting relies on third-party API services; `mixed` mode degrades to local tracks automatically on failure, while pure `meting` mode may briefly have no playlist. A populated local source is the most reliable fallback.
 
-**The Meting playlist fails to load**
+- Does music restart on navigation
+  No. The player mounts in the persistent sidebar outside the Swup container—playback continues seamlessly and state is preserved.
 
-Meting relies on third-party API services; `mixed` mode degrades to local tracks automatically on failure, while pure `meting` mode may briefly have no playlist. A populated local source is the most reliable fallback.
-
-**Does music restart on navigation**
-
-No. The player mounts in the persistent sidebar outside the Swup container—playback continues seamlessly and state is preserved.
-
-**Does volume reset on refresh**
-
-`defaultVolume` only applies at first initialization; a visitor's adjusted volume is held by the player runtime (persisted within the session).
+- Does volume reset on refresh
+  `defaultVolume` only applies at first initialization; a visitor's adjusted volume is held by the player runtime (persisted within the session).
+:::

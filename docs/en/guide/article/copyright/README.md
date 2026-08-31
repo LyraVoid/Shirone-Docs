@@ -58,10 +58,10 @@ url: https://creativecommons.org/licenses/by/4.0/
 
 ## FAQ
 
-**Can each post use a different license**
+::: collapse
+- Can each post use a different license
+  `licenseConfig` is site-wide. For occasional exceptions, append a note at the end of the post body, or add it via `FooterConfig.html`.
 
-`licenseConfig` is site-wide. For occasional exceptions, append a note at the end of the post body, or add it via `FooterConfig.html`.
-
-**The block shows but the link is broken**
-
-Check that `url` is complete (including `https://`). Keep the license name and link consistent—readers verify terms through that link.
+- The block shows but the link is broken
+  Check that `url` is complete (including `https://`). Keep the license name and link consistent—readers verify terms through that link.
+:::

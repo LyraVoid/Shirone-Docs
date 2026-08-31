@@ -117,14 +117,13 @@ share: { enable: false, includeCover: false },
 
 ## 常见问题
 
-**延伸阅读出现的推荐不相关**
+::: collapse
+- 延伸阅读出现的推荐不相关
+  `related` 的匹配依据是标签与分类的重叠。检查文章 frontmatter 的 `tags` / `category` 是否写得太宽泛（如全站共用一个「随笔」分类），细化分类标签能显著改善推荐质量。
 
-`related` 的匹配依据是标签与分类的重叠。检查文章 frontmatter 的 `tags` / `category` 是否写得太宽泛（如全站共用一个「随笔」分类），细化分类标签能显著改善推荐质量。
+- 随机文章每次刷新都变吗
+  不会。抽样基于当前文章标识，同一构建内结果稳定；重新构建后才可能变化。
 
-**随机文章每次刷新都变吗**
-
-不会。抽样基于当前文章标识，同一构建内结果稳定；重新构建后才可能变化。
-
-**更新提示为什么不出现**
-
-依次检查：文章是否填写 `updated` → 时间差是否达到 `minimumAgeDays` → `lastUpdated.enable` 是否被关闭。
+- 更新提示为什么不出现
+  依次检查：文章是否填写 `updated` → 时间差是否达到 `minimumAgeDays` → `lastUpdated.enable` 是否被关闭。
+:::
