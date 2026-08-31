@@ -61,7 +61,7 @@ const zhGuideDoc = defineCollection({
       text: '文章布局',
       icon: 'ri:file-text-line',
       prefix: '/guide/article/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: '文章页配置', link: 'article-config/', icon: 'ri:article-line' },
         { text: '悬浮控制流', link: 'fab/', icon: 'ri:cursor-line', badge: { type: 'info', text: 'FAB' } },
@@ -74,7 +74,7 @@ const zhGuideDoc = defineCollection({
       text: '页面配置',
       icon: 'ri:star-line',
       prefix: '/guide/pages/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: '独立页面总览', link: 'pages-overview/', icon: 'ri:apps-line' },
         { text: '关于页', link: 'about/', icon: 'ri:user-line' },
@@ -91,7 +91,7 @@ const zhGuideDoc = defineCollection({
       text: '侧边栏组件',
       icon: 'ri:window-line',
       prefix: '/guide/widgets/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: '组件总览', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
         { text: '公告组件', link: 'announcement/', icon: 'ri:notification-3-line' },
@@ -103,7 +103,7 @@ const zhGuideDoc = defineCollection({
       text: '特色功能',
       icon: 'ri:magic-line',
       prefix: '/guide/features/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: '右键增强菜单', link: 'context-menu/', icon: 'ri:cursor-line' },
         { text: '图片色调辉光', link: 'image-bloom/', icon: 'ri:blur-off-line' },
@@ -115,13 +115,13 @@ const zhGuideDoc = defineCollection({
       text: 'API',
       icon: 'ri:code-s-slash-line',
       prefix: '/guide/api/',
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           text: '用户',
           icon: 'ri:user-line',
           prefix: 'user/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Meting API', link: 'meting/', icon: 'ri:music-2-line' },
             { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line' },
@@ -133,7 +133,7 @@ const zhGuideDoc = defineCollection({
           text: '组件',
           icon: 'ri:apps-line',
           prefix: 'components/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '设计规范与契约', link: 'overview/', icon: 'ri:book-read-line', badge: { type: 'warning', text: '核心' } },
             { text: '操作交互原子', link: 'actions/', icon: 'ri:cursor-line' },
@@ -151,7 +151,7 @@ const zhGuideDoc = defineCollection({
       text: '常见问题',
       icon: 'ri:question-line',
       prefix: '/guide/faq/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: '错误排查', link: 'troubleshooting/', icon: 'ri:bug-line', badge: { type: 'danger', text: '必看' } },
         { text: '提问与反馈', link: 'asking-questions/', icon: 'ri:chat-smile-2-line' },
@@ -161,13 +161,13 @@ const zhGuideDoc = defineCollection({
       text: '写作',
       icon: 'ri:quill-pen-line',
       prefix: '/guide/writing/',
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           text: 'markdown',
           icon: 'ri:markdown-line',
           prefix: 'markdown/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '基础语法', link: 'basic/', icon: 'ri:text' },
             { text: '扩展与属性', link: 'attributes/', icon: 'ri:code-s-line' },
@@ -193,7 +193,7 @@ const zhGuideDoc = defineCollection({
           text: '组织',
           icon: 'ri:folder-settings-line',
           prefix: 'organization/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '单文件方案', link: 'file/', icon: 'ri:file-text-line' },
             { text: '文件夹方案', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: '推荐' } },
@@ -203,7 +203,7 @@ const zhGuideDoc = defineCollection({
           text: '高级',
           icon: 'ri:settings-3-line',
           prefix: 'advanced/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line' },
           ],
@@ -212,7 +212,7 @@ const zhGuideDoc = defineCollection({
           text: '代码块',
           icon: 'ri:code-box-line',
           prefix: 'codeblock/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '语法高亮与行号', link: 'highlight/', icon: 'ri:code-line' },
             { text: '标题与文件名', link: 'titles/', icon: 'ri:file-text-line' },
@@ -321,7 +321,7 @@ const enGuideDoc = defineCollection({
       text: 'Article Layout',
       icon: 'ri:file-text-line',
       prefix: '/en/guide/article/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Article Page Config', link: 'article-config/', icon: 'ri:article-line' },
         { text: 'Floating Controls (FAB)', link: 'fab/', icon: 'ri:cursor-line', badge: { type: 'info', text: 'FAB' } },
@@ -334,7 +334,7 @@ const enGuideDoc = defineCollection({
       text: 'Page Configurations',
       icon: 'ri:star-line',
       prefix: '/en/guide/pages/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Standalone Pages Overview', link: 'pages-overview/', icon: 'ri:apps-line' },
         { text: 'About Page', link: 'about/', icon: 'ri:user-line' },
@@ -351,7 +351,7 @@ const enGuideDoc = defineCollection({
       text: 'Sidebar Widgets',
       icon: 'ri:window-line',
       prefix: '/en/guide/widgets/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Widgets Overview', link: 'widgets-overview/', icon: 'ri:layout-grid-line' },
         { text: 'Announcement', link: 'announcement/', icon: 'ri:notification-3-line' },
@@ -363,7 +363,7 @@ const enGuideDoc = defineCollection({
       text: 'Special Features',
       icon: 'ri:magic-line',
       prefix: '/en/guide/features/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Context Menu', link: 'context-menu/', icon: 'ri:cursor-line' },
         { text: 'Image Tonal Bloom', link: 'image-bloom/', icon: 'ri:blur-off-line' },
@@ -375,13 +375,13 @@ const enGuideDoc = defineCollection({
       text: 'API',
       icon: 'ri:code-s-slash-line',
       prefix: '/en/guide/api/',
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           text: 'User',
           icon: 'ri:user-line',
           prefix: 'user/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Meting API', link: 'meting/', icon: 'ri:music-2-line' },
             { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line' },
@@ -393,7 +393,7 @@ const enGuideDoc = defineCollection({
           text: 'Components',
           icon: 'ri:apps-line',
           prefix: 'components/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Design Contract', link: 'overview/', icon: 'ri:book-read-line', badge: { type: 'warning', text: 'Core' } },
             { text: 'Action Atoms', link: 'actions/', icon: 'ri:cursor-line' },
@@ -411,7 +411,7 @@ const enGuideDoc = defineCollection({
       text: 'FAQ',
       icon: 'ri:question-line',
       prefix: '/en/guide/faq/',
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Troubleshooting', link: 'troubleshooting/', icon: 'ri:bug-line', badge: { type: 'danger', text: 'Must-Read' } },
         { text: 'Asking & Feedback', link: 'asking-questions/', icon: 'ri:chat-smile-2-line' },
@@ -421,13 +421,13 @@ const enGuideDoc = defineCollection({
       text: 'Writing',
       icon: 'ri:quill-pen-line',
       prefix: '/en/guide/writing/',
-      collapsed: false,
+      collapsed: true,
       items: [
         {
           text: 'Markdown',
           icon: 'ri:markdown-line',
           prefix: 'markdown/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Basic Syntax', link: 'basic/', icon: 'ri:text' },
             { text: 'Attributes & Directives', link: 'attributes/', icon: 'ri:code-s-line' },
@@ -453,7 +453,7 @@ const enGuideDoc = defineCollection({
           text: 'Organization',
           icon: 'ri:folder-settings-line',
           prefix: 'organization/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Single File Mode', link: 'file/', icon: 'ri:file-text-line' },
             { text: 'Folder Mode', link: 'folder/', icon: 'ri:folder-line', badge: { type: 'warning', text: 'Recommended' } },
@@ -463,7 +463,7 @@ const enGuideDoc = defineCollection({
           text: 'Advanced',
           icon: 'ri:settings-3-line',
           prefix: 'advanced/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line' },
           ],
@@ -472,7 +472,7 @@ const enGuideDoc = defineCollection({
           text: 'Code Blocks',
           icon: 'ri:code-box-line',
           prefix: 'codeblock/',
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: 'Syntax Highlighting', link: 'highlight/', icon: 'ri:code-line' },
             { text: 'Titles & File Names', link: 'titles/', icon: 'ri:file-text-line' },
