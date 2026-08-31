@@ -41,6 +41,7 @@ const zhGuideDoc = defineCollection({
         },
         { text: 'Frontmatter', link: 'frontmatter/', icon: 'ri:file-list-3-line', badge: { type: 'warning', text: '规范' } },
         { text: '编写文章', link: 'writing-post/', icon: 'ri:quill-pen-line' },
+        { text: '构建优化', link: 'optimize-build/', icon: 'ri:speed-up-line', badge: { type: 'tip', text: '优化' } },
       ],
     },
     {
@@ -302,6 +303,7 @@ const enGuideDoc = defineCollection({
         },
         { text: 'Frontmatter', link: 'frontmatter/', icon: 'ri:file-list-3-line', badge: { type: 'warning', text: 'Config' } },
         { text: 'Writing Posts', link: 'writing-post/', icon: 'ri:quill-pen-line' },
+        { text: 'Build Optimization', link: 'optimize-build/', icon: 'ri:speed-up-line', badge: { type: 'tip', text: 'Optimize' } },
       ],
     },
     {
