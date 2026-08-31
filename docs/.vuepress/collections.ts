@@ -38,6 +38,7 @@ const zhGuideDoc = defineCollection({
             { text: '本地构建', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: '入门' } },
           ],
         },
+        { text: 'Frontmatter 与文章管理', link: 'frontmatter/', icon: 'ri:file-list-3-line' },
       ],
     },
     {
@@ -163,6 +164,7 @@ const enGuideDoc = defineCollection({
             { text: 'Local Build', link: 'local/', icon: 'ri:computer-line', badge: { type: 'info', text: 'Basic' } },
           ],
         },
+        { text: 'Frontmatter & Post Management', link: 'frontmatter/', icon: 'ri:file-list-3-line' },
       ],
     },
     {
