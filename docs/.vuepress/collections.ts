@@ -112,6 +112,16 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: '常见问题',
+      icon: 'ri:question-line',
+      prefix: '/guide/faq/',
+      collapsed: false,
+      items: [
+        { text: '错误排查', link: 'troubleshooting/', icon: 'ri:bug-line', badge: { type: 'danger', text: '必看' } },
+        { text: '提问与反馈', link: 'asking-questions/', icon: 'ri:chat-smile-2-line' },
+      ],
+    },
+    {
       text: '写作',
       icon: 'ri:quill-pen-line',
       prefix: '/guide/writing/',
@@ -290,6 +300,16 @@ const enGuideDoc = defineCollection({
         { text: 'Image Tonal Bloom', link: 'image-bloom/', icon: 'ri:blur-off-line' },
         { text: 'Umami Analytics', link: 'umami/', icon: 'ri:bar-chart-2-line' },
         { text: 'LLM-Friendly Content', link: 'llms/', icon: 'ri:robot-line' },
+      ],
+    },
+    {
+      text: 'FAQ',
+      icon: 'ri:question-line',
+      prefix: '/en/guide/faq/',
+      collapsed: false,
+      items: [
+        { text: 'Troubleshooting', link: 'troubleshooting/', icon: 'ri:bug-line', badge: { type: 'danger', text: 'Must-Read' } },
+        { text: 'Asking & Feedback', link: 'asking-questions/', icon: 'ri:chat-smile-2-line' },
       ],
     },
     {
