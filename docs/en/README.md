@@ -33,17 +33,17 @@ config:
       -
         title: Native Content Separation
         icon: material-symbols:hub-outline
-        details: Decouple posts and media into a standalone private repo with zero-conflict upstream updates.
+        details: Separate posts and media from the theme codebase, with private-content and public-theme repositories that reduce upgrade conflicts.
         link: /en/guide/content-separation/concepts/
       -
         title: Client-Side Encryption
         icon: material-symbols:lock-outline
-        details: Industrial-grade AES-256-GCM + PBKDF2 authentication encryption directly baked into static pages.
+        details: Uses PBKDF2-SHA-256 key derivation and AES-256-GCM authenticated encryption to protect static post content.
         link: /en/guide/writing/advanced/encryption/
       -
         title: Build & Font Optimization
         icon: material-symbols:speed-outline
-        details: Built on Astro 7 + Vite 8 with automated CJK glyph extraction and subsetting for 80%+ smaller fonts.
+        details: Built on Astro 7 + Vite 8 with content-aware CJK glyph extraction and font subsetting to reduce font transfer size.
         link: /en/guide/optimize-build/
       -
         title: Anime Tracker & Media

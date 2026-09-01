@@ -33,20 +33,20 @@ config:
       -
         title: 原生内容分离架构
         icon: material-symbols:hub-outline
-        details: 主题工程与博主内容完全解耦，支持私有内容仓与公开代码仓双仓协同，主题升级零冲突。
+        details: 主题工程与博主内容分离，支持私有内容仓与公开代码仓双仓协同，减少主题升级时的内容冲突。
         link: /guide/content-separation/concepts/
       -
-        title: 工业级客户端加密
+        title: 客户端文章加密
         icon: material-symbols:lock-outline
-        details: 基于 PBKDF2-SHA-256 与 AES-256-GCM 规范实现静态文章客户端高强度加密解密。
+        details: 使用 PBKDF2-SHA-256 派生密钥，并以 AES-256-GCM 认证加密保护静态文章内容。
         link: /guide/writing/advanced/encryption/
       -
         title: 极致性能与字体裁剪
         icon: material-symbols:speed-outline
-        details: 基于 Astro 7 + Vite 8 构建，全站中文字体按需提取子集裁剪，体积降低 80% 以上。
+        details: 基于 Astro 7 + Vite 8 构建，按内容提取字形并裁剪全站中文字体，减少字体传输体积。
         link: /guide/optimize-build/
       -
-        title: 追番同步与多模态
+        title: 追番同步与媒体功能
         icon: material-symbols:tv-guide-outline
         details: 内置 Bilibili / Bangumi 追番追剧数据同步、侧栏 Meting 音乐播放器与瀑布流相册。
         link: /guide/api/user/bangumi/
@@ -66,7 +66,7 @@ config:
         details: 采用声明式 YAML 覆盖机制与 TypeScript 结构化数据实体，兼具灵活性与类型安全。
         link: /guide/content-separation/config-overlay/
       -
-        title: 零配置开箱与多云部署
+        title: 多云部署
         icon: material-symbols:cloud-done-outline
         details: 完美适配 Cloudflare Pages、Vercel、腾讯云 EdgeOne、Netlify 及独立 Docker 容器。
         link: /guide/deploy/cloudflare/
