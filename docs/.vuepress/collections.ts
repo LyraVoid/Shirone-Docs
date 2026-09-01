@@ -223,6 +223,7 @@ const zhGuideDoc = defineCollection({
           prefix: 'advanced/',
           collapsed: true,
           items: [
+            { text: '固定链接', link: 'permalink/', icon: 'ri:link-m' },
             { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: '可选' } },
           ],
         },
@@ -502,6 +503,7 @@ const enGuideDoc = defineCollection({
           prefix: 'advanced/',
           collapsed: true,
           items: [
+            { text: 'Permalinks', link: 'permalink/', icon: 'ri:link-m' },
             { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: 'Optional' } },
           ],
         },
