@@ -26,6 +26,72 @@ Shirone 的内容分离架构彻底解决了这一痛点：你的内容独立保
 
 ---
 
+## 内容仓库组织结构（Shirone-Content）
+
+在内容分离架构中，所有与个人创作、相册媒体、静态数据和个性化配置相关的文件均集中在独立的内容仓库（以官方模板仓库 [LyraVoid/Shirone-Content](https://github.com/LyraVoid/Shirone-Content) 为规范标准）中管理：
+
+```file-tree title="LyraVoid/Shirone-Content 标准结构"
+shirone-content/
+├── .github/
+│   └── workflows/
+│       └── trigger-build.yml.example # 跨仓触发 GitHub Actions 模板
+├── config/                  # 全站声明式配置 YAML 文件群
+│   ├── site.yaml            # 站点标识、时区、色彩与横幅壁纸
+│   ├── profile.yaml         # 博主头像、昵称、签名与社交外链
+│   ├── nav-bar.yaml         # 顶部导航栏条目与下拉菜单
+│   ├── sidebar.yaml         # 侧边栏布局与组件清单
+│   ├── font.yaml            # 全站字体与字形裁剪配置
+│   ├── anime.yaml           # 追番追剧页面与同步数据源
+│   ├── music.yaml           # 侧栏播放器模式与歌单配置
+│   ├── comment.yaml         # Twikoo 评论系统配置
+│   ├── article.yaml         # 文章排版与阅读提醒配置
+│   ├── post-list.yaml       # 首页文章列表与分页模式
+│   ├── devices.yaml         # 数码装备分类与筛选规则
+│   ├── projects.yaml        # 开源项目分类与阶段规则
+│   ├── skills.yaml          # 技能图谱分类与熟练度规则
+│   ├── timeline.yaml        # 大事记时间线分类规则
+│   ├── friends.yaml         # 友情链接分组规则
+│   ├── announcement.yaml    # 全局浮动公告栏配置
+│   ├── expressive-code.yaml # 代码高亮与代码块行号
+│   ├── fab.yaml             # 悬浮动作按钮 (FAB)
+│   ├── image-bloom.yaml     # 图片泛光视觉滤镜
+│   ├── license.yaml         # 原创知识共享协议 (CC)
+│   ├── llms.yaml            # 大模型 AI 检索增强
+│   ├── umami.yaml           # Umami 访问统计分析
+│   ├── footer.yaml          # 页脚文案与备案信息
+│   └── footer.html          # 自定义注入的页脚 HTML 片段
+├── content/                 # 原创文章、说说与页面文案
+│   ├── posts/               # Markdown 与 MDX 博客长文 (如 guide.md)
+│   ├── moments/             # 动态生活说说 (如 first-moment.md)
+│   └── spec/                # 特殊页面文案 (about.md, friends.md)
+├── data/                    # 结构化数据实体 TypeScript 模块
+│   ├── anime.ts             # 追番本地数据快照
+│   ├── compass.ts           # 推荐导航与罗盘条目
+│   ├── devices.ts           # 硬件与数码设备清单
+│   ├── friends.ts           # 友情链接清单
+│   ├── music.ts             # 本地音乐曲目数据
+│   ├── projects.ts          # 开源与个人项目清单
+│   ├── skills.ts            # 技能图谱与熟练度数据
+│   └── timeline.ts          # 个人大事记时间线数据
+├── public/                  # 静态多媒体资源 (原样发布不转码)
+│   ├── assets/              # 番剧封面与媒资缓存
+│   └── images/              # 博客图片与相册
+│       └── albums/          # 摄影相册目录 (如 SampleAlbum/01.webp + info.json)
+├── .gitignore
+├── README.md
+└── shirone.content.json     # 内容仓库元数据标识与挂载清单
+```
+
+### 目录职能划分
+
+- **`config/`（声明式配置覆盖）**：按功能领域拆分的轻量 YAML 文件，遵循 ==最小化覆盖原则==，未声明字段自动继承主题默认值；
+- **`content/`（核心创作载体）**：存放所有 Markdown/MDX 博客长文、即时说说与自定义页面文案；
+- **`data/`（结构化数据源）**：通过 TypeScript 模块直接管理项目、设备、技能、时间线与友链等结构化数据；
+- **`public/`（静态媒体与相册）**：存放原图、番剧封面缓存与相册摄影集，构建时原样发布至静态站点根目录；
+- **`shirone.content.json`（内容清单描述文件）**：声明内容源协议、挂载映射表与文件保护白名单。
+
+---
+
 ## 双仓协作与自动化流水线
 
 整个内容同步、覆盖编译与发布流程由自动化脚本驱动：

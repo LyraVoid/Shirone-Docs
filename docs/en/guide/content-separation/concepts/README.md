@@ -26,6 +26,72 @@ Shirone's content separation architecture eliminates these pain points: your con
 
 ---
 
+## Content Repository Structure (Shirone-Content)
+
+Under the content separation architecture, all personal articles, media assets, structured data, and configuration overlays are organized in an independent repository based on the official template repository [LyraVoid/Shirone-Content](https://github.com/LyraVoid/Shirone-Content):
+
+```file-tree title="LyraVoid/Shirone-Content Standard Structure"
+shirone-content/
+├── .github/
+│   └── workflows/
+│       └── trigger-build.yml.example # Cross-repo GitHub Actions workflow template
+├── config/                  # Declarative configuration overlay YAML files
+│   ├── site.yaml            # Site identity, timezone, colors, and banner wallpaper
+│   ├── profile.yaml         # Author avatar, bio, and social links
+│   ├── nav-bar.yaml         # Top navigation items and dropdown menus
+│   ├── sidebar.yaml         # Sidebar layout and widget configuration
+│   ├── font.yaml            # Typography and font subsetting rules
+│   ├── anime.yaml           # Anime tracker and sync provider settings
+│   ├── music.yaml           # Music player modes and playlist settings
+│   ├── comment.yaml         # Twikoo comment system settings
+│   ├── article.yaml         # Reading time, typography, and outdated alerts
+│   ├── post-list.yaml       # Post list layout and pagination settings
+│   ├── devices.yaml         # Hardware devices category rules
+│   ├── projects.yaml        # Open source project category rules
+│   ├── skills.yaml          # Technical skill graph category rules
+│   ├── timeline.yaml        # Career timeline milestones rules
+│   ├── friends.yaml         # Friends and blogroll group rules
+│   ├── announcement.yaml    # Global floating announcement banner
+│   ├── expressive-code.yaml # Syntax highlighting and code block numbers
+│   ├── fab.yaml             # Floating action button (FAB)
+│   ├── image-bloom.yaml     # Image bloom visual filter
+│   ├── license.yaml         # Creative Commons license settings
+│   ├── llms.yaml            # LLM AI search enhancement
+│   ├── umami.yaml           # Umami analytics tracking
+│   ├── footer.yaml          # Footer copyright and ICP registration
+│   └── footer.html          # Custom injected footer HTML snippet
+├── content/                 # Blog articles, moments, and spec pages
+│   ├── posts/               # Markdown and MDX posts (e.g., guide.md)
+│   ├── moments/             # Microblog moments (e.g., first-moment.md)
+│   └── spec/                # Spec pages (about.md, friends.md)
+├── data/                    # Structured data entities (TypeScript modules)
+│   ├── anime.ts             # Local anime snapshot data
+│   ├── compass.ts           # Navigation bookmarks and links
+│   ├── devices.ts           # Hardware devices showcase data
+│   ├── friends.ts           # Friends and blogroll entities
+│   ├── music.ts             # Local music tracks metadata
+│   ├── projects.ts          # Open source project portfolio
+│   ├── skills.ts            # Skills proficiency ratings
+│   └── timeline.ts          # Major life and career milestones
+├── public/                  # Static assets (Published as-is without re-encoding)
+│   ├── assets/              # Anime covers and media caches
+│   └── images/              # Blog images and photo albums
+│       └── albums/          # Gallery albums (e.g., SampleAlbum/01.webp + info.json)
+├── .gitignore
+├── README.md
+└── shirone.content.json     # Content repo metadata identifier & mount manifest
+```
+
+### Functional Area Breakdown
+
+- **`config/` (Declarative Config Overlays)**: Lightweight YAML files partitioned by domain, strictly adhering to the ==minimal overlay principle==;
+- **`content/` (Core Authoring Workspace)**: Houses all Markdown/MDX posts, microblog moments, and spec pages;
+- **`data/` (Structured Data Entities)**: TypeScript data files managing projects, hardware, skills, timeline events, and friend links;
+- **`public/` (Static Media & Galleries)**: Stores raw photos, anime cover caches, and gallery albums published directly to the static root;
+- **`shirone.content.json` (Mount Manifest)**: Declares repository metadata, mount points, and protected file rules.
+
+---
+
 ## Dual-Repo Architecture & Automation Pipeline
 
 The synchronization, config merge, and release workflow is fully automated:
