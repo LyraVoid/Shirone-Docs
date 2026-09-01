@@ -1,164 +1,167 @@
 ---
-title: Deploy Hooks on Cloud Platforms
+title: Cloud Deploy Hook Integrations
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/deploy-hooks/
 ---
 
-# Deploy Hooks on Cloud Platforms
+# Cloud Deploy Hook Integrations
 
-If you host your theme repository on Cloudflare Pages, Vercel, Tencent EdgeOne, or Netlify and rely on their native builders, you can trigger deployments via Deploy Hooks.
+If you host your theme repository on Cloudflare Pages, Vercel, Tencent Cloud EdgeOne, or Netlify, you can utilize ==Deploy Hook Trigger Mode==.
+
+In this setup, pushing updates to your private content repository triggers an HTTP POST request to your cloud provider's Deploy Hook endpoint, automatically initiating a remote build and sync.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as Author
-    participant ContentRepo as Content Repository
-    participant Hosting as Hosting Platform Builder
-    participant ThemeRepo as Theme Repository
+    actor Author as "✍️ Author (Content Repo)"
+    participant ContentRepo as "🔒 Private Content Repo"
+    participant Cloudflare as "☁️ Cloudflare Pages / Vercel"
+    participant CDN as "🚀 Production Edge"
 
-    Author->>ContentRepo: git push new changes
-    ContentRepo->>ContentRepo: Validate syntax & structure
-    ContentRepo->>Hosting: Send POST request to Deploy Hook
-    Hosting->>ThemeRepo: Clone theme repository
-    Hosting->>ContentRepo: Fetch content via CONTENT_REPO_URL
-    Hosting->>Hosting: Build static site with overlays
-    Hosting->>Hosting: Deploy to global CDN nodes
+    Author->>ContentRepo: 1. git push new posts or config changes
+    ContentRepo->>Cloudflare: 2. POST Trigger Deploy Hook Webhook
+    Cloudflare->>ContentRepo: 3. Cloud runner pulls private content repo (via Token)
+    Cloudflare->>Cloudflare: 4. Execute pnpm content:sync && pnpm build
+    Cloudflare->>CDN: 5. Auto global edge distribution
 ```
 
 ---
 
-## 1. Cloudflare Pages
+## 1. Cloudflare Pages Setup <Badge text="Recommended" type="tip" />
 
 ::: steps
-1. **Import Project & Build Settings**
+1. **Create Deploy Hook in Cloudflare Pages**
 
-   - In Cloudflare Dashboard, go to **Compute (Workers & Pages)** -> **Create** -> **Pages**;
-   - Connect your GitHub account and select your theme repository;
-   - Set build configuration:
-     - **Framework preset**: None or Astro
-     - **Build command**: `pnpm run build`
-     - **Build output directory**: `dist`
+   - Log in to Cloudflare Dashboard -> **Workers & Pages**;
+   - Select your project -> **Settings** -> **Builds & deployments**;
+   - Scroll to **Deploy hooks** and click **Add deploy hook**;
+   - **Deploy hook name**: e.g., `content-push`;
+   - **Branch to build**: Select ==main==;
+   - Click **Add hook** and **copy the generated URL**.
 
-   ![Cloudflare Pages Setup](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
+   ![Cloudflare Pages Create Deploy Hook](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
 
-2. **Configure Environment Variables**
+2. **Configure Environment Variables in Cloudflare Pages**
 
-   Add environment variables under **Settings** -> **Environment variables**:
+   Go to **Settings** -> **Environment variables**:
+   - **CONTENT_REPO_URL**: ==Private Git URL with Token=={.error}:
+     ```text title="CONTENT_REPO_URL Format"
+     https://x-access-token:YOUR_ACCESS_TOKEN@github.com/YOUR_USERNAME/my-blog-content.git
+     ```
+   - **Build command**: `pnpm content:sync && pnpm build`
 
-   | Variable | Recommended Value | Description |
-   | :--- | :--- | :--- |
-   | `NODE_VERSION` | `22` | Node.js 22 runtime |
-   | `GIT_TERMINAL_PROMPT` | `0` | Disable interactive git prompts |
-   | `CONTENT_REPO_URL` | `https://x-access-token:TOKEN@github.com/USER/REPO.git` | Clone URL with token for private repos |
+3. **Configure Secret in Private Content Repository**
 
-   ![Cloudflare Environment Variables](/images/content-separation/04-deploy/02-hook/06-env-config.png)
+   - In your content repository, go to **Settings** -> **Secrets and variables** -> **Actions**;
+   - Click **New repository secret**;
+   - **Name**: ==CLOUDFLARE_DEPLOY_HOOK=={.tip};
+   - **Secret**: Paste the Cloudflare Deploy Hook URL;
+   - Click **Add secret**.
 
-3. **Create Deploy Hook**
+   ![Configure Cloudflare Secret](/images/content-separation/04-deploy/02-hook/11-actions-repository-secrets.png)
 
-   - Go to **Settings** -> **Builds & deployments**;
-   - Under **Deploy hooks**, click **Add deploy hook**;
-   - Name it `content-update`, branch `main`, and copy the webhook URL.
+4. **Add Trigger Workflow in Content Repository**
 
-   ![Cloudflare Deploy Hook](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+   Create `.github/workflows/trigger-cloudflare.yml`:
 
-4. **Add Secret to Content Repository**
+   ```yaml title=".github/workflows/trigger-cloudflare.yml"
+   name: Trigger Cloudflare Pages Build
 
-   In your content repository's **Settings** -> **Secrets and variables** -> **Actions**:
-   - **Name**: `CLOUDFLARE_DEPLOY_HOOK`
-   - **Secret**: Paste the webhook URL.
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
+
+   jobs:
+     deploy-hook:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Call Cloudflare Deploy Hook
+           run: |
+             curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}" # [!code highlight]
+   ```
 :::
 
 ---
 
-## 2. Vercel
+## 2. Vercel Setup <Badge text="Popular" type="info" />
 
 ::: steps
-1. **Import Project & Configure Build**
+1. **Create Deploy Hook in Vercel**
 
-   - Import your theme repository in Vercel;
-   - Set Build Command to `pnpm run build` and Output Directory to `dist`.
+   - Log in to Vercel -> Select project -> **Settings** -> **Git**;
+   - Scroll to **Deploy Hooks**;
+   - **Hook Name**: `content-update`;
+   - **Branch**: `main`;
+   - Click **Create Hook** and copy the URL.
 
-2. **Add Environment Variables**
+2. **Configure Environment Variables in Vercel**
 
-   Under **Environment Variables**, configure:
-   - `NODE_VERSION`: `22`
-   - `GIT_TERMINAL_PROMPT`: `0`
-   - `CONTENT_REPO_URL`: `https://x-access-token:TOKEN@github.com/USER/REPO.git`
+   Go to **Settings** -> **Environment Variables**:
+   - **CONTENT_REPO_URL**: `https://x-access-token:YOUR_TOKEN@github.com/YOUR_USERNAME/my-blog-content.git`
+   - **Build Command**: `pnpm content:sync && pnpm build`
 
-3. **Create Deploy Hook**
+3. **Configure Secret in Content Repository**
 
-   - Under **Settings** -> **Git** -> **Deploy Hooks**, create a hook for `main`;
-   - Copy the generated Webhook URL.
-
-4. **Add Secret to Content Repository**
-
-   Add the URL as `VERCEL_DEPLOY_HOOK` in your content repository's Actions secrets.
+   Under **Settings** -> **Secrets and variables** -> **Actions**:
+   - **Name**: ==VERCEL_DEPLOY_HOOK=={.tip}
+   - **Secret**: Paste the Vercel Webhook URL.
 :::
 
 ---
 
-## 3. Tencent Cloud EdgeOne Pages
+## 3. Tencent Cloud EdgeOne Setup <Badge text="Fast" type="tip" />
 
 ::: steps
-1. **Create Pages Application**
+1. **Create Deploy Trigger in EdgeOne**
 
-   - Create a Pages application linked to your theme repository;
-   - Set build command to `pnpm run build` and output directory to `dist`.
+   - Log in to EdgeOne Pages -> Project Settings -> **Build & Deploy** -> **Deploy Hooks**;
+   - Add hook for `main` branch and copy URL.
 
-2. **Add Environment Variables**
+2. **Configure Environment Variables in EdgeOne**
 
-   Add `NODE_VERSION`, `GIT_TERMINAL_PROMPT`, and `CONTENT_REPO_URL`.
+   - **CONTENT_REPO_URL**: Git URL with Access Token;
+   - **Build Command**: `pnpm content:sync && pnpm build`.
 
-3. **Create Deploy Hook Trigger**
+3. **Configure Secret in Content Repository**
 
-   - Under **Triggers**, create a Deploy Hook for `main`;
-   - Copy the trigger URL.
-
-   ![EdgeOne Deploy Hook](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
-
-4. **Add Secret to Content Repository**
-
-   Add the URL as `EDGEONE_DEPLOY_HOOK` in your content repository's Actions secrets.
+   Under **Settings** -> **Secrets and variables** -> **Actions**:
+   - **Name**: ==EDGEONE_DEPLOY_HOOK=={.tip}
+   - **Secret**: Paste the EdgeOne Webhook URL.
 :::
 
 ---
 
-## 4. Netlify
+## 4. Netlify Setup
 
 ::: steps
-1. **Import Project & Configure Build**
+1. **Create Build Hook in Netlify**
 
-   - Import theme repo in Netlify;
-   - Set build command to `pnpm run build` and publish directory to `dist`.
+   - Go to **Site configuration** -> **Build & deploy** -> **Continuous deployment**;
+   - Under **Build hooks**, click **Add build hook**;
+   - Select `main` branch and copy the Webhook URL.
 
-2. **Configure Environment Variables**
+2. **Configure Secret in Content Repository**
 
-   In **Site configuration** -> **Environment variables**, add `NODE_VERSION`, `GIT_TERMINAL_PROMPT`, and `CONTENT_REPO_URL`.
-
-3. **Create Build Hook**
-
-   - Under **Build & deploy** -> **Continuous deployment** -> **Build hooks**, click **Add build hook**;
-   - Name it and choose branch `main`, then save and copy the URL.
-
-4. **Add Secret to Content Repository**
-
-   Add the URL as `NETLIFY_DEPLOY_HOOK` in your content repository's Actions secrets.
+   Under **Settings** -> **Secrets and variables** -> **Actions**:
+   - **Name**: ==NETLIFY_DEPLOY_HOOK=={.tip}
+   - **Secret**: Paste the Netlify Webhook URL.
 :::
 
 ---
 
-## Secret Reference Summary
+## Deploy Secret Reference Table
 
-| Platform | GitHub Secret Name | Trigger Mechanism |
+| Platform | GitHub Secret Name (Strict Match) | Trigger Type |
 | :--- | :--- | :--- |
-| **CI Dispatch (Recommended)** | `DISPATCH_TOKEN` | Dispatches repository event to theme repo GitHub Actions |
-| **Cloudflare Pages** | `CLOUDFLARE_DEPLOY_HOOK` | Sends HTTP POST request to Cloudflare deploy hook |
-| **Vercel** | `VERCEL_DEPLOY_HOOK` | Sends HTTP POST request to Vercel deploy hook |
-| **Tencent EdgeOne** | `EDGEONE_DEPLOY_HOOK` | Sends HTTP POST request to EdgeOne trigger hook |
-| **Netlify** | `NETLIFY_DEPLOY_HOOK` | Sends HTTP POST request to Netlify build hook |
+| **Cross-Repo CI (Recommended)** | `DISPATCH_TOKEN` <Badge text="Recommended" type="tip" /> | Dispatches GitHub Actions in theme repo for full build & font subsetting |
+| **Cloudflare Pages** | `CLOUDFLARE_DEPLOY_HOOK` <Badge text="Edge" type="info" /> | Sends POST request to Cloudflare Deploy Hook |
+| **Vercel** | `VERCEL_DEPLOY_HOOK` <Badge text="Global" type="info" /> | Sends POST request to Vercel Deploy Hook |
+| **Tencent Cloud EdgeOne** | `EDGEONE_DEPLOY_HOOK` <Badge text="APAC" type="tip" /> | Sends POST request to EdgeOne Deploy Hook |
+| **Netlify** | `NETLIFY_DEPLOY_HOOK` <Badge text="General" type="info" /> | Sends POST request to Netlify Build Hook |
 
 ---
 
 ## Next Steps
 
-- Head to [Troubleshooting & FAQ](/en/guide/content-separation/faq/): Solutions for authentication errors, draft filtering, and schema mismatches
+- Head to [Troubleshooting & FAQ](/en/guide/content-separation/faq/): View permission diagnosis, config overrides, and build error resolutions

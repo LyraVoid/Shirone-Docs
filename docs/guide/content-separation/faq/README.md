@@ -10,12 +10,12 @@ permalink: /guide/content-separation/faq/
 
 ---
 
-## 1. 跨仓构建报错：403 Resource not accessible by integration
+## 1. 跨仓构建报错：403 Resource not accessible by integration <Badge text="权限问题" type="danger" />
 
 ### 现象
 内容仓推送新提交后，`trigger-build.yml` 工作流报错：
-```text
-HttpError: Resource not accessible by integration
+```text title="GitHub Actions Error"
+HttpError: Resource not accessible by integration // [!code error]
 ```
 
 ### 原因分析
@@ -29,8 +29,8 @@ HttpError: Resource not accessible by integration
 
 2. **检查细粒度令牌权限**
 
-   - **Repository access**：确认已选中**主题代码仓库**；
-   - **Permissions**：确认已将 **Contents** 权限设为 **Read and write**。
+   - **Repository access**：确认已选中 ==主题代码仓库==；
+   - **Permissions**：确认已将 **Contents** 权限设为 ==Read and write=={.error}。
 
 3. **更新仓库 Secret**
 
@@ -39,12 +39,12 @@ HttpError: Resource not accessible by integration
 
 ---
 
-## 2. 托管平台拉取私有内容仓失败：Authentication failed
+## 2. 托管平台拉取私有内容仓失败：Authentication failed <Badge text="鉴权失败" type="danger" />
 
 ### 现象
 在 Cloudflare Pages 或 Vercel 构建时，日志提示克隆私有内容仓失败：
-```text
-fatal: Authentication failed for 'https://github.com/...'
+```text title="Build Log Error"
+fatal: Authentication failed for 'https://github.com/...' // [!code error]
 ```
 
 ### 原因分析
@@ -53,14 +53,14 @@ fatal: Authentication failed for 'https://github.com/...'
 ### 解决方案
 1. 生成一个具备内容仓读取权限的个人访问令牌；
 2. 在托管平台的环境变量中将 `CONTENT_REPO_URL` 修改为带令牌的格式：
-   ```text
+   ```text title="CONTENT_REPO_URL"
    https://x-access-token:你的访问令牌@github.com/用户名/内容仓名.git
    ```
 3. 重新触发一次部署构建。
 
 ---
 
-## 3. 修改了 YAML 配置但页面没有生效
+## 3. 修改了 YAML 配置但页面没有生效 <Badge text="配置诊断" type="warning" />
 
 ### 现象
 在内容仓的 `config/site.yaml` 或其他配置文件中修改了属性，但在本地预览或构建后未看到变化。
@@ -69,15 +69,15 @@ fatal: Authentication failed for 'https://github.com/...'
 ::: steps
 1. **运行安全预检命令**
 
-   ```bash
-   pnpm content:validate
+   ```bash title="content:validate"
+   pnpm content:validate // [!code highlight]
    ```
 
    查看是否有字段拼写错误提示（例如将 `title` 误写为 `titel`）。
 
 2. **检查合并策略**
 
-   若修改的是数组列表（如 `nav-bar.yaml` 或 `sidebar.yaml` 中的 `components`），请注意数组遵循**整体替换**规则，必须列出完整的条目列表，而不能只写增量项。
+   若修改的是数组列表（如 `nav-bar.yaml` 或 `sidebar.yaml` 中的 `components`），请注意数组遵循 ==整体替换规则=={.error}，必须列出完整的条目列表，而不能只写增量项。
 
 3. **检查文件名与目录**
 
@@ -86,20 +86,22 @@ fatal: Authentication failed for 'https://github.com/...'
 
 ---
 
-## 4. 本地撰写的文章在构建后未显示
+## 4. 本地撰写的文章在构建后未显示 <Badge text="内容过滤" type="info" />
 
 ### 现象
 在 `content/posts/` 编写了新文章，但在首页文章列表中没有出现。
 
 ### 排查清单
+::: details 展开查看 4 项核心排查条件
 1. **检查草稿状态**：文章元数据中的 `draft` 字段是否为 `true`。草稿文章在生产打包时会被自动过滤；
 2. **检查发布日期**：`published` 日期是否被设置为了未来的时间。系统默认不显示未到发布日期的文章；
 3. **检查文件扩展名**：文章文件扩展名是否为 `.md` 或 `.mdx`；
 4. **运行类型诊断**：在主题代码仓运行 `npx astro check`，排查是否有必填元数据缺失。
+:::
 
 ---
 
-## 5. 本地预览出现幽灵数据或缓存混乱
+## 5. 本地预览出现幽灵数据或缓存混乱 <Badge text="缓存清理" type="tip" />
 
 ### 现象
 删除或移动了外部内容仓的某篇文章，但本地预览中仍然出现旧页面残留。
@@ -107,12 +109,12 @@ fatal: Authentication failed for 'https://github.com/...'
 ### 解决方案
 在主题代码仓执行安全重置与缓存清理：
 
-```bash
+```bash title="Safe Reset"
 # 1. 预演清理计划
 pnpm content:clean
 
 # 2. 确认无误后执行清理重置
-pnpm content:clean --yes
+pnpm content:clean --yes // [!code highlight]
 
 # 3. 重新同步最新内容
 pnpm content:sync

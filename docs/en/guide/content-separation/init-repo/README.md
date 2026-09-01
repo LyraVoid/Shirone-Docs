@@ -8,18 +8,23 @@ permalink: /en/guide/content-separation/init-repo/
 
 There are two recommended methods to set up your standalone content repository:
 
-- **Method 1 (Recommended): One-click Eject with `content:eject`**: If you have already cloned or forked the theme repo, a single command extracts your posts, photos, data entities, and configurations into a structured content repository;
-- **Method 2: Clone from the Official Template**: Best for users starting from scratch with a dual-repo setup.
+- **Method 1 (Recommended): One-click Eject with `content:eject`** <Badge text="Recommended" type="tip" />: If you have already cloned or forked the theme repo, a single command extracts your posts, photos, data entities, and configurations into a structured content repository;
+- **Method 2: Clone from the Official Template** <Badge text="From Scratch" type="info" />: Best for users starting from scratch with a dual-repo setup.
 
 ---
 
-## Method 1: Using content:eject (Recommended)
+## Method 1: Using content:eject (Recommended) <Badge text="Recommended" type="tip" />
+
+If you already have the theme repository locally, the built-in eject wizard is the fastest initialization pathway.
 
 ### Key Features
 - **Automated Structure Assembly**: Automatically extracts posts, moments, albums, and data files, and generates a valid `shirone.content.json` manifest and GitHub Actions trigger workflow;
-- **Minimal Config Export**: Exports only essential identity settings in `site.yaml` and `profile.yaml`, avoiding hardcoded defaults to ensure seamless future upgrades;
+- **Minimal Config Export**: Exports only essential identity settings in `site.yaml` and `profile.yaml`, ==avoiding hardcoded defaults== to ensure seamless future upgrades;
 - **Theme Repo Protection**: Adds gitignore rules and safely unstages content files from Git while keeping physical files intact for local preview;
 - **Automatic Local Binding**: Connects your theme development workspace to the newly created external directory.
+
+> [!TIP] Zero-Risk Dry Run
+> Running `pnpm.cmd content:eject` without the `--yes` flag executes in ==dry-run mode=={.secondary}, printing the export plan without making any disk modifications.
 
 ### Step-by-Step Guide
 
@@ -30,24 +35,24 @@ There are two recommended methods to set up your standalone content repository:
 
    ::: tabs
    @tab Windows (PowerShell)
-   ```powershell
+   ```powershell title="PowerShell"
    # 1. Dry run: preview files to be ejected (zero disk changes)
    pnpm.cmd content:eject
 
    # 2. Confirm and execute eject (default destination: ../shirone-content)
-   pnpm.cmd content:eject --yes
+   pnpm.cmd content:eject --yes // [!code highlight]
 
    # Or specify a custom output directory:
    pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
    ```
 
    @tab Linux / macOS (Bash)
-   ```bash
+   ```bash title="Bash"
    # 1. Dry run: preview files to be ejected
    pnpm content:eject
 
    # 2. Confirm and execute eject
-   pnpm content:eject --yes
+   pnpm content:eject --yes // [!code highlight]
 
    # Custom output path:
    pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
@@ -58,17 +63,20 @@ There are two recommended methods to set up your standalone content repository:
 
    - Log in to GitHub, click the **+** icon in the top right corner and select **New repository**;
    - **Repository name**: e.g., `my-blog-content` or `shirone-content`;
-   - **Visibility**: **Must select Private**;
+   - **Visibility**: ==Must select Private=={.error};
    - **Initialize with**: **Do not select** any initialization files (keep completely empty);
    - Click **Create repository**.
 
    ![GitHub Create Private Repo](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
 
+   > [!IMPORTANT] Repository Must Be Private
+   > To ensure your drafts, high-res photos, and private metadata remain secure, ==visibility must be set to Private=={.error}.
+
 3. **Push Content Repository to GitHub**
 
    In your terminal, navigate to the ejected directory and push:
 
-   ```bash
+   ```bash title="Git Push"
    # 1. Enter the external content directory
    cd ../shirone-content
 
@@ -83,16 +91,18 @@ There are two recommended methods to set up your standalone content repository:
    ```
 ::::
 
+Your standalone private content repository is now fully initialized.
+
 ---
 
-## Method 2: Clone from Official Template
+## Method 2: Clone from Official Template <Badge text="From Scratch" type="info" />
 
 ### Step-by-Step Guide
 
 ::: steps
 1. **Create a Blank Private Repo on GitHub**
 
-   Create an empty private repository on GitHub without adding a README or gitignore.
+   Create an empty ==Private repository== on GitHub without adding a README or gitignore.
 
    ![GitHub Initial Page](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
 
@@ -100,7 +110,7 @@ There are two recommended methods to set up your standalone content repository:
 
    Run in your terminal:
 
-   ```bash
+   ```bash title="Git Clone"
    # 1. Clone the template
    git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
 
@@ -112,7 +122,7 @@ There are two recommended methods to set up your standalone content repository:
 
 3. **Reset Remote URL to Your Private Repo**
 
-   ```bash
+   ```bash title="Git Remote"
    # Point remote origin to your new private repository
    git remote set-url origin git@github.com:YOUR_USERNAME/my-blog-content.git
 
@@ -124,7 +134,7 @@ There are two recommended methods to set up your standalone content repository:
 
 4. **Push to Your Private Repository**
 
-   ```bash
+   ```bash title="Git Push"
    git push -u origin main
    ```
 

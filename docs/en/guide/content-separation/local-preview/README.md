@@ -22,7 +22,7 @@ Install dependencies in the theme repository:
 
 ---
 
-## Method 1: Single Sync Preview
+## Method 1: Single Sync Preview <Badge text="Fast" type="info" />
 
 :::: steps
 1. **Configure Path and Sync Content**
@@ -31,24 +31,24 @@ Install dependencies in the theme repository:
 
    ::: tabs
    @tab Windows (PowerShell)
-   ```powershell
+   ```powershell title="PowerShell"
    # 1. Set the absolute path of your content repository
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
    # 2. Run a single sync to materialize content
-   pnpm.cmd content:sync
+   pnpm.cmd content:sync // [!code highlight]
 
    # 3. Start local development server
    pnpm.cmd dev
    ```
 
    @tab Linux / macOS (Bash / Zsh)
-   ```bash
+   ```bash title="Bash"
    # 1. Set the path of your content repository
    export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
    # 2. Run a single sync
-   pnpm content:sync
+   pnpm content:sync // [!code highlight]
 
    # 3. Start development server
    pnpm dev
@@ -69,7 +69,7 @@ Install dependencies in the theme repository:
 
    Once the terminal outputs the local URL:
 
-   ```text
+   ```text title="Local Server"
      Local    http://localhost:4321/
    ```
 
@@ -80,37 +80,35 @@ Install dependencies in the theme repository:
 
 ---
 
-## Method 2: Live Incremental Watch Mode
+## Method 2: Live Incremental Watch Mode <Badge text="Recommended" type="tip" />
 
 When frequently drafting Markdown posts or tweaking YAML styles, running sync manually can be tedious.
-Use **live incremental watch mode**:
+Use ==live incremental watch mode=={.tip}:
 
 ::: steps
 1. **Launch Development Server (Terminal 1)**
 
-   ```powershell
+   ```powershell title="Terminal 1 (Dev Server)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd dev
    ```
 
 2. **Launch Incremental Watcher (Terminal 2)**
 
-   ```powershell
+   ```powershell title="Terminal 2 (Content Watcher)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
-   pnpm.cmd content:watch
+   pnpm.cmd content:watch // [!code highlight]
    ```
 :::
 
-Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian, VS Code, or Typora), changes will be synced incrementally in milliseconds and trigger browser hot module replacement.
+Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian, VS Code, or Typora), changes will be synced incrementally in milliseconds and trigger browser ==hot module replacement=={.tip}.
 
-::: tip Simplify Environment Configuration
-Create a `.env` file in the root of your theme repository so you do not need to set `$env:CONTENT_DIR` manually each time:
-
-```ini
-# .env
-CONTENT_DIR="D:/Code/my-blog-content"
-```
-:::
+> [!TIP] Simplify Environment Configuration
+> Create a `.env` file in the root of your theme repository so you do not need to set `$env:CONTENT_DIR` manually each time:
+>
+> ```ini title=".env"
+> CONTENT_DIR="D:/Code/my-blog-content"
+> ```
 
 ---
 

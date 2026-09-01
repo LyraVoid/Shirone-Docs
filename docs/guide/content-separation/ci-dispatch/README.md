@@ -13,146 +13,139 @@ permalink: /guide/content-separation/ci-dispatch/
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as 博主
-    participant ContentRepo as 个人内容仓库
-    participant ThemeRepo as 主题代码仓库
-    participant DeployHost as 托管部署平台
+    actor Author as "✍️ 博主 (内容仓)"
+    participant ContentRepo as "🔒 私有内容仓库"
+    participant ThemeRepo as "🏗️ 主题代码仓库"
+    participant DeployTarget as "🚀 CDN / GitHub Pages"
 
-    Author->>ContentRepo: git push 提交新文章或配置修改
-    ContentRepo->>ContentRepo: 触发 trigger-build.yml 执行语法预检
-    ContentRepo->>ThemeRepo: 携带 DISPATCH_TOKEN 派发 content-updated 事件
-    ThemeRepo->>ContentRepo: 拉取最新内容并合并配置覆盖
-    ThemeRepo->>ThemeRepo: 运行字体子集裁剪与 Astro 静态打包
-    ThemeRepo->>DeployHost: 部署构建产物至 GitHub Pages / Cloudflare / Vercel
+    Author->>ContentRepo: 1. git push 推送新文章或配置修改
+    ContentRepo->>ThemeRepo: 2. repository_dispatch 派发构建信号 (携带安全 Token)
+    ThemeRepo->>ContentRepo: 3. 拉取私有内容仓库与配置覆盖
+    ThemeRepo->>ThemeRepo: 4. 静态编译 + 字体子集裁剪 + 图片优化
+    ThemeRepo->>DeployTarget: 5. 自动发布静态产物至生产环境
 ```
 
 ---
 
-## 第一步：创建 GitHub 个人访问令牌
-
-我们需要生成一个专用令牌，用来让内容仓库有权限通知代码仓库启动构建。
-
-1. **前往个人设置**：点击 GitHub 页面右上角头像，进入 Settings 设置页面；
-
-   ![主页点击 Settings](/images/content-separation/04-deploy/01-dispatch/01-settings-click.png)
-
-2. **进入开发者设置**：在左侧导航栏滑到底部，点击 Developer Settings；
-
-   ![找到 Developer Settings](/images/content-separation/04-deploy/01-dispatch/02-developer-settings.png)
-
-   ![Developer Settings 界面](/images/content-separation/04-deploy/01-dispatch/03-developer-settings-menu.png)
-
-3. **进入细粒度令牌**：依次点击左侧的 Personal access tokens 下的 Fine-grained tokens；
-
-   ![Fine-grained tokens](/images/content-separation/04-deploy/01-dispatch/04-fine-grained-tokens.png)
-
-4. **新建令牌**：点击右上角的 Generate new token 按钮；
-
-   ![Generate new token](/images/content-separation/04-deploy/01-dispatch/05-generate-new-token.png)
-
-5. **配置令牌属性与权限**：
-   - **Token name**：填入 `DISPATCH_TOKEN`（或自定义名称）；
-   - **Expiration**：选择过期时间（建议选择 90 天或按需设置）；
-   - **Repository access**：**务必选择 Only select repositories**，并在下拉菜单中**只勾选你的主题代码仓库**；
-
-     ![Repository access](/images/content-separation/04-deploy/01-dispatch/06-repository-access.png)
-
-   - **Permissions -> Repository permissions**：展开仓库权限列表，找到 **Contents**，将其权限修改为 **Read and write**（用于触发工作流派发）；
-
-     ![Contents 权限设置](/images/content-separation/04-deploy/01-dispatch/07-contents-permission.png)
-
-6. **生成并妥善复制令牌**：滑动至页面最底部，点击绿色按钮 Generate token，**立即复制生成的令牌字符串并妥善保存**。
-
-   ![创建 GitHub 个人访问令牌](/images/content-separation/04-deploy/01-dispatch/08-generate-pat-token.png)
-
----
-
-## 第二步：在内容仓库配置派发密钥与工作流
+## 核心配置步骤
 
 ::: steps
-1. **启用触发工作流**
+1. **生成 GitHub 个人访问令牌（PAT）**
 
-   在内容仓库中，将 `.github/workflows/trigger-build.yml.example` 重命名为 `.github/workflows/trigger-build.yml`（通过 `pnpm content:eject` 初始化的仓库已默认启用）。
+   为了让私有内容仓库能够向主题代码仓库发送派发信号，需要创建一个具备仓库触发权限的访问令牌：
 
-2. **配置仓库密钥 Secret**
+   - 登录 GitHub，点击右上角头像 -> **Settings** -> **Developer Settings**；
+   - 选择 **Personal access tokens** -> **Fine-grained tokens**（或 Classic Tokens）；
+   - 点击 **Generate new token**；
+   - **Repository access**：选择 **Only select repositories**，并勾选你的 ==主题代码仓库==；
+   - **Permissions**：在 **Repository permissions** 下找到 **Contents**，设为 ==Read and write=={.error}；
+   - 点击底部 **Generate token** 生成令牌并**立即复制保存**。
 
-   - 打开你的**个人内容仓库**（例如 `my-blog-content`）；
-   - 点击顶部导航栏的 **Settings**；
-   - 在左侧菜单中展开 **Secrets and variables**，选择 **Actions**；
-   - 点击页面右侧的 **New repository secret**；
-   - **Name**：必须填入 `DISPATCH_TOKEN`（全大写）；
-   - **Secret**：粘贴第一步中复制的个人访问令牌；
+   ![GitHub 创建 PAT 界面](/images/content-separation/04-deploy/01-dispatch/06-repository-access.png)
+
+   > [!CAUTION] 访问令牌安全保管
+   > 令牌生成后仅展示一次。==绝不能将此令牌明文写进任何公共文件或代码中=={.error}，必须保存到 GitHub 仓库的 Encrypted Secrets 中。
+
+2. **在私有内容仓库中配置 Secret**
+
+   - 进入你的 ==私有内容仓库==；
+   - 点击 **Settings** -> **Secrets and variables** -> **Actions**；
+   - 点击 **New repository secret**；
+   - **Name**：填写 ==DISPATCH_TOKEN=={.tip}（必须完全一致，区分大小写）；
+   - **Secret**：粘贴上一步生成的 Personal Access Token；
    - 点击 **Add secret** 保存。
-:::
 
----
+   ![配置仓库 Secret](/images/content-separation/04-deploy/02-hook/11-actions-repository-secrets.png)
 
-## 第三步：在主题代码仓启用部署工作流
+3. **在内容仓库中添加触发工作流**
 
-::: steps
-1. **重命名并启用部署工作流**
+   在私有内容仓库的 `.github/workflows/` 目录下新建 `trigger-build.yml` 文件：
 
-   打开你的**主题代码仓库**，进入目录 `.github/workflows/`，将示例工作流 `deploy.yml.example` 重命名为 `deploy.yml`。
+   ```yaml title=".github/workflows/trigger-build.yml"
+   name: Trigger Theme Build
 
-2. **配置内容仓库环境变量**
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
 
-   修改文件开头的环境变量配置：
-
-   ```yaml
-   env:
-     # 替换为你的内容仓库路径
-     CONTENT_REPOSITORY: yourname/my-blog-content
-     CONTENT_WORKING_COPY: .content-src
+   jobs:
+     dispatch:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Dispatch build event to theme repository
+           uses: peter-evans/repository-dispatch@v3
+           with:
+             token: ${{ secrets.DISPATCH_TOKEN }} # [!code highlight]
+             repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 请替换为你的主题代码仓路径 # [!code warning]
+             event-type: content-update
    ```
 
-3. **私有仓库读取鉴权（若内容仓为私有）**
+4. **在主题代码仓库中配置响应工作流**
 
-   - 生成一个具备内容仓读取权限的个人访问令牌；
-   - 在主题代码仓的 **Settings** -> **Secrets and variables** -> **Actions** 中添加 Secret，名称为 `CONTENT_REPO_TOKEN`，值为该令牌；
-   - 提交并推送到代码仓的主分支。
+   在主题代码仓库的 `.github/workflows/` 目录下新建或更新 `deploy.yml`，监听派发事件：
+
+   ```yaml title=".github/workflows/deploy.yml"
+   name: Deploy Shirone Blog
+
+   on:
+     push:
+       branches: [main]
+     repository_dispatch:
+       types: [content-update] # 响应内容仓库发送的派发事件 # [!code highlight]
+     workflow_dispatch:
+
+   jobs:
+     build-and-deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout Theme Repo
+           uses: actions/checkout@v4
+
+         - name: Setup Node.js & pnpm
+           uses: pnpm/action-setup@v3
+           with:
+             version: 9
+
+         - name: Setup Node
+           uses: actions/setup-node@v4
+           with:
+             node-version: 20
+             cache: "pnpm"
+
+         - name: Install Dependencies
+           run: pnpm install --frozen-lockfile
+
+         - name: Pull Private Content & Build
+           env:
+             CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git" # [!code highlight]
+           run: |
+             pnpm content:sync
+             pnpm build
+
+         - name: Deploy to GitHub Pages
+           uses: peaceiris/actions-gh-pages@v4
+           with:
+             github_token: ${{ secrets.GITHUB_TOKEN }}
+             publish_dir: ./dist
+   ```
 :::
 
 ---
 
-## 第四步：验证全自动构建与发布
+## 验证自动化流水线
 
-现在，只需在内容仓库中修改任意一篇文章并执行推送：
-
-```bash
-git add .
-git commit -m "feat: 发布一篇新文章"
-git push origin main
-```
+完成配置后，进行一次端到端验证：
 
 ::: steps
-1. **查看内容仓触发状态**
-
-   打开内容仓库的 **Actions** 页面，你将看到 `Trigger Theme Build` 工作流被自动触发并成功派发事件。
-
-2. **查看代码仓构建进度**
-
-   随后打开代码仓库的 **Actions** 页面，主题代码仓正在全自动拉取内容并完成编译部署。
-
-3. **全网发布上线**
-
-   构建完成后，刷新你的博客网站，新文章即可完成全网发布。
+1. 在外部内容仓库中新建或修改一篇 Markdown 文章；
+2. 执行 `git add .`、`git commit -m "docs: test dispatch"` 并 `git push` 推送到 GitHub；
+3. 打开内容仓库的 **Actions** 面板，观察 `Trigger Theme Build` 是否成功派发；
+4. 打开主题代码仓库的 **Actions** 面板，观察 `Deploy Shirone Blog` 是否被自动触发并成功发布。
 :::
-
----
-
-## 并发构建与版本回滚保障
-
-### 1. 并发抢占与自动截断
-代码仓部署流水线配置了全局并发控制（`concurrency: group: deploy, cancel-in-progress: true`）。当博主短时间内高频提交时，后续新触发的构建会自动强制取消正在执行中的旧构建，无缝切换到最新一次构建，杜绝并发竞争或旧文章覆盖新内容。
-
-### 2. 零代码历史版本紧急回滚
-如果线上刚发布的文章存在严重错误：
-- 直接在代码仓进入 **Actions** 页面；
-- 选择 **Deploy** 工作流并点击 **Run workflow**；
-- 在弹出的 `content_ref` 输入框中填入历史版本的 Git Commit SHA，即可一键拉取指定历史版本并完成部署上线。
 
 ---
 
 ## 下一步
 
-- 前往 [云托管平台 Deploy Hook 部署](/guide/content-separation/deploy-hooks/)：了解 Cloudflare Pages、Vercel、EdgeOne 等平台的部署钩子配置方式
+- 前往 [云托管平台 Deploy Hook 部署](/guide/content-separation/deploy-hooks/)：了解 Cloudflare Pages、Vercel 与 EdgeOne 的集成方案

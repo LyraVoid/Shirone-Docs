@@ -6,86 +6,97 @@ permalink: /en/guide/content-separation/concepts/
 
 # Content Separation Overview
 
-Shirone provides native support for a decoupled dual-repository architecture, allowing you to separate your personal blog content from the theme codebase into two independent Git repositories.
+Shirone provides native support for decoupled content separation, allowing you to isolate the ==theme frontend engine== and your ==personal content repository== into two independent Git repositories.
 
 ---
 
-## Core Architecture Concepts
+## Core Concepts
 
-Think of your blog as a residential home:
+Think of a personal blog as a residence:
 
-- **Theme Code Repository**: Functions as the architectural foundation, plumbing, and electrical framework. It handles animations, color schemes, responsive layouts, image optimization, and build pipelines. It is publicly maintained and updated by theme authors;
-- **Personal Content Repository**: Represents your personal furniture, photo albums, and journals. It contains all your posts, moments, photos, structured data entities, and configuration overrides. It is fully controlled by you and can be kept private.
+- **Theme Code Repository**: The architectural framework, plumbing, electrical grid, and rendering pipeline: responsible for UI animations, dark mode, responsive layout, image optimization, and static building—maintained and ==continuously upgraded upstream==;
+- **Personal Content Repository**: The furniture, family photo albums, books, and diary entries: contains all your posts, moments, album photos, data entities, and configuration overlays—under your ==complete ownership and kept private=={.tip}.
 
-In a traditional single-repository model, posts, photos, and theme source code are mixed together. When upgrading the theme, merging upstream changes often causes Git conflicts or accidentally exposes unpublished drafts.
+In traditional monolithic repositories, posts, media assets, and theme source code are tightly coupled. Upstream updates frequently trigger painful Git merge conflicts, or inadvertently publish private drafts to public repositories.
 
-Shirone resolves this by keeping your content in a private repository while the theme repository pulls and builds the site.
+Shirone's content separation architecture eliminates these pain points: your content is securely housed in a ==private content repository==, while the theme code repository simply pulls content during builds.
+
+> [!TIP] Core Value of Dual-Repo Setup
+> By decoupling content from theme mechanics, you can author posts and configure your site like using a lightweight headless CMS while seamlessly syncing upstream theme enhancements.
 
 ---
 
-## Dual-Repository Workflow
+## Dual-Repo Architecture & Automation Pipeline
 
-The synchronization and build pipeline is driven by automation scripts:
+The synchronization, config merge, and release workflow is fully automated:
 
 ```mermaid
 flowchart LR
-    A[Author writes in Content Repo] -->|git push| B[GitHub Actions]
-    B -->|Dispatch build event| C[Theme Code Repo]
-    C -->|Fetch content & merge configs| D[Typecheck & Font Subsetting]
-    D -->|Static Build| E[Global CDN & Hosting Platforms]
+    A["✍️ Authoring in Content Repo"] -->|Git Push| B["🤖 GitHub Actions"]
+    B -->|Dispatch Build Event| C["🏗️ Theme Code Repo"]
+    C -->|Pull Content & Merge Overlays| D["⚡ Type Checking & Font Subsetting"]
+    D -->|Static Build| E["🚀 Global CDN & Hosting"]
 ```
 
 ::: steps
-1. **Write in Content Repo**
+1. **Authoring in Content Repo**
 
-   Write Markdown posts or adjust YAML configurations, then push to your content repository.
+   Draft posts or update YAML configs in your favorite Markdown editor, then push to your private repository.
 
 2. **Automated Pipeline Trigger**
 
-   Actions in the content repo dispatch a build signal to the theme repo, or hosting deploy hooks receive the update.
+   A lightweight GitHub Actions workflow sends a ==dispatch event== to the theme repository, or a cloud deploy hook captures the push.
 
-3. **Materialization & Config Merging**
+3. **Content Materialization & Config Overlay**
 
-   The theme repo fetches the content and recursively merges YAML overrides with theme defaults.
+   The theme repository pulls the content payload and executes ==recursive deep merge== between YAML overlays and theme defaults.
 
-4. **Compile & Deploy**
+4. **Build & Global Deployment**
 
-   The theme repo subsets Chinese fonts, renders static HTML, optimizes assets, and deploys to hosting platforms.
+   The theme repository performs Chinese font subsetting, static page generation, asset compression, and deploys to global CDNs.
 :::
 
 ---
 
-## Key Benefits
+## Key Advantages
 
 ### 1. Conflict-Free Theme Upgrades
 
-Theme updates will not touch your personal content. When a new theme version is released, simply sync upstream commits in your theme repository without Git conflicts.
+Open-source themes evolve rapidly with new features and bug fixes. Under content separation, your posts, albums, and custom configs reside outside the theme repository. Syncing upstream releases yields ==zero Git merge conflicts=={.tip}.
 
-### 2. Private Content Protection
+### 2. Safeguard Private Content & Drafts
 
-Keep your content repository private while leaving your theme code repository public. Unpublished drafts, personal photo albums, and private credentials remain secure.
+Many authors wish to keep their theme repository open-source while keeping:
+- Unfinished drafts and private journals;
+- Family albums and high-res photography;
+- Private analytics tokens or unpublished metadata.
 
-### 3. Focused Authoring Experience
+With dual repos, you can set your ==content repository to Private=={.tip} and your ==theme repository to Public==, enjoying the open-source ecosystem without exposing sensitive data.
 
-Authors do not need to deal with build tooling or package dependencies. Daily work focuses on:
-- Writing Markdown articles and moments under `content/`;
-- Editing lightweight YAML files under `config/`.
+> [!IMPORTANT] Privacy Isolation
+> Storing posts in a private repository ensures that even if your theme repository is completely open-source, your drafts and media assets remain strictly confidential.
+
+### 3. Lightweight Authoring Experience
+
+Authors do not need to install complex Node.js dependencies, build tooling, or bundlers on their writing devices. Simply focus on:
+- Authoring Markdown posts and microblogs inside `content/`;
+- Tweaking lightweight YAML configs inside `config/`.
 
 ---
 
-## Single vs Dual Repository Comparison
+## Monolithic vs Dual-Repo Comparison
 
-| Dimension | Default Single Repo | Decoupled Dual Repo |
+| Metric | Monolithic Setup <Badge text="Starter" type="info" /> | Content Separation <Badge text="Recommended" type="tip" /> |
 | :--- | :--- | :--- |
-| **Target Audience** | Beginners looking for a simple start | Long-term bloggers needing private drafts and seamless theme updates |
-| **Repository Count** | 1 (Code and content mixed) | 2 (Public theme repo + Private content repo) |
-| **Upgrade Cost** | Manual upstream merge with potential conflicts | Fast upstream pull with zero conflicts |
-| **Privacy** | Drafts are exposed if the repo is public | Content repo is private; theme repo can be public |
-| **Authoring Tools** | Inside the project workspace | Any external editor like Obsidian, VS Code, or Typora |
-| **Setup Overhead** | Zero extra setup | One-time token or deploy hook configuration |
+| **Target Audience** | Beginners seeking single-repository simplicity | Long-term bloggers needing private drafts and seamless theme updates |
+| **Repo Count** | 1 (Code and content coupled) | 2 (Public theme repo + Private content repo) |
+| **Upgrade Friction** | Manual upstream merge with potential Git conflicts | Direct upstream pull with ==zero merge conflicts== |
+| **Privacy** | Drafts exposed if repository is open-sourced | ==Content repo completely private=={.tip}, theme repo safely public |
+| **Writing Tools** | Must run within the theme project | Independent editing with Obsidian, VS Code, Typora |
+| **Onboarding** | Zero setup, clone and run | One-time setup for access token or deploy hook |
 
 ---
 
 ## Next Steps
 
-- Head to [Initializing Private Content Repo](/en/guide/content-separation/init-repo/): Learn how to eject from an existing repo or clone from template
+- Head to [Initializing Private Content Repo](/en/guide/content-separation/init-repo/): Learn one-click eject and template initialization

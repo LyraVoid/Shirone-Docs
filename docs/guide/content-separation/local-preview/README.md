@@ -22,7 +22,7 @@ permalink: /guide/content-separation/local-preview/
 
 ---
 
-## 方式一：快速单次同步预览
+## 方式一：快速单次同步预览 <Badge text="快捷" type="info" />
 
 :::: steps
 1. **配置路径并执行内容同步**
@@ -31,24 +31,24 @@ permalink: /guide/content-separation/local-preview/
 
    ::: tabs
    @tab Windows (PowerShell)
-   ```powershell
+   ```powershell title="PowerShell"
    # 1. 设置内容仓库的本地路径（请替换为你电脑上的真实绝对路径）
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
-   pnpm.cmd content:sync
+   pnpm.cmd content:sync // [!code highlight]
 
    # 3. 启动本地开发服务器
    pnpm.cmd dev
    ```
 
    @tab Linux / macOS (Bash / Zsh)
-   ```bash
+   ```bash title="Bash"
    # 1. 设置内容仓库的本地路径
    export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
-   pnpm content:sync
+   pnpm content:sync // [!code highlight]
 
    # 3. 启动本地开发服务器
    pnpm dev
@@ -69,7 +69,7 @@ permalink: /guide/content-separation/local-preview/
 
    终端输出本地访问地址后：
 
-   ```text
+   ```text title="Local Server"
      Local    http://localhost:4321/
    ```
 
@@ -80,37 +80,35 @@ permalink: /guide/content-separation/local-preview/
 
 ---
 
-## 方式二：双终端边写边看（实时增量监听）
+## 方式二：双终端边写边看（实时增量监听） <Badge text="推荐" type="tip" />
 
 如果你正在频繁撰写 Markdown 文章或调试 YAML 配置，反复手动执行同步命令较为繁琐。
-你可以开启**实时增量监听模式**：
+你可以开启 ==实时增量监听模式=={.tip}：
 
 ::: steps
 1. **启动本地预览服务（终端窗口 1）**
 
-   ```powershell
+   ```powershell title="Terminal 1 (Dev Server)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd dev
    ```
 
 2. **启动实时增量监听（终端窗口 2）**
 
-   ```powershell
+   ```powershell title="Terminal 2 (Content Watcher)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
-   pnpm.cmd content:watch
+   pnpm.cmd content:watch // [!code highlight]
    ```
 :::
 
-此时，只要你在外部编辑器（如 Obsidian、VS Code、Typora）中按 `Ctrl + S` 保存任何 Markdown 文件或修改 YAML 配置，监听器会自动捕获增量变更并同步至代码仓，触发浏览器的局部热重载，体验与单仓开发完全一致。
+此时，只要你在外部编辑器（如 Obsidian、VS Code、Typora）中按 `Ctrl + S` 保存任何 Markdown 文件或修改 YAML 配置，监听器会自动捕获增量变更并同步至代码仓，触发浏览器的 ==局部热重载=={.tip}，体验与单仓开发完全一致。
 
-::: tip 简化环境变量配置
-你也可以直接在主题代码仓根目录下新建 `.env` 文件，写入内容仓库路径，这样无需每次在终端手动设置环境变量：
-
-```ini
-# .env
-CONTENT_DIR="D:/Code/my-blog-content"
-```
-:::
+> [!TIP] 简化环境变量配置
+> 你可以直接在主题代码仓根目录下新建 `.env` 文件，写入内容仓库路径，这样无需每次在终端手动设置环境变量：
+>
+> ```ini title=".env"
+> CONTENT_DIR="D:/Code/my-blog-content"
+> ```
 
 ---
 

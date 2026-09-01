@@ -6,162 +6,147 @@ permalink: /guide/content-separation/deploy-hooks/
 
 # 云托管平台 Deploy Hook 部署
 
-如果你习惯将主题代码仓直接托管在 Cloudflare Pages、Vercel、腾讯云 EdgeOne 或 Netlify 等平台，并由平台自身的构建机拉取内容进行打包，你可以使用**部署钩子触发模式**。
+如果你习惯将主题代码仓直接托管在 Cloudflare Pages、Vercel、腾讯云 EdgeOne 或 Netlify 等平台，并由平台自身的构建机拉取内容进行打包，你可以使用 ==部署钩子触发模式==。
 
-在这种模式下，内容仓库每次推送更新，会自动向托管平台的 Deploy Hook 发送请求，平台接收到请求后自动启动构建流程。
+在这种模式下，内容仓库每次推送更新，会自动向托管平台的 Deploy Hook 发送一次 HTTP POST 请求，平台构建机接收到请求后会自动触发拉取与编译。
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as 博主
-    participant ContentRepo as 个人内容仓库
-    participant Hosting as 托管平台构建机
-    participant ThemeRepo as 主题代码仓库
+    actor Author as "✍️ 博主 (内容仓)"
+    participant ContentRepo as "🔒 私有内容仓库"
+    participant Cloudflare as "☁️ Cloudflare Pages / Vercel"
+    participant CDN as "🚀 生产网络"
 
-    Author->>ContentRepo: git push 推送文章或配置修改
-    ContentRepo->>ContentRepo: 运行内容语法与格式校验
-    ContentRepo->>Hosting: 发送 POST 请求触发 Deploy Hook
-    Hosting->>ThemeRepo: 克隆主题代码仓库
-    Hosting->>ContentRepo: 通过 CONTENT_REPO_URL 拉取最新内容
-    Hosting->>Hosting: 执行配置覆盖与静态打包
-    Hosting->>Hosting: 发布并更新全球 CDN 节点
+    Author->>ContentRepo: 1. git push 推送新文章或配置修改
+    ContentRepo->>Cloudflare: 2. POST 触发 Deploy Hook Webhook
+    Cloudflare->>ContentRepo: 3. 构建机拉取私有内容仓库 (通过 Token)
+    Cloudflare->>Cloudflare: 4. 执行 pnpm content:sync && pnpm build
+    Cloudflare->>CDN: 5. 自动全网边缘分发
 ```
 
 ---
 
-## 1. Cloudflare Pages 配置步骤
+## 1. Cloudflare Pages 接入指南 <Badge text="推荐" type="tip" />
 
 ::: steps
-1. **导入项目与构建设置**
+1. **在 Cloudflare Pages 中创建 Deploy Hook**
 
-   - 登录 Cloudflare 控制台；
-   - 进入 **Compute (Workers & Pages)** -> **Create** -> 选择 **Pages** 选项卡（严禁选择 Worker 模式）；
-   - 连接你的 GitHub 账号，并选择你的主题代码仓库；
-   - 配置构建设置：
-     - **Framework preset**：选择 **None** 或 **Astro**
-     - **Build command**：`pnpm run build`
-     - **Build output directory**：`dist`
+   - 登录 Cloudflare 控制台，进入 **Workers & Pages**；
+   - 点击你的博客项目，前往 **Settings** -> **Builds & deployments**；
+   - 滚动到 **Deploy hooks** 区域，点击 **Add deploy hook**；
+   - **Deploy hook name**：填写 `content-push`；
+   - **Branch to build**：选择 ==main==；
+   - 点击 **Add hook** 并**复制生成的完整 Webhook URL**。
 
-   ![Cloudflare Pages 创建与设置](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
+   ![Cloudflare Pages 创建 Deploy Hook](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
 
-2. **配置构建环境变量**
+2. **在 Cloudflare Pages 中配置环境变量**
 
-   在项目创建向导或 **Settings** -> **Environment variables** 中，添加以下环境变量：
+   进入项目的 **Settings** -> **Environment variables**，添加生产环境变量：
+   - **CONTENT_REPO_URL**：==带访问令牌的私有 Git URL=={.error}：
+     ```text title="CONTENT_REPO_URL 格式"
+     https://x-access-token:你的访问令牌@github.com/你的用户名/my-blog-content.git
+     ```
+   - **Build command**：设置为 `pnpm content:sync && pnpm build`。
 
-   | 环境变量名 | 推荐值 | 说明 |
-   | :--- | :--- | :--- |
-   | `NODE_VERSION` | `22` | **必填**，指定 Node.js 22 运行环境 |
-   | `GIT_TERMINAL_PROMPT` | `0` | **必填**，防止 Git 产生终端交互等待 |
-   | `CONTENT_REPO_URL` | `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git` | **私有内容仓必填**，附带访问令牌的克隆地址 |
-   | `BILI_SESSDATA` | `你的凭证` | *可选*，用于追番私密列表同步 |
+3. **在 GitHub 内容仓库中配置 Secret**
 
-   ![Cloudflare 环境变量配置](/images/content-separation/04-deploy/02-hook/06-env-config.png)
-
-3. **创建 Deploy Hook**
-
-   - 进入该 Pages 项目的 **Settings** -> **Builds & deployments**；
-   - 向下滚动找到 **Deploy hooks**，点击 **Add deploy hook**；
-   - 填写名称（如 `content-update`），分支选择 `main`，点击 **Add hook**；
-   - 复制生成的 Webhook URL。
-
-   ![Cloudflare Deploy Hook 配置](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
-
-4. **在 GitHub 内容仓库中配置 Secret**
-
-   - 打开你的 **GitHub 私有内容仓库** -> **Settings** -> **Secrets and variables** -> **Actions**；
+   - 进入你的私有内容仓库，打开 **Settings** -> **Secrets and variables** -> **Actions**；
    - 点击 **New repository secret**；
-   - 填写配置项：
-     - **Name**：必须填入 `CLOUDFLARE_DEPLOY_HOOK`（全大写）
-     - **Secret**：粘贴刚才复制的 Cloudflare 部署钩子 URL
+   - **Name**：填写 ==CLOUDFLARE_DEPLOY_HOOK=={.tip}；
+   - **Secret**：粘贴第一步复制的 Cloudflare Deploy Hook URL；
    - 点击 **Add secret** 保存。
+
+   ![配置 Cloudflare Secret](/images/content-separation/04-deploy/02-hook/11-actions-repository-secrets.png)
+
+4. **在内容仓库中添加触发工作流**
+
+   在私有内容仓库新建 `.github/workflows/trigger-cloudflare.yml`：
+
+   ```yaml title=".github/workflows/trigger-cloudflare.yml"
+   name: Trigger Cloudflare Pages Build
+
+   on:
+     push:
+       branches: [main]
+     workflow_dispatch:
+
+   jobs:
+     deploy-hook:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Call Cloudflare Deploy Hook
+           run: |
+             curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}" # [!code highlight]
+   ```
 :::
 
 ---
 
-## 2. Vercel 配置步骤
+## 2. Vercel 接入指南 <Badge text="主流" type="info" />
 
 ::: steps
-1. **导入项目与构建设置**
+1. **在 Vercel 中创建 Deploy Hook**
 
-   - 登录 Vercel 控制台，点击 **Add New...** -> **Project**；
-   - 导入你的主题代码仓库；
-   - 构建命令填入 `pnpm run build`，输出目录填入 `dist`。
+   - 登录 Vercel 控制台，进入你的博客项目；
+   - 前往 **Settings** -> **Git**；
+   - 滚动到 **Deploy Hooks** 区域；
+   - **Hook Name**：填写 `content-update`；
+   - **Branch**：填写 `main`；
+   - 点击 **Create Hook** 并复制生成的 Webhook URL。
 
-2. **配置构建环境变量**
+2. **在 Vercel 中配置环境变量**
 
-   在 **Environment Variables** 设置中添加：
-   - `NODE_VERSION`: `22`
-   - `GIT_TERMINAL_PROMPT`: `0`
-   - `CONTENT_REPO_URL`: `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git`（私有仓必填）
+   进入 **Settings** -> **Environment Variables**：
+   - **CONTENT_REPO_URL**：`https://x-access-token:你的访问令牌@github.com/你的用户名/my-blog-content.git`
+   - **Build Command**：`pnpm content:sync && pnpm build`
 
-3. **创建 Deploy Hook**
-
-   - 进入项目 **Settings** -> **Git**；
-   - 找到 **Deploy Hooks** 区域，点击 **Create Hook**；
-   - 填写 Hook 名称与分支 `main`，点击 **Create** 并复制生成的 URL。
-
-4. **在 GitHub 内容仓库中配置 Secret**
+3. **在 GitHub 内容仓库中配置 Secret**
 
    在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-   - **Name**：`VERCEL_DEPLOY_HOOK`
-   - **Secret**：粘贴复制的 Vercel Deploy Hook URL。
+   - **Name**：==VERCEL_DEPLOY_HOOK=={.tip}
+   - **Secret**：粘贴复制的 Vercel Webhook URL。
 :::
 
 ---
 
-## 3. 腾讯云 EdgeOne Pages 配置步骤
+## 3. 腾讯云 EdgeOne 接入指南 <Badge text="国内加速" type="tip" />
 
 ::: steps
-1. **创建 Pages 应用**
+1. **在 EdgeOne 中创建部署触发器**
 
-   - 登录腾讯云 EdgeOne 控制台；
-   - 点击 **新建 Pages 应用**，授权并绑定你的主题代码仓库；
-   - 构建命令填入 `pnpm run build`，产物目录填入 `dist`。
+   - 登录腾讯云 EdgeOne Pages 控制台；
+   - 进入项目设置 -> **构建与部署** -> **部署触发器 (Deploy Hook)**；
+   - 新增部署钩子，分支绑定为 `main` 并生成触发 URL。
 
-2. **配置环境变量**
+2. **在 EdgeOne 中配置环境变量**
 
-   在构建设置中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
+   - **CONTENT_REPO_URL**：填写带个人访问令牌的 GitHub 内容仓克隆地址；
+   - **构建命令**：`pnpm content:sync && pnpm build`。
 
-3. **创建部署钩子触发器**
-
-   - 进入应用的 **触发器** 设置页面；
-   - 新建 **部署钩子**，选择分支为 `main`；
-   - 保存并复制生成的触发 URL。
-
-   ![EdgeOne 钩子创建位置](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
-
-4. **在 GitHub 内容仓库中配置 Secret**
+3. **在 GitHub 内容仓库中配置 Secret**
 
    在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-   - **Name**：`EDGEONE_DEPLOY_HOOK`
+   - **Name**：==EDGEONE_DEPLOY_HOOK=={.tip}
    - **Secret**：粘贴复制的 EdgeOne 部署钩子 URL。
 :::
 
 ---
 
-## 4. Netlify 配置步骤
+## 4. Netlify 接入指南
 
 ::: steps
-1. **导入项目与构建设置**
-
-   - 登录 Netlify 控制台，点击 **Add new site** -> **Import an existing project**；
-   - 选择 **GitHub** 并授权选择你的主题代码仓库；
-   - 配置构建命令为 `pnpm run build`，输出目录为 `dist`。
-
-2. **配置构建环境变量**
-
-   在 **Site configuration** -> **Environment variables** 中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
-
-3. **创建 Build Hook**
+1. **在 Netlify 中创建 Build Hook**
 
    - 进入项目的 **Site configuration** -> **Build & deploy** -> **Continuous deployment**；
    - 找到 **Build hooks**，点击 **Add build hook**；
    - 填写名称并将分支指定为 `main`，点击 **Save** 并复制生成的 Webhook URL。
 
-4. **在 GitHub 内容仓库中配置 Secret**
+2. **在 GitHub 内容仓库中配置 Secret**
 
    在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-   - **Name**：`NETLIFY_DEPLOY_HOOK`
+   - **Name**：==NETLIFY_DEPLOY_HOOK=={.tip}
    - **Secret**：粘贴复制的 Netlify Webhook URL。
 :::
 
@@ -173,11 +158,11 @@ sequenceDiagram
 
 | 托管平台 | GitHub Secret 变量名（严格匹配） | 触发机制说明 |
 | :--- | :--- | :--- |
-| **跨仓联动构建（推荐）** | `DISPATCH_TOKEN` | 通知主题代码仓通过 GitHub Actions 执行拉取、编译与发布 |
-| **Cloudflare Pages** | `CLOUDFLARE_DEPLOY_HOOK` | 推送后向 Cloudflare Deploy Hook 发送 POST 请求触发重新拉取与构建 |
-| **Vercel** | `VERCEL_DEPLOY_HOOK` | 推送后向 Vercel Deploy Hook 发送 POST 请求触发重新部署 |
-| **腾讯云 EdgeOne** | `EDGEONE_DEPLOY_HOOK` | 推送后向 EdgeOne 部署钩子发送 POST 请求触发构建发布 |
-| **Netlify** | `NETLIFY_DEPLOY_HOOK` | 推送后向 Netlify Build Hook 发送 POST 请求触发重新编译 |
+| **跨仓联动构建（推荐）** | `DISPATCH_TOKEN` <Badge text="推荐" type="tip" /> | 通知主题代码仓通过 GitHub Actions 执行拉取、编译与发布 |
+| **Cloudflare Pages** | `CLOUDFLARE_DEPLOY_HOOK` <Badge text="边缘" type="info" /> | 推送后向 Cloudflare Deploy Hook 发送 POST 请求触发重新拉取与构建 |
+| **Vercel** | `VERCEL_DEPLOY_HOOK` <Badge text="全球" type="info" /> | 推送后向 Vercel Deploy Hook 发送 POST 请求触发重新部署 |
+| **腾讯云 EdgeOne** | `EDGEONE_DEPLOY_HOOK` <Badge text="国内" type="tip" /> | 推送后向 EdgeOne 部署钩子发送 POST 请求触发构建发布 |
+| **Netlify** | `NETLIFY_DEPLOY_HOOK` <Badge text="通用" type="info" /> | 推送后向 Netlify Build Hook 发送 POST 请求触发重新编译 |
 
 ---
 
