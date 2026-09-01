@@ -264,33 +264,54 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --------------------------------------------------------------------------
-   7. Home Features Grid (M3e Expressive Cards)
+   7. Home Features Grid (M3e Expressive Translucent Cards)
    -------------------------------------------------------------------------- */
 .vp-home-feature {
-  border-radius: 20px !important;
+  border-radius: 16px !important;
   border: 1px solid var(--vp-c-gutter) !important;
-  background-color: var(--vp-c-bg-elv) !important;
-  box-shadow: var(--vp-shadow-1) !important;
-  padding: 24px !important;
-  transition: all 0.28s var(--vp-m3-ease-decelerate) !important;
+  background-color: var(--vp-c-bg-alt) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  transition: all 0.25s var(--vp-m3-ease-decelerate) !important;
+}
+
+.vp-home-feature .box {
+  padding: 22px 24px !important;
 }
 
 .vp-home-feature:hover {
-  transform: translateY(-4px) !important;
-  box-shadow: var(--vp-shadow-hover) !important;
+  background-color: var(--vp-c-bg-elv) !important;
   border-color: var(--vp-c-brand-2) !important;
+  box-shadow: 0 8px 24px -4px rgba(0, 104, 116, 0.15) !important;
+  transform: translateY(-3px) !important;
+}
+
+[data-theme="dark"] .vp-home-feature {
+  background-color: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .vp-home-feature:hover {
+  background-color: rgba(79, 216, 235, 0.06) !important;
+  border-color: rgba(79, 216, 235, 0.35) !important;
+  box-shadow: 0 8px 28px -4px rgba(0, 0, 0, 0.5), 0 0 16px -2px rgba(79, 216, 235, 0.18) !important;
+  transform: translateY(-3px) !important;
 }
 
 .vp-home-feature .icon {
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 14px !important;
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
   background-color: var(--vp-c-brand-soft) !important;
   color: var(--vp-c-brand-1) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: transform 0.32s var(--vp-m3-ease-decelerate) !important;
+  font-size: 22px !important;
+  margin-bottom: 14px !important;
+  transition: transform 0.3s var(--vp-m3-ease-decelerate) !important;
 }
 
 .vp-home-feature:hover .icon {
@@ -298,16 +319,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .vp-home-feature .title {
-  font-size: 16.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.015em !important;
-  margin-top: 14px !important;
+  font-size: 16px !important;
+  font-weight: 650 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.01em !important;
+  margin: 0 !important;
 }
 
 .vp-home-feature .details {
-  line-height: 1.6 !important;
   font-size: 13.5px !important;
+  line-height: 1.6 !important;
   color: var(--vp-c-text-2) !important;
+  padding-top: 8px !important;
+  margin: 0 !important;
 }
 
 /* --------------------------------------------------------------------------
