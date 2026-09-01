@@ -485,6 +485,7 @@ mark.info {
   }
 }
 
+/* Code Block Title */
 .code-block-title .code-block-title-bar {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -497,18 +498,55 @@ mark.info {
   border-bottom-right-radius: 12px;
 }
 
+/* Code Groups */
 .vp-code-group {
   border-radius: 12px !important;
 }
 
-/* File Tree & Code Tree */
-.vp-file-tree,
-.vp-code-tree {
-  border-radius: 14px !important;
+/* File Tree Fixes */
+.vp-file-tree {
+  border-radius: 12px !important;
   border: 1px solid var(--vp-c-gutter) !important;
   background-color: var(--vp-c-bg-elv) !important;
   box-shadow: var(--vp-shadow-1) !important;
-  padding: 16px 18px !important;
+}
+
+/* Fix Copy Button in File Tree so it doesn't overlap item rows */
+.vp-file-tree .vp-copy-code-button {
+  top: 8px !important;
+  right: 12px !important;
+}
+
+.vp-file-tree .vp-file-tree-title + .vp-copy-code-button {
+  top: 6px !important;
+  right: 12px !important;
+}
+
+/* Code Tree Layout & Text Clipping Fix */
+.vp-code-tree {
+  border-radius: 12px !important;
+  border: 1px solid var(--vp-c-gutter) !important;
+  background-color: var(--vp-code-block-bg) !important;
+  box-shadow: var(--vp-shadow-1) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.vp-code-tree .code-tree-panel {
+  background-color: var(--vp-c-bg-alt) !important;
+}
+
+.vp-code-tree .code-panel .code-block-title .code-block-title-bar {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.vp-code-tree .code-panel div[class*="language-"] {
+  margin: 0 !important;
+  border-radius: 0 !important;
+  flex: 1 1 auto !important;
 }
 
 table {
