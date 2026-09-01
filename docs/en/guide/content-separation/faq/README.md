@@ -15,7 +15,7 @@ This document aggregates common diagnostic solutions, permission fixes, and conf
 ### Symptom
 When pushing commits to the content repository, `trigger-build.yml` fails:
 ```text title="GitHub Actions Error"
-HttpError: Resource not accessible by integration // [!code error]
+HttpError: Resource not accessible by integration
 ```
 
 ### Cause
@@ -44,7 +44,7 @@ The `DISPATCH_TOKEN` configured in your content repository lacks write permissio
 ### Symptom
 Cloudflare Pages or Vercel build log outputs:
 ```text title="Build Log Error"
-fatal: Authentication failed for 'https://github.com/...' // [!code error]
+fatal: Authentication failed for 'https://github.com/...'
 ```
 
 ### Cause
@@ -70,7 +70,7 @@ Attributes modified in `config/site.yaml` or other YAML files do not update on t
 1. **Run Validation Command**
 
    ```bash title="content:validate"
-   pnpm content:validate // [!code highlight]
+   pnpm content:validate
    ```
 
    Check for typo suggestions (e.g. `titel` instead of `title`).
@@ -114,7 +114,7 @@ Perform a safe reset and cache purge:
 pnpm content:clean
 
 # 2. Execute clean reset
-pnpm content:clean --yes // [!code highlight]
+pnpm content:clean --yes
 
 # 3. Re-sync content
 pnpm content:sync

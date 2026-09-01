@@ -31,7 +31,7 @@ Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无�
 pnpm content:sync
 
 # 2. 全量强制同步（重新覆盖所有文章、相册与数据文件）
-pnpm content:sync --clean-temp // [!code highlight]
+pnpm content:sync --clean-temp
 ```
 
 ### 适用场景
@@ -86,7 +86,7 @@ pnpm content:validate
 pnpm content:status
 
 # 或检查远端 Git 仓库连接与最新版本：
-pnpm content:status --remote // [!code highlight]
+pnpm content:status --remote
 ```
 
 ### 适用场景
@@ -103,7 +103,7 @@ pnpm content:status --remote // [!code highlight]
 
 ```bash title="content:export"
 pnpm content:export          # 预演：仅输出将要导出的文件清单
-pnpm content:export --yes    # 实际执行导出 // [!code highlight]
+pnpm content:export --yes    # 实际执行导出
 ```
 
 ### 适用场景
@@ -119,7 +119,7 @@ pnpm content:export --yes    # 实际执行导出 // [!code highlight]
 
 ```bash title="content:clean"
 pnpm content:clean          # 预演：打印清理计划
-pnpm content:clean --yes    # 实际执行清理 // [!code highlight]
+pnpm content:clean --yes    # 实际执行清理
 ```
 
 ### 适用场景
@@ -150,7 +150,7 @@ pnpm content:clean --yes    # 实际执行清理 // [!code highlight]
 
 ```bash title="content:eject"
 pnpm content:eject          # 预演：打印迁移计划与生成清单
-pnpm content:eject --yes    # 实际执行迁移（默认导出到 ../shirone-content） // [!code highlight]
+pnpm content:eject --yes    # 实际执行迁移（默认导出到 ../shirone-content）
 pnpm content:eject --yes --out ..\my-content  # 指定自定义导出路径
 ```
 

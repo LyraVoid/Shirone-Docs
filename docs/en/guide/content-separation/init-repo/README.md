@@ -40,7 +40,7 @@ If you already have the theme repository locally, the built-in eject wizard is t
    pnpm.cmd content:eject
 
    # 2. Confirm and execute eject (default destination: ../shirone-content)
-   pnpm.cmd content:eject --yes // [!code highlight]
+   pnpm.cmd content:eject --yes
 
    # Or specify a custom output directory:
    pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
@@ -52,7 +52,7 @@ If you already have the theme repository locally, the built-in eject wizard is t
    pnpm content:eject
 
    # 2. Confirm and execute eject
-   pnpm content:eject --yes // [!code highlight]
+   pnpm content:eject --yes
 
    # Custom output path:
    pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"

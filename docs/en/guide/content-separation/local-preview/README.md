@@ -36,7 +36,7 @@ Install dependencies in the theme repository:
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
    # 2. Run a single sync to materialize content
-   pnpm.cmd content:sync // [!code highlight]
+   pnpm.cmd content:sync
 
    # 3. Start local development server
    pnpm.cmd dev
@@ -48,7 +48,7 @@ Install dependencies in the theme repository:
    export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
    # 2. Run a single sync
-   pnpm content:sync // [!code highlight]
+   pnpm content:sync
 
    # 3. Start development server
    pnpm dev
@@ -97,7 +97,7 @@ Use ==live incremental watch mode=={.tip}:
 
    ```powershell title="Terminal 2 (Content Watcher)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
-   pnpm.cmd content:watch // [!code highlight]
+   pnpm.cmd content:watch
    ```
 :::
 

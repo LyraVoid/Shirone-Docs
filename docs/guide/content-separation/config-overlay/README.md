@@ -39,7 +39,7 @@ flowchart TD
 banner:
   homeText:
     typewriter:
-      speed: 150 # [!code highlight]
+      speed: 150
 ```
 
 打字机的删除速度、停顿时间以及壁纸轮播的其他参数仍会自动继承主题默认值。
@@ -63,7 +63,7 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 
 ```text title="Terminal Typo Suggestion"
   config/site.yaml's banner.homeText: Type '{ titel: string }' is not assignable to type 'DeepPartial<HomeTextConfig>'
-    Did you mean "title"? // [!code highlight]
+    Did you mean "title"?
 ```
 
 这种机制让你在本地就能第一时间发现并修正问题，无需等到部署上线后才排查错误。
@@ -121,8 +121,8 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 
 ```yaml title="config/site.yaml"
 # 仅需声明要修改的字段，其他全部继承主题默认值
-title: "我的技术博客" # [!code ++]
-description: "分享编程与生活" # [!code ++]
+title: "我的技术博客"
+description: "分享编程与生活"
 favicon: "/favicon.ico"
 
 banner:
@@ -142,7 +142,7 @@ layout: "two-column"
 sticky: "toc"
 
 # 数组整体替换：仅启用并按顺序展示以下 4 个组件
-components: # [!code highlight]
+components:
   - "profile"
   - "toc"
   - "recent-posts"

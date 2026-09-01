@@ -39,7 +39,7 @@ For instance, in `site.yaml`, if you only wish to adjust typewriter typing speed
 banner:
   homeText:
     typewriter:
-      speed: 150 # [!code highlight]
+      speed: 150
 ```
 
 Deletion speed, pause delays, and wallpaper sliders automatically inherit upstream defaults.
@@ -61,7 +61,7 @@ Shirone incorporates compile-time schema validation. When running `pnpm content:
 
 ```text title="Terminal Typo Suggestion"
   config/site.yaml's banner.homeText: Type '{ titel: string }' is not assignable to type 'DeepPartial<HomeTextConfig>'
-    Did you mean "title"? // [!code highlight]
+    Did you mean "title"?
 ```
 
 ### 2. Automated Bridge Module Compilation
@@ -115,8 +115,8 @@ All config files reside under `config/` in your content repository:
 
 ```yaml title="config/site.yaml"
 # Only declare fields you want to change
-title: "My Tech Notes" # [!code ++]
-description: "Exploring programming and design" # [!code ++]
+title: "My Tech Notes"
+description: "Exploring programming and design"
 favicon: "/favicon.ico"
 
 banner:
@@ -136,7 +136,7 @@ layout: "two-column"
 sticky: "toc"
 
 # Array full replacement: renders only these 4 widgets
-components: # [!code highlight]
+components:
   - "profile"
   - "toc"
   - "recent-posts"

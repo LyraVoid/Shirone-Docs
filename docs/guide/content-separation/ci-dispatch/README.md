@@ -76,8 +76,8 @@ sequenceDiagram
          - name: Dispatch build event to theme repository
            uses: peter-evans/repository-dispatch@v3
            with:
-             token: ${{ secrets.DISPATCH_TOKEN }} # [!code highlight]
-             repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 请替换为你的主题代码仓路径 # [!code warning]
+             token: ${{ secrets.DISPATCH_TOKEN }}
+             repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 请替换为你的主题代码仓路径
              event-type: content-update
    ```
 
@@ -92,7 +92,7 @@ sequenceDiagram
      push:
        branches: [main]
      repository_dispatch:
-       types: [content-update] # 响应内容仓库发送的派发事件 # [!code highlight]
+       types: [content-update] # 响应内容仓库发送的派发事件
      workflow_dispatch:
 
    jobs:
@@ -118,7 +118,7 @@ sequenceDiagram
 
          - name: Pull Private Content & Build
            env:
-             CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git" # [!code highlight]
+             CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
            run: |
              pnpm content:sync
              pnpm build

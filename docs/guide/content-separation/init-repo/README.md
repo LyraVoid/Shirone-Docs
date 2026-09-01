@@ -40,7 +40,7 @@ permalink: /guide/content-separation/init-repo/
    pnpm.cmd content:eject
 
    # 2. 确认无误后执行迁出（默认导出至上一级目录的 ../shirone-content）
-   pnpm.cmd content:eject --yes // [!code highlight]
+   pnpm.cmd content:eject --yes
 
    # 也可以通过 --out 参数指定自定义导出路径：
    pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
@@ -52,7 +52,7 @@ permalink: /guide/content-separation/init-repo/
    pnpm content:eject
 
    # 2. 确认无误后执行迁出
-   pnpm content:eject --yes // [!code highlight]
+   pnpm content:eject --yes
 
    # 自定义导出路径
    pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"

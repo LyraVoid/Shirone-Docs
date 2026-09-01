@@ -15,7 +15,7 @@ permalink: /guide/content-separation/faq/
 ### 现象
 内容仓推送新提交后，`trigger-build.yml` 工作流报错：
 ```text title="GitHub Actions Error"
-HttpError: Resource not accessible by integration // [!code error]
+HttpError: Resource not accessible by integration
 ```
 
 ### 原因分析
@@ -44,7 +44,7 @@ HttpError: Resource not accessible by integration // [!code error]
 ### 现象
 在 Cloudflare Pages 或 Vercel 构建时，日志提示克隆私有内容仓失败：
 ```text title="Build Log Error"
-fatal: Authentication failed for 'https://github.com/...' // [!code error]
+fatal: Authentication failed for 'https://github.com/...'
 ```
 
 ### 原因分析
@@ -70,7 +70,7 @@ fatal: Authentication failed for 'https://github.com/...' // [!code error]
 1. **运行安全预检命令**
 
    ```bash title="content:validate"
-   pnpm content:validate // [!code highlight]
+   pnpm content:validate
    ```
 
    查看是否有字段拼写错误提示（例如将 `title` 误写为 `titel`）。
@@ -114,7 +114,7 @@ fatal: Authentication failed for 'https://github.com/...' // [!code error]
 pnpm content:clean
 
 # 2. 确认无误后执行清理重置
-pnpm content:clean --yes // [!code highlight]
+pnpm content:clean --yes
 
 # 3. 重新同步最新内容
 pnpm content:sync

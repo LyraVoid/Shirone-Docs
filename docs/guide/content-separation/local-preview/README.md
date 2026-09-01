@@ -36,7 +36,7 @@ permalink: /guide/content-separation/local-preview/
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
-   pnpm.cmd content:sync // [!code highlight]
+   pnpm.cmd content:sync
 
    # 3. 启动本地开发服务器
    pnpm.cmd dev
@@ -48,7 +48,7 @@ permalink: /guide/content-separation/local-preview/
    export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
-   pnpm content:sync // [!code highlight]
+   pnpm content:sync
 
    # 3. 启动本地开发服务器
    pnpm dev
@@ -97,7 +97,7 @@ permalink: /guide/content-separation/local-preview/
 
    ```powershell title="Terminal 2 (Content Watcher)"
    $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
-   pnpm.cmd content:watch // [!code highlight]
+   pnpm.cmd content:watch
    ```
 :::
 

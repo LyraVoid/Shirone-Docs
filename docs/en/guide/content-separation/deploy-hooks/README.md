@@ -78,7 +78,7 @@ sequenceDiagram
        steps:
          - name: Call Cloudflare Deploy Hook
            run: |
-             curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}" # [!code highlight]
+             curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
    ```
 :::
 

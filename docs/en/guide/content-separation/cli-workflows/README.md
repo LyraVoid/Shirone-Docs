@@ -31,7 +31,7 @@ Shirone provides a dedicated suite of CLI commands engineered for content separa
 pnpm content:sync
 
 # 2. Full clean sync (re-materialize all posts, albums, and configs)
-pnpm content:sync --clean-temp // [!code highlight]
+pnpm content:sync --clean-temp
 ```
 
 ### Key Mechanics
@@ -76,7 +76,7 @@ pnpm content:validate
 pnpm content:status
 
 # Inspect remote Git connection and latest commit:
-pnpm content:status --remote // [!code highlight]
+pnpm content:status --remote
 ```
 
 ---
@@ -85,7 +85,7 @@ pnpm content:status --remote // [!code highlight]
 
 ```bash title="content:export"
 pnpm content:export          # Dry run: prints export plan
-pnpm content:export --yes    # Execute export // [!code highlight]
+pnpm content:export --yes    # Execute export
 ```
 
 ### Key Mechanics
@@ -98,7 +98,7 @@ pnpm content:export --yes    # Execute export // [!code highlight]
 
 ```bash title="content:clean"
 pnpm content:clean          # Dry run: prints clean plan
-pnpm content:clean --yes    # Execute clean // [!code highlight]
+pnpm content:clean --yes    # Execute clean
 ```
 
 ### Snapshot Backup & Recovery
