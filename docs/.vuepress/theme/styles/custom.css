@@ -476,23 +476,55 @@ mark.info {
 }
 
 /* --------------------------------------------------------------------------
-   12. Code Blocks, Trees & Tables
+   12. Code Blocks, Groups, Trees & Tables
    -------------------------------------------------------------------------- */
-div[class*="language-"] {
-  border-radius: 16px !important;
-  margin: 18px 0 !important;
-  border: 1px solid var(--vp-c-gutter) !important;
+/* Standalone code blocks */
+.vp-doc div[class*="language-"] {
+  border-radius: 12px;
+  margin: 16px 0;
+  transition: background-color var(--vp-t-color);
 }
 
+/* Code block with title wrapper */
+.code-block-title {
+  border-radius: 12px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+
+.code-block-title .code-block-title-bar {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  margin-bottom: -16px;
+  background-color: var(--vp-code-block-bg);
+}
+
+.vp-doc .code-block-title div[class*="language-"] {
+  margin-top: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+}
+
+/* Code groups / tabs */
 .vp-code-group {
-  border-radius: 18px !important;
+  border-radius: 14px !important;
   overflow: hidden !important;
+  margin: 16px 0 !important;
   box-shadow: var(--vp-shadow-1) !important;
 }
 
+.vp-code-group div[class*="language-"] {
+  margin: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+/* File Tree & Code Tree */
 .vp-file-tree,
 .vp-code-tree {
-  border-radius: 18px !important;
+  border-radius: 16px !important;
   border: 1px solid var(--vp-c-gutter) !important;
   background-color: var(--vp-c-bg-elv) !important;
   box-shadow: var(--vp-shadow-1) !important;
@@ -500,7 +532,7 @@ div[class*="language-"] {
 }
 
 table {
-  border-radius: 14px !important;
+  border-radius: 12px !important;
   overflow: hidden !important;
   border: 1px solid var(--vp-c-gutter) !important;
 }
