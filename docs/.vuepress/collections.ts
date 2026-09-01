@@ -45,6 +45,22 @@ const zhGuideDoc = defineCollection({
       ],
     },
     {
+      text: '内容分离',
+      icon: 'ri:git-branch-line',
+      prefix: '/guide/content-separation/',
+      collapsed: true,
+      items: [
+        { text: '架构概览', link: 'concepts/', icon: 'ri:information-line', badge: { type: 'tip', text: '核心' } },
+        { text: '初始化私有仓库', link: 'init-repo/', icon: 'ri:folder-add-line' },
+        { text: '本地预览与调试', link: 'local-preview/', icon: 'ri:computer-line' },
+        { text: 'CLI 工具链', link: 'cli-workflows/', icon: 'ri:terminal-box-line', badge: { type: 'info', text: 'CLI' } },
+        { text: '配置覆盖原理', link: 'config-overlay/', icon: 'ri:settings-3-line', badge: { type: 'warning', text: '原理' } },
+        { text: '跨仓自动构建', link: 'ci-dispatch/', icon: 'ri:cloud-line', badge: { type: 'tip', text: '推荐' } },
+        { text: '托管平台部署钩子', link: 'deploy-hooks/', icon: 'ri:link-m' },
+        { text: '常见问题与排错', link: 'faq/', icon: 'ri:question-line' },
+      ],
+    },
+    {
       text: '基础布局',
       icon: 'ri:layout-2-line',
       prefix: '/guide/layout/',
@@ -250,6 +266,7 @@ const zhGuideDoc = defineCollection({
   ].sort((left, right) => {
     const order = [
       '/guide/',
+      '/guide/content-separation/',
       '/guide/layout/',
       '/guide/article/',
       '/guide/writing/',
@@ -304,6 +321,22 @@ const enGuideDoc = defineCollection({
         { text: 'Frontmatter', link: 'frontmatter/', icon: 'ri:file-list-3-line', badge: { type: 'warning', text: 'Config' } },
         { text: 'Writing Posts', link: 'writing-post/', icon: 'ri:quill-pen-line' },
         { text: 'Build Optimization', link: 'optimize-build/', icon: 'ri:speed-up-line', badge: { type: 'tip', text: 'Optimize' } },
+      ],
+    },
+    {
+      text: 'Content Separation',
+      icon: 'ri:git-branch-line',
+      prefix: '/en/guide/content-separation/',
+      collapsed: true,
+      items: [
+        { text: 'Architecture Overview', link: 'concepts/', icon: 'ri:information-line', badge: { type: 'tip', text: 'Core' } },
+        { text: 'Initialize Private Repo', link: 'init-repo/', icon: 'ri:folder-add-line' },
+        { text: 'Local Preview & Debugging', link: 'local-preview/', icon: 'ri:computer-line' },
+        { text: 'CLI Toolchain', link: 'cli-workflows/', icon: 'ri:terminal-box-line', badge: { type: 'info', text: 'CLI' } },
+        { text: 'Configuration Overlay', link: 'config-overlay/', icon: 'ri:settings-3-line', badge: { type: 'warning', text: 'Overlay' } },
+        { text: 'Cross-Repo CI Dispatch', link: 'ci-dispatch/', icon: 'ri:cloud-line', badge: { type: 'tip', text: 'Recommended' } },
+        { text: 'Hosting Deploy Hooks', link: 'deploy-hooks/', icon: 'ri:link-m' },
+        { text: 'Troubleshooting & FAQ', link: 'faq/', icon: 'ri:question-line' },
       ],
     },
     {
@@ -512,6 +545,7 @@ const enGuideDoc = defineCollection({
   ].sort((left, right) => {
     const order = [
       '/en/guide/',
+      '/en/guide/content-separation/',
       '/en/guide/layout/',
       '/en/guide/article/',
       '/en/guide/writing/',

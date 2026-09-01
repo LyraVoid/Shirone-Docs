@@ -132,10 +132,11 @@ pnpm build
 
 如果希望将主题代码与个人内容分仓管理（例如内容仓库设为私有），可以使用官方配套仓库 [Shirone-Content](https://github.com/LyraVoid/Shirone-Content)：将文章、说说、数据、媒体与 `config/*.yaml` 覆盖的内容模板放入独立仓库，再让主题仓指向它。
 
-普通用户直接在主题仓的 `src/content/` 中写作即可，详见主题仓库的《内容分离指南》。
+普通用户直接在主题仓的 `src/content/` 中写作即可，详见 [内容分离架构概览](/guide/content-separation/concepts/)。
 
 ---
 
 ## 下一步
 
 - 回顾 [主题介绍](/guide/intro/)：了解 Shirone 的设计理念与核心特性
+- 查阅 [内容分离架构概览](/guide/content-separation/concepts/)：了解双仓解耦与平滑升级机制

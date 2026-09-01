@@ -132,10 +132,11 @@ On your hosting platform, set the build command to `pnpm build` and the output d
 
 If you prefer to manage theme code and personal content in separate repositories (e.g. keep the content repo private), use the official companion repository [Shirone-Content](https://github.com/LyraVoid/Shirone-Content): put posts, moments, data, media and the `config/*.yaml` content overrides into an independent repository, then point the theme repo to it.
 
-Most users can simply write inside `src/content/` of the theme repo. See the Content Separation guide in the theme repository for details.
+Most users can simply write inside `src/content/` of the theme repo. See the [Content Separation Overview](/en/guide/content-separation/concepts/) for details.
 
 ---
 
 ## Next Steps
 
 - Review the [Introduction](/en/guide/intro/) to learn about Shirone's design philosophy and key features
+- Read the [Content Separation Overview](/en/guide/content-separation/concepts/) to explore dual-repo decoupled architecture
