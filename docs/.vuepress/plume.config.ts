@@ -18,7 +18,7 @@ import { enNavbar, zhNavbar } from './navbar'
  * @see https://theme-plume.vuejs.press/config/theme/
  */
 export default defineThemeConfig({
-  logo: '/favicon.svg',
+  logo: '/icon.png',
 
   /* 社交链接 */
   social: [
@@ -34,7 +34,7 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/theme/#profile
        */
       profile: {
-        avatar: '/favicon.svg',
+        avatar: '/icon.png',
         name: 'Shirone',
         description: '从零开始看世界',
       },
@@ -47,7 +47,7 @@ export default defineThemeConfig({
        * @see https://theme-plume.vuejs.press/config/theme/#profile
        */
       profile: {
-        avatar: '/favicon.svg',
+        avatar: '/icon.png',
         name: 'Shirone',
         description: 'Seeing the world from scratch',
       },

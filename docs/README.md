@@ -6,12 +6,12 @@ config:
     type: doc-hero
     full: true
     background: tint-plate
-    tintPlate: 180,230,228
+    tintPlate: 255,205,220
     hero:
       name: Shirone
       tagline: Astro Next Theme
       text: 一个简约 & 功能丰富的 Astro 博客主题
-      image: /favicon.svg
+      image: /icon.png
 
       actions:
         -

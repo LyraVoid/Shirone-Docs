@@ -6,12 +6,12 @@ config:
     type: doc-hero
     full: true
     background: tint-plate
-    tintPlate: 180,230,228
+    tintPlate: 255,205,220
     hero:
       name: Shirone
       tagline: Astro Next Theme
       text: A minimalist & feature-rich Astro blog theme
-      image: /favicon.svg
+      image: /icon.png
 
       actions:
         -
