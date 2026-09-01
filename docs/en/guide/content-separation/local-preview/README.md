@@ -4,9 +4,7 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/local-preview/
 ---
 
-# Local Preview & Debugging
-
-Before pushing articles or configurations to production, you can launch a local development server to preview typography and styling in real-time.
+Before pushing posts or config changes to remote, you can run a local development server to preview Markdown rendering and styling in real time.
 
 ---
 
@@ -33,7 +31,7 @@ Install dependencies in the theme repository:
    @tab Windows (PowerShell)
    ```powershell title="PowerShell"
    # 1. Set the absolute path of your content repository
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
 
    # 2. Run a single sync to materialize content
    pnpm.cmd content:sync
@@ -89,14 +87,14 @@ Use ==live incremental watch mode=={.tip}:
 1. **Launch Development Server (Terminal 1)**
 
    ```powershell title="Terminal 1 (Dev Server)"
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
    pnpm.cmd dev
    ```
 
 2. **Launch Incremental Watcher (Terminal 2)**
 
    ```powershell title="Terminal 2 (Content Watcher)"
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
    pnpm.cmd content:watch
    ```
 :::
@@ -107,8 +105,26 @@ Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian,
 > Create a `.env` file in the root of your theme repository so you do not need to set `$env:CONTENT_DIR` manually each time:
 >
 > ```ini title=".env"
-> CONTENT_DIR="D:/Code/my-blog-content"
+> CONTENT_DIR="<your-content-repo-path>" # e.g. "D:/Code/my-blog-content"
 > ```
+
+---
+
+## FAQ
+
+::: collapse
+- How to stop local development?
+
+  Press `Ctrl + C` in the respective terminal window to stop the dev server or watcher.
+
+- Error: Path not found
+
+  Verify that `CONTENT_DIR` points to a valid absolute path containing a standard `config/` or `content/` directory.
+
+- External images not updating in browser
+
+  Ensure images reside in `assets/` or `public/` in your content repository. For newly added files in deep subdirectories, run `pnpm content:sync` once to refresh indices.
+:::
 
 ---
 

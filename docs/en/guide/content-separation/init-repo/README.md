@@ -4,12 +4,10 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/init-repo/
 ---
 
-# Initializing Private Content Repo
-
 There are two recommended methods to set up your standalone content repository:
 
-- **Method 1 (Recommended): One-click Eject with `content:eject`** <Badge text="Recommended" type="tip" />: If you have already cloned or forked the theme repo, a single command extracts your posts, photos, data entities, and configurations into a structured content repository;
-- **Method 2: Clone from the Official Template** <Badge text="From Scratch" type="info" />: Best for users starting from scratch with a dual-repo setup.
+- [Method 1: One-click Eject with content:eject](#method-1-using-content-eject-recommended) <Badge text="Recommended" type="tip" />: Best if you already have the theme repository locally and wish to extract existing content;
+- [Method 2: Clone from Official Template](#method-2-clone-from-official-template) <Badge text="From Scratch" type="info" />: Best for users starting from scratch directly with a dual-repo setup.
 
 ---
 
@@ -43,7 +41,7 @@ If you already have the theme repository locally, the built-in eject wizard is t
    pnpm.cmd content:eject --yes
 
    # Or specify a custom output directory:
-   pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
+   pnpm.cmd content:eject --yes --out "<target-path>" # e.g. "D:\Code\my-blog-content"
    ```
 
    @tab Linux / macOS (Bash)
@@ -55,7 +53,7 @@ If you already have the theme repository locally, the built-in eject wizard is t
    pnpm content:eject --yes
 
    # Custom output path:
-   pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
+   pnpm content:eject --yes --out "<target-path>" # e.g. "/Users/yourname/Code/my-blog-content"
    ```
    :::
 

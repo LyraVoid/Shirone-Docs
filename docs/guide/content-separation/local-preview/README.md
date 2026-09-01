@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/local-preview/
 ---
 
-# 本地预览与实时调试
-
 在将文章或配置推送到远端之前，你可以在本地启动开发服务器，实时查看 Markdown 排版与样式效果。
 
 ---
@@ -33,7 +31,7 @@ permalink: /guide/content-separation/local-preview/
    @tab Windows (PowerShell)
    ```powershell title="PowerShell"
    # 1. 设置内容仓库的本地路径（请替换为你电脑上的真实绝对路径）
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
    pnpm.cmd content:sync
@@ -45,7 +43,7 @@ permalink: /guide/content-separation/local-preview/
    @tab Linux / macOS (Bash / Zsh)
    ```bash title="Bash"
    # 1. 设置内容仓库的本地路径
-   export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+   export CONTENT_DIR="<你的内容仓库绝对路径>" # 例如 "/Users/yourname/Code/my-blog-content"
 
    # 2. 执行一次内容同步与配置合并
    pnpm content:sync
@@ -89,14 +87,14 @@ permalink: /guide/content-separation/local-preview/
 1. **启动本地预览服务（终端窗口 1）**
 
    ```powershell title="Terminal 1 (Dev Server)"
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
    pnpm.cmd dev
    ```
 
 2. **启动实时增量监听（终端窗口 2）**
 
    ```powershell title="Terminal 2 (Content Watcher)"
-   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
+   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
    pnpm.cmd content:watch
    ```
 :::
@@ -107,21 +105,26 @@ permalink: /guide/content-separation/local-preview/
 > 你可以直接在主题代码仓根目录下新建 `.env` 文件，写入内容仓库路径，这样无需每次在终端手动设置环境变量：
 >
 > ```ini title=".env"
-> CONTENT_DIR="D:/Code/my-blog-content"
+> CONTENT_DIR="<你的内容仓库绝对路径>" # 例如 "D:/Code/my-blog-content"
 > ```
 
 ---
 
 ## 常见疑问排查
 
-### 1. 如何退出本地开发？
-在对应终端窗口中按下快捷键 `Ctrl + C` 即可停止开发服务器或监听器。
+::: collapse
+- 如何退出本地开发？
 
-### 2. 报错提示找不到路径
-请检查 `CONTENT_DIR` 的路径是否为有效的绝对路径，且该目录下包含合规的 `config/` 或 `content/` 文件夹。
+  在对应终端窗口中按下快捷键 `Ctrl + C` 即可停止开发服务器或监听器。
 
-### 3. 修改了外部图片但浏览器未更新
-确保图片放置在内容仓的 `assets/` 或 `public/` 目录下。若属于深层嵌套目录中的新增文件，重新运行一次 `pnpm content:sync` 即可完成全量索引刷新。
+- 报错提示找不到路径
+
+  请检查 `CONTENT_DIR` 的路径是否为有效的绝对路径，且该目录下包含合规的 `config/` 或 `content/` 文件夹。
+
+- 修改了外部图片但浏览器未更新
+
+  确保图片放置在内容仓的 `assets/` 或 `public/` 目录下。若属于深层嵌套目录中的新增文件，重新运行一次 `pnpm content:sync` 即可完成全量索引刷新。
+:::
 
 ---
 

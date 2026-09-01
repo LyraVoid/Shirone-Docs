@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/cli-workflows/
 ---
 
-# CLI Workflows & Toolchain
-
 Shirone provides a dedicated suite of CLI commands engineered for content separation. From external drafting to ==zero-disk memory validation=={.tip}, and bi-directional synchronization to safe snapshot resets, everything is executable via intuitive commands.
 
 ---

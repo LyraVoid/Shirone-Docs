@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/faq/
 ---
 
-# 常见问题与排错
-
 本文汇总了在双仓内容分离架构下常见的错误现象、原因分析与解决方案。
 
 ---

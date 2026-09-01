@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/concepts/
 ---
 
-# Content Separation Overview
-
 Shirone provides native support for decoupled content separation, allowing you to isolate the ==theme frontend engine== and your ==personal content repository== into two independent Git repositories.
 
 ---

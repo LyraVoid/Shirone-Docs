@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/ci-dispatch/
 ---
 
-# 跨仓自动化构建与发布
-
 这是官方推荐的自动化部署方案。
 
 在这种模式下，内容仓库每次推送更新，会自动通知主题代码仓库。代码仓库的 GitHub Actions 会执行配置验证、中文字体切片、全量静态构建，并自动发布上线。

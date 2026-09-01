@@ -4,12 +4,10 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/init-repo/
 ---
 
-# 初始化私有内容仓库
+构建独立的内容仓库有两种途径，请根据你的现状选择：
 
-构建独立的内容仓库有两种途径：
-
-- **方式一（推荐）：使用 `content:eject` 一键解耦迁出** <Badge text="推荐" type="tip" />：如果你已经克隆或分叉了主题代码仓库，一条命令即可将文章、相册、自定义页面数据与基础配置自动抽离为标准的内容仓库；
-- **方式二：从官方模板仓库克隆初始化** <Badge text="从零建站" type="info" />：适合从零开始、直接以双仓形态建站的博主。
+- [方式一：使用 content:eject 一键解耦迁出](#方式一-使用-content-eject-一键解耦迁出) <Badge text="推荐" type="tip" />：适合已在本地克隆主题代码仓，希望一键将文章与配置抽离为独立内容仓的博主；
+- [方式二：从官方模板仓库克隆初始化](#方式二-从官方模板仓库克隆初始化) <Badge text="从零建站" type="info" />：适合全新起步、直接以双仓形态建站的博主。
 
 ---
 
@@ -43,7 +41,7 @@ permalink: /guide/content-separation/init-repo/
    pnpm.cmd content:eject --yes
 
    # 也可以通过 --out 参数指定自定义导出路径：
-   pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
+   pnpm.cmd content:eject --yes --out "<目标路径>" # 例如 "D:\Code\my-blog-content"
    ```
 
    @tab Linux / macOS (Bash)
@@ -55,7 +53,7 @@ permalink: /guide/content-separation/init-repo/
    pnpm content:eject --yes
 
    # 自定义导出路径
-   pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
+   pnpm content:eject --yes --out "<目标路径>" # 例如 "/Users/yourname/Code/my-blog-content"
    ```
    :::
 

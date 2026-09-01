@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/concepts/
 ---
 
-# 内容分离架构概览
-
 Shirone 提供了原生支持的内容分离架构，允许将 ==主题前端工程== 与 ==博主个人内容== 分别存放于两个相互独立的 Git 仓库中进行解耦管理。
 
 ---

@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/faq/
 ---
 
-# Troubleshooting & FAQ
-
 This document aggregates common diagnostic solutions, permission fixes, and configuration troubleshooting for the dual-repo content separation setup.
 
 ---

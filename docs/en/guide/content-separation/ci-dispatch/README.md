@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/ci-dispatch/
 ---
 
-# Cross-Repo CI Automation
-
 This is the officially recommended automated deployment architecture.
 
 Whenever changes are pushed to your content repository, it sends a repository dispatch notification to the theme code repository. GitHub Actions in the theme repo automatically validates configs, slices Chinese fonts, builds static pages, and deploys to production.

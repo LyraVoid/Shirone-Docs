@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/config-overlay/
 ---
 
-# 配置覆盖核心原理
-
 在 Shirone 体系中，全站配置采用 ==声明式覆盖机制==。你无需修改主题的核心代码，只需在内容仓库的 `config/` 目录下按需编写对应的 YAML 配置文件，即可轻松定制站点的每一个细节。
 
 ---
@@ -92,26 +90,44 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 
 ## 全站配置文件速查总表
 
-所有配置文件均存放在内容仓库的 `config/` 目录下：
+所有配置文件均存放在内容仓库的 `config/` 目录下，按功能领域划分：
+
+### 1. 全局基础与外观
 
 | 配置文件路径 | 负责的功能领域 | 默认覆盖策略 |
 | :--- | :--- | :--- |
-| `config/site.yaml` | 站点基本标识与时区、横幅壁纸、多图轮播、打字机、背景纹理 | 对象递归合并 |
+| `config/site.yaml` | 站点基本标识、时区、横幅壁纸、多图轮播、打字机、背景纹理 | 对象递归合并 |
 | `config/profile.yaml` | 博主头像、昵称、签名、社交平台链接列表 | 对象合并（`links` 数组替换） |
 | `config/nav-bar.yaml` | 顶部导航栏条目清单、预设条目与下拉子菜单 | ==数组整体替换== |
-| `config/sidebar.yaml` | 侧边栏单/双栏模式、侧栏组件排布与吸顶规则 | 对象合并（`components` 数组替换） |
+| `config/sidebar.yaml` | 侧边栏单双栏模式、侧栏组件排布与吸顶规则 | 对象合并（`components` 数组替换） |
 | `config/font.yaml` | 全站中文字体、西文字体、等宽代码字体与子集化裁剪 | 对象合并（`fontFamilies` 数组替换） |
-| `config/anime.yaml` | 追番追剧页面主数据源、Bilibili/Bangumi 同步策略 | 对象递归合并 |
-| `config/music.yaml` | 侧栏音乐播放器四种模式、网易云歌单与自定义曲目 | 对象递归合并 |
-| `config/comment.yaml` | 评论系统服务提供商与 Twikoo 连接参数 | 对象递归合并 |
 | `config/context-menu.yaml` | 桌面端右键上下文菜单、快捷动作清单与页面过滤 | 对象合并（`actions` 数组替换） |
+| `config/footer.yaml` | 页脚文案与备案信息 | 对象递归合并 |
+| `config/footer.html` | 自定义注入的页脚 HTML 片段 | 完整替换 |
+
+### 2. 内容与文章排版
+
+| 配置文件路径 | 负责的功能领域 | 默认覆盖策略 |
+| :--- | :--- | :--- |
 | `config/post-list.yaml` | 文章列表分页大小、列表或网格排版模式 | 对象递归合并 |
 | `config/article.yaml` | 文章阅读时长、长期未更新提醒、相关文章推荐与海报分享 | 对象递归合并 |
+| `config/announcement.yaml` | 全局浮动公告栏配置 | 对象递归合并 |
+| `config/expressive-code.yaml` | 代码高亮主题与代码块行号显示 | 对象递归合并 |
+
+### 3. 特色功能与独立页面
+
+| 配置文件路径 | 负责的功能领域 | 默认覆盖策略 |
+| :--- | :--- | :--- |
+| `config/anime.yaml` | 追番追剧页面主数据源、Bilibili 与 Bangumi 同步策略 | 对象递归合并 |
+| `config/music.yaml` | 侧栏音乐播放器模式、网易云歌单与自定义曲目 | 对象递归合并 |
+| `config/comment.yaml` | 评论系统服务提供商与 Twikoo 连接参数 | 对象递归合并 |
 | `config/devices.yaml` | 个人数码设备展示页分类与筛选规则 | 对象合并（`categories` 数组替换） |
 | `config/projects.yaml` | 开源项目展示页分类与阶段筛选规则 | 对象合并（`categories` 数组替换） |
 | `config/skills.yaml` | 技能图谱页分类与熟练度规则 | 对象合并（`categories` 数组替换） |
 | `config/timeline.yaml` | 大事记时间线分类与展示规则 | 对象合并（`categories` 数组替换） |
 | `config/friends.yaml` | 友情链接分组规则与丢失检测策略 | 对象合并（`groups` 数组替换） |
+| `config/umami.yaml` | Umami 访问统计分析 | 对象递归合并 |
+| `config/llms.yaml` | 大模型 AI 检索增强 | 对象递归合并 |
 
 ---
 

@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/cli-workflows/
 ---
 
-# CLI 命令行工具链
-
 Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无论是外部编辑器中的日常写作、配置修改后的 ==零写盘预检=={.tip}，还是不同仓库之间的双向同步与安全重置，均可通过简单指令一键完成。
 
 ---

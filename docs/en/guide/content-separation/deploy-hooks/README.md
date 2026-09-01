@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/deploy-hooks/
 ---
 
-# Cloud Deploy Hook Integrations
-
 If you host your theme repository on Cloudflare Pages, Vercel, Tencent Cloud EdgeOne, or Netlify, you can utilize ==Deploy Hook Trigger Mode==.
 
 In this setup, pushing updates to your private content repository triggers an HTTP POST request to your cloud provider's Deploy Hook endpoint, automatically initiating a remote build and sync.

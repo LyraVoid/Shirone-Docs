@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/deploy-hooks/
 ---
 
-# 云托管平台 Deploy Hook 部署
-
 如果你习惯将主题代码仓直接托管在 Cloudflare Pages、Vercel、腾讯云 EdgeOne 或 Netlify 等平台，并由平台自身的构建机拉取内容进行打包，你可以使用 ==部署钩子触发模式==。
 
 在这种模式下，内容仓库每次推送更新，会自动向托管平台的 Deploy Hook 发送一次 HTTP POST 请求，平台构建机接收到请求后会自动触发拉取与编译。

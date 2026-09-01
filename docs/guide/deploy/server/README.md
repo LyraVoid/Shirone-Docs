@@ -4,7 +4,7 @@ createTime: 2026/08/31 21:55:00
 permalink: /guide/deploy/server/
 ---
 
-将 Shirone 部署到自己的服务器（VPS / 云主机），可以获得最大的控制权：自定义缓存策略、无平台构建额度限制、与现有服务共用资源。
+将 Shirone 部署到自己的服务器，可以获得最大的控制权：自定义缓存策略、无平台构建额度限制、与现有服务共用资源。
 
 ::: tip 适合谁
 有一台自己的服务器、能接受少量命令行操作的用户。如果你只想"推代码就有网站"，请回到 [Vercel](/guide/deploy/vercel/) 或 [EdgeOne Pages](/guide/deploy/edgeone/)，它们更省心。
@@ -135,13 +135,197 @@ chmod +x deploy.sh
 
 ## 进阶：CI 自动部署
 
-把上述流程交给 GitHub Actions，推送 `main` 即自动构建并部署到服务器。主题仓库的 `deploy.yml.example` **变体 C** 给出了生产级写法（rsync over SSH，凭据全部走 Secrets）：
+通过配置工作流，只要将代码或文章推送到仓库的 `main` 分支，即可全自动完成依赖安装、静态构建并通过 SSH 增量同步到服务器。
 
-- `DEPLOY_HOST` / `DEPLOY_USER`：服务器地址与用户
-- `DEPLOY_SSH_KEY`：专用部署密钥私钥
-- `DEPLOY_DIR`：目标目录
+### 1. 配置 GitHub 密钥
 
-建议为部署创建独立的低权限用户与仅能写入站点目录的密钥，不要直接使用 root。
+在 GitHub 仓库中，进入 **Settings** -> **Secrets and variables** -> **Actions**，点击 **New repository secret** 配置以下敏感变量：
+
+| 密钥名 | 说明 | 示例值 |
+| :--- | :--- | :--- |
+| `SERVER_HOST` | 服务器公网 IP 或域名 | `1.2.3.4` 或 `vps.your-domain.com` |
+| `SERVER_PORT` | 服务器 SSH 端口（可选，默认 22） | `22` |
+| `SERVER_USER` | 用于部署的系统用户名（建议创建专用非 root 用户） | `deploy` |
+| `SERVER_SSH_KEY` | 用于部署的 SSH 私钥文本 | `-----BEGIN OPENSSH PRIVATE KEY----- ...` |
+| `SERVER_TARGET` | 服务器站点根目录绝对路径 | `/var/www/shirone` |
+
+> [!TIP] 双仓内容分离架构额外配置
+> 若文章存放在私有内容仓库中，还需在内容仓额外添加一个密钥：
+> - `CONTENT_ACCESS_TOKEN`：具备私有内容仓读取权限的访问令牌。
+
+---
+
+### 2. 服务器权限与密钥配置
+
+为了保障服务器安全，建议创建专用的低权限 `deploy` 用户并仅授权访问网站目录：
+
+::: steps
+1. **创建部署专用用户并授权目录**
+
+   ```bash
+   # 1. 创建专门用于部署的系统用户（禁用密码登录）
+   sudo adduser --disabled-password --gecos "" deploy
+
+   # 2. 创建站点根目录并分配所有权给 deploy 用户
+   sudo mkdir -p /var/www/shirone
+   sudo chown -R deploy:deploy /var/www/shirone
+   ```
+
+2. **生成专用的部署 SSH 密钥对**
+
+   切换到 `deploy` 用户并生成专属密钥对：
+
+   ```bash
+   # 切换为 deploy 用户
+   sudo su - deploy
+
+   # 生成无密码 SSH 密钥对
+   ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/id_ed25519 -N ""
+
+   # 将公钥写入授权列表
+   cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+   chmod 700 ~/.ssh
+   chmod 600 ~/.ssh/authorized_keys
+
+   # 查看并复制私钥内容（填入 GitHub Secret: SERVER_SSH_KEY）
+   cat ~/.ssh/id_ed25519
+   ```
+:::
+
+---
+
+### 3. 创建自动化工作流文件
+
+#### 模式一：双仓内容分离架构 <Badge text="官方推荐" type="tip" />
+
+在双仓模式下，由内容仓发送触发信号，主题代码仓执行拉取与部署：
+
+::: tabs
+@tab 内容仓库触发流
+```yaml title=".github/workflows/trigger-build.yml"
+name: Trigger Theme Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch build event to theme repository
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DISPATCH_TOKEN }}
+          repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 替换为你的主题代码仓路径
+          event-type: content-update
+```
+
+@tab 主题代码仓部署流
+```yaml title=".github/workflows/deploy.yml"
+name: Deploy to Server (Decoupled)
+
+on:
+  push:
+    branches: [main]
+  repository_dispatch:
+    types: [content-update]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Theme Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync Private Content & Build
+        env:
+          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+        run: |
+          pnpm content:sync
+          pnpm build
+
+      - name: Deploy to Server via rsync
+        uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-avz --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          TARGET: ${{ secrets.SERVER_TARGET }}
+```
+:::
+
+---
+
+#### 模式二：标准单仓架构
+如果你的文章与代码存放在同一个仓库中，直接在代码仓库新建 `.github/workflows/deploy.yml`：
+
+```yaml title=".github/workflows/deploy.yml"
+name: Deploy to Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Static Site
+        run: pnpm build
+
+      - name: Deploy to Server via rsync
+        uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-avz --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
+          REMOTE_USER: ${{ secrets.SERVER_USER }}
+          TARGET: ${{ secrets.SERVER_TARGET }}
+```
 
 ## 常见问题
 

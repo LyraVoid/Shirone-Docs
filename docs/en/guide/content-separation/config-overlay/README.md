@@ -4,8 +4,6 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/config-overlay/
 ---
 
-# Config Overlay Principles
-
 In Shirone, all site configurations use a ==declarative overlay architecture==. You do not need to touch the theme engine core code. Simply create YAML files in your content repository's `config/` directory to customize any site behavior.
 
 ---
@@ -86,7 +84,9 @@ During sync (`pnpm content:sync`) or production build, all YAML files are compil
 
 ## Configuration Quick Reference
 
-All config files reside under `config/` in your content repository:
+All config files reside under `config/` in your content repository, partitioned by functional domain:
+
+### 1. Global Identity & Appearance
 
 | File Path | Functional Domain | Default Strategy |
 | :--- | :--- | :--- |
@@ -95,17 +95,33 @@ All config files reside under `config/` in your content repository:
 | `config/nav-bar.yaml` | Top navigation items and dropdowns | ==Array Replacement== |
 | `config/sidebar.yaml` | Single/dual column layout and widgets | Object Merge (`components` Array Replacement) |
 | `config/font.yaml` | Web fonts and subsetting rules | Object Merge (`fontFamilies` Array Replacement) |
+| `config/context-menu.yaml` | Desktop right-click context menu actions | Object Merge (`actions` Array Replacement) |
+| `config/footer.yaml` | Footer copyright and ICP registration | Recursive Object Merge |
+| `config/footer.html` | Custom injected footer HTML snippet | Full Replacement |
+
+### 2. Content & Reading Experience
+
+| File Path | Functional Domain | Default Strategy |
+| :--- | :--- | :--- |
+| `config/post-list.yaml` | Post pagination and card grid layout | Recursive Object Merge |
+| `config/article.yaml` | Reading time, outdated alerts, recommendations | Recursive Object Merge |
+| `config/announcement.yaml` | Global floating announcement banner | Recursive Object Merge |
+| `config/expressive-code.yaml` | Syntax highlighting and code block numbers | Recursive Object Merge |
+
+### 3. Features & Special Pages
+
+| File Path | Functional Domain | Default Strategy |
+| :--- | :--- | :--- |
 | `config/anime.yaml` | Anime sync sources and Bangumi config | Recursive Object Merge |
 | `config/music.yaml` | Sidebar music player modes and playlist | Recursive Object Merge |
 | `config/comment.yaml` | Comment providers and Twikoo settings | Recursive Object Merge |
-| `config/context-menu.yaml` | Desktop right-click context menu actions | Object Merge (`actions` Array Replacement) |
-| `config/post-list.yaml` | Post pagination and card grid layout | Recursive Object Merge |
-| `config/article.yaml` | Reading time, outdated alerts, recommendations | Recursive Object Merge |
 | `config/devices.yaml` | Hardware device showcase categories | Object Merge (`categories` Array Replacement) |
 | `config/projects.yaml` | Open source project categories | Object Merge (`categories` Array Replacement) |
 | `config/skills.yaml` | Skill graph categories | Object Merge (`categories` Array Replacement) |
 | `config/timeline.yaml` | Milestones timeline categories | Object Merge (`categories` Array Replacement) |
 | `config/friends.yaml` | Friend links grouping and health check | Object Merge (`groups` Array Replacement) |
+| `config/umami.yaml` | Umami analytics tracking | Recursive Object Merge |
+| `config/llms.yaml` | LLM AI search enhancement | Recursive Object Merge |
 
 ---
 
