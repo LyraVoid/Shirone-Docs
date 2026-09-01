@@ -29,7 +29,7 @@ config:
         title: Material 3 Expressive
         icon: material-symbols:palette-outline
         details: Deeply integrated with Google M3 design tokens, dynamic color mapping, and adaptive layouts.
-        link: /en/guide/features/overview/
+        link: /en/guide/intro/
       -
         title: Native Content Separation
         icon: material-symbols:hub-outline
@@ -46,28 +46,28 @@ config:
         details: Built on Astro 5 + Vite 6 with automated CJK glyph extraction and subsetting for 80%+ smaller fonts.
         link: /en/guide/optimize-build/
       -
-        title: Media & Anime Tracker
+        title: Anime Tracker & Media
         icon: material-symbols:tv-guide-outline
         details: Native Bilibili / Bangumi tracking synchronization, Meting music player, and masonry photo albums.
-        link: /en/guide/features/bangumi-tracker/
+        link: /en/guide/api/user/bangumi/
       -
         title: Rich Markdown Syntax
         icon: material-symbols:code-blocks-outline
         details: 15+ custom markdown extensions including file trees, code trees, markers, steps, and GitHub alerts.
         link: /en/guide/writing/markdown/basic/
       -
-        title: Offline Full-Text Search
-        icon: material-symbols:search
-        details: Powered by Pagefind WASM for instant, low-latency offline chunked search without external APIs.
-        link: /en/guide/features/pagefind-search/
+        title: Component Architecture
+        icon: material-symbols:widgets-outline
+        details: Atomic design component system covering atoms, molecules, organisms, navigation, and shell widgets.
+        link: /en/guide/api/components/
       -
-        title: Structured Data Showcase
-        icon: material-symbols:devices-other-outline
-        details: Out-of-the-box data managers for projects, hardware devices, skill graphs, and career milestones.
-        link: /en/guide/features/overview/
+        title: Config Overlays & Data
+        icon: material-symbols:tune-outline
+        details: Declarative YAML overlay mechanism and TypeScript structured data entities with full type safety.
+        link: /en/guide/content-separation/config-overlay/
       -
         title: Universal Cloud Deployment
         icon: material-symbols:cloud-done-outline
         details: Tailored workflows for Cloudflare Pages, Vercel, Tencent EdgeOne, Netlify, and standalone Docker.
-        link: /en/guide/deploy/cloudflare-pages/
+        link: /en/guide/deploy/cloudflare/
 ---
