@@ -48,11 +48,14 @@ Shirone 是一个基于 ==M3E 规范==、富有表现力的现代化二次元个
 <CardGrid>
   <RepoCard repo="LyraVoid/Shirone" />
   <RepoCard repo="LyraVoid/Shirone-Content" />
+  <Card title="QQ 交流群" icon="ri:qq-line">
+    官方交流群号：<code>1062166377</code> <Badge text="欢迎加入" type="tip" />，欢迎加入与其他博主共同探讨主题配置、功能定制与排版经验。
+  </Card>
 </CardGrid>
 
-- 在线预览：[shirone.mysqil.com](https://shirone.mysqil.com/)
-- 代码仓库：[LyraVoid/Shirone](https://github.com/LyraVoid/Shirone)
-- 交流社区：欢迎加入交流群与其他使用者探讨交流。
+- **在线预览**：[shirone.mysqil.com](https://shirone.mysqil.com/)
+- **代码仓库**：[LyraVoid/Shirone](https://github.com/LyraVoid/Shirone)
+- **QQ 交流群**：`1062166377` <Badge text="官方群" type="tip" />
 
 ::: collapse 不了解 Astro？
 Astro 是专为内容驱动型网站设计的现代 Web 框架。它通过创新的孤岛架构最大程度减少客户端 JavaScript 开销，提供出色的页面加载速度与搜索引擎优化表现。
