@@ -73,6 +73,7 @@ const zhGuideDoc = defineCollection({
         { text: '侧栏布局', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
         { text: '页脚与博主资料', link: 'footer-profile/', icon: 'ri:user-smile-line' },
         { text: '自定义字体', link: 'font/', icon: 'ri:font-size-2' },
+        { text: '国际化与语言包', link: 'i18n/', icon: 'ri:translate-2' },
       ],
     },
     {
@@ -146,6 +147,7 @@ const zhGuideDoc = defineCollection({
             { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line', badge: { type: 'tip', text: '番剧' } },
             { text: 'Bilibili API', link: 'bilibili/', icon: 'ri:bilibili-line', badge: { type: 'tip', text: '同步' } },
             { text: 'Umami API', link: 'umami/', icon: 'ri:bar-chart-2-line', badge: { type: 'info', text: '统计' } },
+            { text: '数据快照与离线同步', link: 'data-sync/', icon: 'ri:database-2-line', badge: { type: 'info', text: '离线' } },
           ],
         },
         {
@@ -164,6 +166,16 @@ const zhGuideDoc = defineCollection({
             { text: '全局外壳与侧栏部件', link: 'shell-widgets/', icon: 'ri:dashboard-line', badge: { type: 'info', text: 'Shell' } },
           ],
         },
+      ],
+    },
+    {
+      text: '开发',
+      icon: 'ri:code-s-slash-line',
+      prefix: '/guide/development/',
+      collapsed: true,
+      items: [
+        { text: '主题开发与贡献', link: 'theme-contributing/', icon: 'ri:git-pull-request-line' },
+        { text: '路由系统', link: 'routing/', icon: 'ri:route-line' },
       ],
     },
     {
@@ -225,6 +237,7 @@ const zhGuideDoc = defineCollection({
           collapsed: true,
           items: [
             { text: '固定链接', link: 'permalink/', icon: 'ri:link-m' },
+            { text: '内容集合 Schema', link: 'content-schema/', icon: 'ri:database-2-line' },
             { text: '加密(可选)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: '可选' } },
           ],
         },
@@ -276,6 +289,7 @@ const zhGuideDoc = defineCollection({
       '/guide/widgets/',
       '/guide/features/',
       '/guide/api/',
+      '/guide/development/',
       '/guide/faq/',
     ]
 
@@ -354,6 +368,7 @@ const enGuideDoc = defineCollection({
         { text: 'Sidebar Layout', link: 'sidebar/', icon: 'ri:sidebar-unfold-line' },
         { text: 'Footer & Profile', link: 'footer-profile/', icon: 'ri:user-smile-line' },
         { text: 'Custom Fonts', link: 'font/', icon: 'ri:font-size-2' },
+        { text: 'Internationalization', link: 'i18n/', icon: 'ri:translate-2' },
       ],
     },
     {
@@ -427,6 +442,7 @@ const enGuideDoc = defineCollection({
             { text: 'Bangumi API', link: 'bangumi/', icon: 'ri:film-line', badge: { type: 'tip', text: 'Anime' } },
             { text: 'Bilibili API', link: 'bilibili/', icon: 'ri:bilibili-line', badge: { type: 'tip', text: 'Sync' } },
             { text: 'Umami API', link: 'umami/', icon: 'ri:bar-chart-2-line', badge: { type: 'info', text: 'Stats' } },
+            { text: 'Data Snapshots & Offline Sync', link: 'data-sync/', icon: 'ri:database-2-line', badge: { type: 'info', text: 'Offline' } },
           ],
         },
         {
@@ -445,6 +461,16 @@ const enGuideDoc = defineCollection({
             { text: 'Shell & Widgets', link: 'shell-widgets/', icon: 'ri:dashboard-line', badge: { type: 'info', text: 'Shell' } },
           ],
         },
+      ],
+    },
+    {
+      text: 'Development',
+      icon: 'ri:code-s-slash-line',
+      prefix: '/en/guide/development/',
+      collapsed: true,
+      items: [
+        { text: 'Theme Development & Contribution', link: 'theme-contributing/', icon: 'ri:git-pull-request-line' },
+        { text: 'Routing System', link: 'routing/', icon: 'ri:route-line' },
       ],
     },
     {
@@ -506,6 +532,7 @@ const enGuideDoc = defineCollection({
           collapsed: true,
           items: [
             { text: 'Permalinks', link: 'permalink/', icon: 'ri:link-m' },
+            { text: 'Content Collection Schema', link: 'content-schema/', icon: 'ri:database-2-line' },
             { text: 'Encryption (Optional)', link: 'encryption/', icon: 'ri:key-line', badge: { type: 'info', text: 'Optional' } },
           ],
         },
@@ -557,6 +584,7 @@ const enGuideDoc = defineCollection({
       '/en/guide/widgets/',
       '/en/guide/features/',
       '/en/guide/api/',
+      '/en/guide/development/',
       '/en/guide/faq/',
     ]
 
