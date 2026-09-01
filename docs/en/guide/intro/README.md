@@ -22,22 +22,22 @@ Whether you are writing long-form technical articles, fleeting daily thoughts, o
 
 <CardGrid>
   <Card title="Dynamic Color System" icon="ri:palette-line">
-    Dynamic color system based on ==HCT color space== and Google Material Color Utilities, supporting real-time theme color extraction from banner wallpapers with ==8 palettes and over 25 color roles==.
+    Dynamic color system based on HCT color space and Google Material Color Utilities, supporting real-time theme color extraction from banner wallpapers with 8 palettes and over 25 color roles.
   </Card>
   <Card title="Seamless Navigation" icon="ri:flashlight-line">
-    Smooth client-side page transitions via ==Swup==, keeping the ==outer peripheral frame persistent and uninterrupted==.
+    Smooth client-side page transitions via Swup, keeping the outer peripheral frame persistent and uninterrupted.
   </Card>
   <Card title="Markdown Extensions" icon="ri:book-open-line">
     Built-in Expressive Code syntax highlighting, KaTeX math typesetting, Mermaid diagrams, Callout containers, Tabs, timelines, and media galleries.
   </Card>
   <Card title="Zero Overhead" icon="ri:shield-check-line">
-    ==SSR-first==, keyboard-friendly. Optional integrations leave ==zero requests, zero DOM footprint, and zero bundle bloat== when disabled.
+    SSR-first, keyboard-friendly. Optional integrations leave zero requests, zero DOM footprint, and zero bundle bloat when disabled.
   </Card>
   <Card title="Behavior & Content Separation" icon="ri:stack-line">
-    ==Config governs behavior and feature switches, while pure data structures hold content items==.
+    Config governs behavior and feature switches, while pure data structures hold content items.
   </Card>
   <Card title="Content Separation Ecosystem" icon="ri:git-branch-line">
-    Decouple theme code from private content with ==Shirone-Content==, incremental YAML overlay support, and streamlined CLI workflows.
+    Decouple theme code from private content with Shirone-Content, incremental YAML overlay support, and streamlined CLI workflows.
   </Card>
 </CardGrid>
 
