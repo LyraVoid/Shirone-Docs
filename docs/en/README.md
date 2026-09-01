@@ -21,7 +21,7 @@ config:
         -
           theme: alt
           text: View on GitHub →
-          link: https://github.com/matsuzaka-yuki/Shirone
+          link: https://github.com/LyraVoid/Shirone
   -
     type: features
     features:
@@ -82,7 +82,7 @@ Initialize your Shirone blog in seconds:
 @tab pnpm (Recommended)
 ```bash
 # 1. Clone official repository
-git clone https://github.com/matsuzaka-yuki/Shirone.git my-blog
+git clone https://github.com/LyraVoid/Shirone.git my-blog
 
 # 2. Navigate and install dependencies
 cd my-blog
@@ -93,7 +93,7 @@ pnpm dev
 ```
 
 @tab One-Click Template (GitHub)
-Visit [matsuzaka-yuki/Shirone](https://github.com/matsuzaka-yuki/Shirone) and click **Use this template** -> **Create a new repository** to fork directly to your account.
+Visit [matsuzaka-yuki/Shirone](https://github.com/LyraVoid/Shirone) and click **Use this template** -> **Create a new repository** to fork directly to your account.
 :::
 
 ---

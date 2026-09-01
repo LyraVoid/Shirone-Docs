@@ -22,7 +22,7 @@ export default defineThemeConfig({
 
   /* 社交链接 */
   social: [
-    { icon: 'github', link: 'https://github.com/matsuzaka-yuki' },
+    { icon: 'github', link: 'https://github.com/LyraVoid/Shirone' },
   ],
 
   /* 深色模式 */
@@ -55,6 +55,12 @@ export default defineThemeConfig({
       navbar: enNavbar,
       collections: enCollections,
     },
+  },
+
+  /* 页脚配置 */
+  footer: {
+    message: false,
+    copyright: 'Copyright © 2026-present LyraVoid/Shirone',
   },
 
   /* 过渡动画 @see https://theme-plume.vuejs.press/config/basic/#transition */

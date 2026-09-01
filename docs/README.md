@@ -21,7 +21,7 @@ config:
         -
           theme: alt
           text: 在 GitHub 上查看 →
-          link: https://github.com/matsuzaka-yuki/Shirone
+          link: https://github.com/LyraVoid/Shirone
   -
     type: features
     features:
@@ -82,7 +82,7 @@ config:
 @tab pnpm (推荐)
 ```bash
 # 1. 克隆官方代码仓库
-git clone https://github.com/matsuzaka-yuki/Shirone.git my-blog
+git clone https://github.com/LyraVoid/Shirone.git my-blog
 
 # 2. 进入目录并安装依赖
 cd my-blog
@@ -93,7 +93,7 @@ pnpm dev
 ```
 
 @tab 模板一键创建 (GitHub)
-前往 [matsuzaka-yuki/Shirone](https://github.com/matsuzaka-yuki/Shirone) 点击右上角 **Use this template** -> **Create a new repository** 即可直接分叉至个人 GitHub 账号。
+前往 [matsuzaka-yuki/Shirone](https://github.com/LyraVoid/Shirone) 点击右上角 **Use this template** -> **Create a new repository** 即可直接分叉至个人 GitHub 账号。
 :::
 
 ---
