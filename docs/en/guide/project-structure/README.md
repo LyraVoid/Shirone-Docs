@@ -28,8 +28,8 @@ The repository root contains public assets, build tooling configurations, automa
   - styles/ # M3 Expressive Design Tokens & global stylesheets
   - utils/ # Algorithm utilities (WebCrypto, color palette, audio singleton)
 - scripts/ # Build automation and offline data sync scripts
-  - sync-bangumi.ts # Bangumi anime collection sync
-  - sync-bilibili.ts # Bilibili anime collection sync
+  - anime/
+    - sync.mjs # Bangumi / Bilibili anime sync entry point
 - astro.config.mjs # Top-level Astro configuration (Svelte, Swup, Tailwind)
 - svelte.config.js # Svelte 5 compiler settings (Runes reactivity)
 - tsconfig.json # TypeScript strict path aliases
@@ -53,7 +53,7 @@ src/
 ├── config/               # Centralized Strongly-Typed Configs
 │   ├── siteConfig.ts     # Site metadata & profile information
 │   ├── sidebarConfig.ts  # Sidebar widget arrangement & priorities
-│   ├── navConfig.ts      # Top navigation hierarchy
+│   ├── navBarConfig.ts    # Top navigation hierarchy
 │   ├── musicConfig.ts    # Music player sources & Meting configs
 │   └── animeConfig.ts    # Anime collection sync settings
 ├── content/              # Content Layer
@@ -65,9 +65,10 @@ src/
 │   ├── MainLayout.astro  # Root HTML shell, SEO tags, Swup containers, M3 theme injection
 │   └── PostLayout.astro  # Article reading layout (TOC + Comments + Copyright)
 ├── pages/                # File-system Routing
-│   ├── index.astro       # Home page (Hero banner + post feed)
-│   ├── posts/            # Dynamic article routes
-│   └── [slug].astro      # Standalone pages (about, anime, friends, projects...)
+│   ├── [...page].astro   # Home page and paginated post-list routes
+│   ├── [...permalink].astro # Global and custom permalink routes
+│   ├── posts/            # Default dynamic article routes
+│   └── about.astro, anime.astro, friends.astro, projects.astro # Standalone pages
 ├── styles/               # Design System
 │   ├── tokens.css        # Material 3 Expressive color & surface tokens
 │   ├── typography.css    # Typography scales and responsive font sizing
@@ -87,7 +88,7 @@ Shirone uses a strongly-typed configuration model. All feature toggles, author p
 ::: code-tree title="Configuration Driven Modules" entry="src/config/siteConfig.ts" height="380px"
 
 ```ts title="src/config/siteConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const siteConfig = withUserConfig("site", {
   title: "Shirone",
@@ -103,7 +104,7 @@ export const siteConfig = withUserConfig("site", {
 ```
 
 ```ts title="src/config/sidebarConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const sidebarConfig = withUserConfig("sidebar", {
   position: "left", // "left" | "right" | "none"
@@ -118,7 +119,7 @@ export const sidebarConfig = withUserConfig("sidebar", {
 ```
 
 ```ts title="src/config/musicConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const musicConfig = withUserConfig("music", {
   enable: true,

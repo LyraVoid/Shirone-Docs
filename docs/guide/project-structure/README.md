@@ -28,8 +28,8 @@ Shirone 是一个基于 ==**Astro 7 + Svelte 5 + Tailwind CSS + TypeScript**== �
   - styles/ # M3 Expressive Tokens 与全局 CSS 样式
   - utils/ # 算法工具库（WebCrypto、动态配色、音频单例）
 - scripts/ # 自动化构建与离线同步脚本
-  - sync-bangumi.ts # Bangumi 追番数据同步
-  - sync-bilibili.ts # Bilibili 追番数据同步
+  - anime/
+    - sync.mjs # Bangumi / Bilibili 追番数据同步入口
 - astro.config.mjs # Astro 顶层配置文件（集成 Svelte、Swup、Tailwind）
 - svelte.config.js # Svelte 5 编译器配置（启用 Runes 响应式）
 - tsconfig.json # TypeScript 路径映射与严格模式
@@ -53,7 +53,7 @@ src/
 ├── config/               # 集中化强类型配置
 │   ├── siteConfig.ts     # 站点基础信息与个人资料
 │   ├── sidebarConfig.ts  # 侧边栏小部件编排
-│   ├── navConfig.ts      # 顶部导航栏层级
+│   ├── navBarConfig.ts    # 顶部导航栏层级
 │   ├── musicConfig.ts    # 音乐播放器源与 Meting 配置
 │   └── animeConfig.ts    # 番剧数据同步源
 ├── content/              # 内容层
@@ -65,9 +65,10 @@ src/
 │   ├── MainLayout.astro  # 全局 HTML 壳、SEO、Swup 容器、动态配色注入
 │   └── PostLayout.astro  # 文章详情页特化布局 (TOC + 评论 + 版权)
 ├── pages/                # 文件系统路由
-│   ├── index.astro       # 首页 (精选横幅 + 文章卡片流)
-│   ├── posts/            # 文章详情动态路由
-│   └── [slug].astro      # 独立页面 (about, anime, friends, projects...)
+│   ├── [...page].astro   # 首页与文章列表分页路由
+│   ├── [...permalink].astro # 全局/自定义固定链接路由
+│   ├── posts/            # 默认文章详情动态路由
+│   └── about.astro, anime.astro, friends.astro, projects.astro # 独立页面
 ├── styles/               # 设计系统
 │   ├── tokens.css        # Material 3 Expressive 颜色与阴影 Token
 │   ├── typography.css    # 排版系统与字体层级
@@ -87,7 +88,7 @@ Shirone 采用强类型配置驱动架构，所有的功能开关、个人信息
 ::: code-tree title="核心配置驱动模块" entry="src/config/siteConfig.ts" height="380px"
 
 ```ts title="src/config/siteConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const siteConfig = withUserConfig("site", {
   title: "Shirone",
@@ -103,7 +104,7 @@ export const siteConfig = withUserConfig("site", {
 ```
 
 ```ts title="src/config/sidebarConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const sidebarConfig = withUserConfig("sidebar", {
   position: "left", // "left" | "right" | "none"
@@ -118,7 +119,7 @@ export const sidebarConfig = withUserConfig("sidebar", {
 ```
 
 ```ts title="src/config/musicConfig.ts"
-import { withUserConfig } from "../utils/config";
+import { withUserConfig } from "../utils/config-overlay";
 
 export const musicConfig = withUserConfig("music", {
   enable: true,
