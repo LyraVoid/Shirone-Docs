@@ -84,7 +84,7 @@ src/
 
 Shirone uses a strongly-typed configuration model. All feature toggles, author profiles, and widget placements are centralized under `src/config/`:
 
-::: code-tree title="Configuration Driven Modules" entry="src/config/siteConfig.ts" height="370px"
+::: code-tree title="Configuration Driven Modules" entry="src/config/siteConfig.ts" height="380px"
 
 ```ts title="src/config/siteConfig.ts"
 import { withUserConfig } from "../utils/config";

@@ -558,6 +558,7 @@ mark.info {
 .vp-code-tree .code-tree-panel {
   background-color: var(--vp-c-bg-alt) !important;
   border-right: 1px solid var(--vp-c-divider) !important;
+  overflow: hidden !important;
 }
 
 .vp-code-tree .code-tree-panel .code-tree-title {
@@ -577,20 +578,29 @@ mark.info {
   background-color: transparent !important;
   margin: 0 !important;
   padding: 12px 14px !important;
+  overflow: auto !important;
 }
 
 .vp-code-tree .code-panel {
   background-color: var(--vp-code-block-bg) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 .vp-code-tree .code-panel .code-block-title {
   height: 100% !important;
   margin: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
 .vp-code-tree .code-panel .code-block-title.active {
   display: flex !important;
   flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
 .vp-code-tree .code-panel .code-block-title-bar {
@@ -629,20 +639,21 @@ mark.info {
 .vp-code-tree .code-panel div[class*="language-"] {
   margin: 0 !important;
   border-radius: 0 !important;
-  flex: 1 1 auto !important;
-  height: calc(100% - 40px) !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
   background-color: var(--vp-code-block-bg) !important;
-  overflow: auto !important;
+  overflow-y: hidden !important;
+  overflow-x: auto !important;
 }
 
 .vp-code-tree .code-panel div[class*="language-"] pre {
-  padding: 12px 0 !important;
+  padding: 10px 0 !important;
   margin: 0 !important;
 }
 
 .vp-code-tree .code-panel div[class*="language-"].line-numbers-mode .line-numbers {
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
 }
 
 table {

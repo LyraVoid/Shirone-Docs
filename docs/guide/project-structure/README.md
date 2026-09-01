@@ -84,7 +84,7 @@ src/
 
 Shirone 采用强类型配置驱动架构，所有的功能开关、个人信息与侧栏编排均收敛在 `src/config/` 目录下：
 
-::: code-tree title="核心配置驱动模块" entry="src/config/siteConfig.ts" height="370px"
+::: code-tree title="核心配置驱动模块" entry="src/config/siteConfig.ts" height="380px"
 
 ```ts title="src/config/siteConfig.ts"
 import { withUserConfig } from "../utils/config";
