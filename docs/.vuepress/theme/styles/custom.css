@@ -104,9 +104,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --------------------------------------------------------------------------
-   4. Navbar (M3e Glass Acrylic Bar)
+   4. Navbar (M3e Glass Acrylic Bar) & Mobile Navigation Screen
    -------------------------------------------------------------------------- */
-.vp-nav {
+.vp-navbar {
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid var(--vp-c-gutter) !important;
@@ -114,8 +114,18 @@ h1, h2, h3, h4, h5, h6 {
   transition: background-color 0.25s var(--vp-m3-ease-standard), border-color 0.25s var(--vp-m3-ease-standard);
 }
 
-[data-theme="dark"] .vp-nav {
+[data-theme="dark"] .vp-navbar {
   background-color: rgba(21, 13, 17, 0.86) !important;
+}
+
+.vp-nav-screen {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+[data-theme="dark"] .vp-nav-screen {
+  background-color: rgba(21, 13, 17, 0.96) !important;
 }
 
 .vp-nav-link {
