@@ -527,8 +527,8 @@ mark.info {
   border-radius: 12px !important;
 }
 
-/* File Tree */
-.vp-file-tree {
+/* Standalone File Tree */
+.vp-file-tree:not(.code-tree-panel .vp-file-tree) {
   border-radius: 12px !important;
   border: 1px solid var(--vp-c-gutter) !important;
   background-color: var(--vp-c-bg-elv) !important;
@@ -545,7 +545,7 @@ mark.info {
   right: 12px !important;
 }
 
-/* Code Tree Layout & Visual Harmony */
+/* Code Tree (Integrated Left Panel & Right Code View) */
 .vp-code-tree {
   border-radius: 12px !important;
   border: 1px solid var(--vp-c-gutter) !important;
@@ -567,6 +567,16 @@ mark.info {
   font-size: 13.5px !important;
   font-weight: 700 !important;
   border-bottom: 1px solid var(--vp-c-divider) !important;
+}
+
+/* Flat, unrounded file tree inside Code Tree left panel */
+.vp-code-tree .code-tree-panel .vp-file-tree {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 12px 14px !important;
 }
 
 .vp-code-tree .code-panel {
