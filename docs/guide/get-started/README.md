@@ -6,10 +6,6 @@ permalink: /guide/get-started/
 
 从零开始搭建属于你的 Shirone 博客。
 
-::: warning Alpha 阶段提醒
-Shirone 目前仍处于 Alpha 阶段，首个稳定版本发布前，配置和组件 API 可能发生变化。
-:::
-
 ## 环境要求
 
 - [Node.js](https://nodejs.org/) ==**22.12** 或更高版本==

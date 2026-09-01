@@ -10,7 +10,7 @@ Before filing an Issue or joining a discussion in the theme repository, read thi
 
 - [ ] Read the relevant doc pages on this site and their FAQs
 - [ ] Worked through the universal tools in [Troubleshooting](/en/guide/faq/troubleshooting/)
-- [ ] Confirmed the theme is up to date (Alpha-stage configs may change—try updating first)
+- [ ] Confirmed the theme is up to date (try updating to the latest version first)
 - [ ] The issue reproduces in a clean environment (fresh clone + minimal changes)
 
 ## What Issues Are Welcome

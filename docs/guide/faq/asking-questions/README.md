@@ -10,7 +10,7 @@ permalink: /guide/faq/asking-questions/
 
 - [ ] 已读本站相关文档页与其 FAQ
 - [ ] 已跑通[错误排查](/guide/faq/troubleshooting/)的通用手段
-- [ ] 确认主题为最新版本（Alpha 阶段配置可能变化，先更新试试）
+- [ ] 确认主题为最新版本（建议先更新到最新版本排查）
 - [ ] 问题可在干净环境复现（新克隆的主题 + 最小改动）
 
 ## 什么样的 Issue 会被欢迎

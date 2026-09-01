@@ -6,10 +6,6 @@ permalink: /en/guide/get-started/
 
 Set up your own Shirone blog from scratch.
 
-::: warning Alpha Stage
-Shirone is still in its Alpha stage. Before the first stable release, configuration and component APIs may change.
-:::
-
 ## Requirements
 
 - [Node.js](https://nodejs.org/) ==**22.12** or higher==
