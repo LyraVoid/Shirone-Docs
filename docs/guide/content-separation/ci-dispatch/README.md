@@ -13,10 +13,10 @@ permalink: /guide/content-separation/ci-dispatch/
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as "✍️ 博主 (内容仓)"
-    participant ContentRepo as "🔒 私有内容仓库"
-    participant ThemeRepo as "🏗️ 主题代码仓库"
-    participant DeployTarget as "🚀 CDN / GitHub Pages"
+    actor Author as 博主 (内容仓)
+    participant ContentRepo as 私有内容仓库
+    participant ThemeRepo as 主题代码仓库
+    participant DeployTarget as CDN / GitHub Pages
 
     Author->>ContentRepo: 1. git push 推送新文章或配置修改
     ContentRepo->>ThemeRepo: 2. repository_dispatch 派发构建信号 (携带安全 Token)

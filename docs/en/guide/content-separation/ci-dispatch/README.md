@@ -13,10 +13,10 @@ Whenever changes are pushed to your content repository, it sends a repository di
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as "✍️ Author (Content Repo)"
-    participant ContentRepo as "🔒 Private Content Repo"
-    participant ThemeRepo as "🏗️ Theme Code Repo"
-    participant DeployTarget as "🚀 CDN / GitHub Pages"
+    actor Author as Author (Content Repo)
+    participant ContentRepo as Private Content Repo
+    participant ThemeRepo as Theme Code Repo
+    participant DeployTarget as CDN / GitHub Pages
 
     Author->>ContentRepo: 1. git push new posts or config changes
     ContentRepo->>ThemeRepo: 2. repository_dispatch signal (with secure token)

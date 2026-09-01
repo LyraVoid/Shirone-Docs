@@ -13,10 +13,10 @@ In this setup, pushing updates to your private content repository triggers an HT
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as "✍️ Author (Content Repo)"
-    participant ContentRepo as "🔒 Private Content Repo"
-    participant Cloudflare as "☁️ Cloudflare Pages / Vercel"
-    participant CDN as "🚀 Production Edge"
+    actor Author as Author (Content Repo)
+    participant ContentRepo as Private Content Repo
+    participant Cloudflare as Cloudflare Pages / Vercel
+    participant CDN as Production Edge
 
     Author->>ContentRepo: 1. git push new posts or config changes
     ContentRepo->>Cloudflare: 2. POST Trigger Deploy Hook Webhook

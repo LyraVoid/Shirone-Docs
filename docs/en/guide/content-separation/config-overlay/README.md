@@ -25,11 +25,11 @@ When parsing YAML configurations, two distinct merging rules apply:
 
 ```mermaid
 flowchart TD
-    A["📝 Authoring YAML Config"] --> B{"Field Data Structure?"}
-    B -->|Nested Dictionary Object| C["🔄 Recursive Deep Merge"]
-    B -->|List Array| D["⚡ Atomic Full Replacement"]
-    C --> E["Overwrites declared keys; unmentioned keys inherit defaults"]
-    D --> F["Strictly applies the entire user array"]
+    A[Authoring YAML Config] --> B{Field Data Structure?}
+    B -->|Nested Dictionary Object| C[Recursive Deep Merge]
+    B -->|List Array| D[Atomic Full Replacement]
+    C --> E[Overwrites declared keys; unmentioned keys inherit defaults]
+    D --> F[Strictly applies the entire user array]
 ```
 
 #### Nested Objects (Recursive Deep Merge)

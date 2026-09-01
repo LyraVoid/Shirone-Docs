@@ -32,10 +32,10 @@ The synchronization, config merge, and release workflow is fully automated:
 
 ```mermaid
 flowchart LR
-    A["✍️ Authoring in Content Repo"] -->|Git Push| B["🤖 GitHub Actions"]
-    B -->|Dispatch Build Event| C["🏗️ Theme Code Repo"]
-    C -->|Pull Content & Merge Overlays| D["⚡ Type Checking & Font Subsetting"]
-    D -->|Static Build| E["🚀 Global CDN & Hosting"]
+    A[Authoring in Content Repo] -->|Git Push| B[GitHub Actions]
+    B -->|Dispatch Build Event| C[Theme Code Repo]
+    C -->|Pull Content & Merge Overlays| D[Type Checking & Font Subsetting]
+    D -->|Static Build| E[Global CDN & Hosting]
 ```
 
 ::: steps

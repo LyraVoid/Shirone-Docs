@@ -13,10 +13,10 @@ permalink: /guide/content-separation/deploy-hooks/
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as "✍️ 博主 (内容仓)"
-    participant ContentRepo as "🔒 私有内容仓库"
-    participant Cloudflare as "☁️ Cloudflare Pages / Vercel"
-    participant CDN as "🚀 生产网络"
+    actor Author as 博主 (内容仓)
+    participant ContentRepo as 私有内容仓库
+    participant Cloudflare as Cloudflare Pages / Vercel
+    participant CDN as 生产网络
 
     Author->>ContentRepo: 1. git push 推送新文章或配置修改
     ContentRepo->>Cloudflare: 2. POST 触发 Deploy Hook Webhook
