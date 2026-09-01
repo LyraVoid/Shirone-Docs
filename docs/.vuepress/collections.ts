@@ -289,8 +289,8 @@ export const zhCollections = defineCollections([
 
 const enGuideDoc = defineCollection({
   type: 'doc',
-  dir: 'en/guide',
-  linkPrefix: '/en/guide',
+  dir: 'guide',
+  linkPrefix: '/guide',
   title: 'Documentation',
   sidebar: [
     {
