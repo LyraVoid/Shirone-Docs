@@ -478,6 +478,30 @@ mark.info {
 /* --------------------------------------------------------------------------
    12. Code Blocks, Groups, Trees & Tables
    -------------------------------------------------------------------------- */
+/* Global Sleek Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--vp-c-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--vp-c-border);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--vp-c-brand-1);
+}
+
 @media (min-width: 640px) {
   .vp-doc div[class*="language-"],
   .vp-block {
@@ -485,7 +509,7 @@ mark.info {
   }
 }
 
-/* Code Block Title */
+/* Standalone Code Block Title */
 .code-block-title .code-block-title-bar {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
@@ -503,7 +527,7 @@ mark.info {
   border-radius: 12px !important;
 }
 
-/* File Tree Fixes */
+/* File Tree */
 .vp-file-tree {
   border-radius: 12px !important;
   border: 1px solid var(--vp-c-gutter) !important;
@@ -511,7 +535,6 @@ mark.info {
   box-shadow: var(--vp-shadow-1) !important;
 }
 
-/* Fix Copy Button in File Tree so it doesn't overlap item rows */
 .vp-file-tree .vp-copy-code-button {
   top: 8px !important;
   right: 12px !important;
@@ -522,7 +545,7 @@ mark.info {
   right: 12px !important;
 }
 
-/* Code Tree Layout & Text Clipping Fix */
+/* Code Tree Layout & Visual Harmony */
 .vp-code-tree {
   border-radius: 12px !important;
   border: 1px solid var(--vp-c-gutter) !important;
@@ -534,19 +557,82 @@ mark.info {
 
 .vp-code-tree .code-tree-panel {
   background-color: var(--vp-c-bg-alt) !important;
+  border-right: 1px solid var(--vp-c-divider) !important;
 }
 
-.vp-code-tree .code-panel .code-block-title .code-block-title-bar {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+.vp-code-tree .code-tree-panel .code-tree-title {
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid var(--vp-c-divider) !important;
+}
+
+.vp-code-tree .code-panel {
+  background-color: var(--vp-code-block-bg) !important;
+}
+
+.vp-code-tree .code-panel .code-block-title {
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+.vp-code-tree .code-panel .code-block-title.active {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.vp-code-tree .code-panel .code-block-title-bar {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  line-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
   border-radius: 0 !important;
+  background-color: var(--vp-c-bg-alt) !important;
+  border-bottom: 1px solid var(--vp-c-divider) !important;
+  display: flex !important;
+  align-items: center !important;
   flex-shrink: 0 !important;
+}
+
+.vp-code-tree .code-panel .code-block-title-bar .title {
+  padding: 0 !important;
+  line-height: 40px !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.vp-code-tree .code-panel .code-block-title-bar .title::before {
+  display: none !important;
+}
+
+.vp-code-tree .code-panel .code-block-title-bar::before {
+  display: none !important;
 }
 
 .vp-code-tree .code-panel div[class*="language-"] {
   margin: 0 !important;
   border-radius: 0 !important;
   flex: 1 1 auto !important;
+  height: calc(100% - 40px) !important;
+  background-color: var(--vp-code-block-bg) !important;
+  overflow: auto !important;
+}
+
+.vp-code-tree .code-panel div[class*="language-"] pre {
+  padding: 12px 0 !important;
+  margin: 0 !important;
+}
+
+.vp-code-tree .code-panel div[class*="language-"].line-numbers-mode .line-numbers {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
 }
 
 table {
