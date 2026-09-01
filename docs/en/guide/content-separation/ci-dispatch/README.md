@@ -66,25 +66,44 @@ sequenceDiagram
 
 ## Step 2: Configure Secret in Content Repository
 
-1. In your **content repository**, ensure `.github/workflows/trigger-build.yml` is enabled;
-2. Go to **Settings** -> **Secrets and variables** -> **Actions**;
-3. Click **New repository secret**;
-4. Set **Name** to `DISPATCH_TOKEN` and paste your token in **Secret**;
-5. Click **Add secret**.
+::: steps
+1. **Enable Trigger Workflow**
+
+   In your content repository, ensure `.github/workflows/trigger-build.yml` is enabled (ejected repositories enable this by default).
+
+2. **Add DISPATCH_TOKEN Secret**
+
+   - Go to your content repository's **Settings** -> **Secrets and variables** -> **Actions**;
+   - Click **New repository secret**;
+   - Set **Name** to `DISPATCH_TOKEN` (all uppercase);
+   - Paste the token into **Secret** and click **Add secret**.
+:::
 
 ---
 
 ## Step 3: Enable Deploy Workflow in Theme Repository
 
-1. In your **theme code repository**, rename `.github/workflows/deploy.yml.example` to `deploy.yml`;
-2. Edit the environment variable:
+::: steps
+1. **Rename Deploy Workflow**
+
+   In your theme code repository, rename `.github/workflows/deploy.yml.example` to `deploy.yml`.
+
+2. **Configure Content Repo Environment Variable**
+
+   Edit the environment variable block:
+
    ```yaml
    env:
      CONTENT_REPOSITORY: YOUR_USERNAME/my-blog-content
      CONTENT_WORKING_COPY: .content-src
    ```
-3. If the content repository is private, add a token named `CONTENT_REPO_TOKEN` with read access to the content repository in the theme repo's Secrets;
-4. Commit and push to main.
+
+3. **Add Private Access Token (If Private Repo)**
+
+   - Generate a token with read access to the private content repository;
+   - In theme repo **Settings** -> **Secrets and variables** -> **Actions**, add a secret named `CONTENT_REPO_TOKEN` with the token value;
+   - Commit and push to main.
+:::
 
 ---
 
@@ -98,7 +117,19 @@ git commit -m "feat: publish new article"
 git push origin main
 ```
 
-Check the Actions tab in both repositories to monitor the dispatch and build progress.
+::: steps
+1. **Check Content Repo Dispatch**
+
+   Open the Actions tab in your content repository to confirm `Trigger Theme Build` succeeded.
+
+2. **Monitor Theme Build**
+
+   Open the Actions tab in your theme repository to verify automated pulling, font subsetting, and static site compilation.
+
+3. **View Live Site**
+
+   Refresh your live blog to see your newly published content.
+:::
 
 ---
 

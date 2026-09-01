@@ -19,11 +19,20 @@ HttpError: Resource not accessible by integration
 ```
 
 ### Solution
-1. In GitHub, go to **Settings** -> **Developer Settings** -> **Personal access tokens**;
-2. Verify token properties:
+::: steps
+1. **Open Personal Access Tokens Settings**
+
+   In GitHub, navigate to **Settings** -> **Developer Settings** -> **Personal access tokens**.
+
+2. **Verify Token Properties and Permissions**
+
    - **Repository access**: Ensure the **theme code repository** is selected;
-   - **Permissions**: Set **Contents** permission to **Read and write**;
-3. Update the token in your content repo's `DISPATCH_TOKEN` Secret.
+   - **Permissions**: Set **Contents** permission to **Read and write**.
+
+3. **Update Secret in Content Repository**
+
+   Update the token in your content repo's `DISPATCH_TOKEN` Secret.
+:::
 
 ---
 
@@ -46,15 +55,23 @@ https://x-access-token:YOUR_TOKEN@github.com/USER/CONTENT_REPO.git
 ## 3. YAML changes are not taking effect
 
 ### Diagnosis
-1. **Run Validation**:
+::: steps
+1. **Run Validation Command**
+
    ```bash
    pnpm content:validate
    ```
-   Check for property typos (e.g. `titel` instead of `title`);
-2. **Check Merge Strategy**:
-   Arrays (such as `nav-bar.yaml` or `sidebar.yaml` components) follow **whole replacement** rules. You must provide the full list of items;
-3. **Verify File Location**:
+
+   Check for property typos (e.g. `titel` instead of `title`).
+
+2. **Check Merge Strategy**
+
+   Arrays (such as `nav-bar.yaml` or `sidebar.yaml` components) follow **whole replacement** rules. You must provide the full list of items.
+
+3. **Verify File Location**
+
    Ensure files are located under `config/` in the content repo with exact domain names (e.g., `site.yaml`, `profile.yaml`).
+:::
 
 ---
 

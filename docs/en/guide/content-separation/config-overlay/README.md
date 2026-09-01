@@ -53,6 +53,24 @@ During `pnpm content:validate` or `pnpm content:sync`, the system parses YAML fi
     Did you mean "title"?
 ```
 
+### Automated Bridge File Processing
+
+During `pnpm content:sync` or production builds, YAML configs under `config/` are automatically compiled into the `src/user/user-config.ts` bridge module:
+
+::: steps
+1. **Icon Offline Bundling**
+
+   Automatically scans icon names declared in configs and bundles them into local assets during build time.
+
+2. **Site Typography Subsetting**
+
+   Extracts site title, author name, and bio text into the font subsetting pipeline to minimize font payload.
+
+3. **Zero Maintenance Overhead**
+
+   The bridge module is auto-generated and safely managed by the synchronization system.
+:::
+
 ---
 
 ## Configuration File Reference

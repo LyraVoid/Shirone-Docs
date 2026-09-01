@@ -69,8 +69,13 @@ sequenceDiagram
 
 ## 第二步：在内容仓库配置派发密钥与工作流
 
-1. **启用触发工作流**：在内容仓库中，将 `.github/workflows/trigger-build.yml.example` 重命名为 `.github/workflows/trigger-build.yml`（通过 `pnpm content:eject` 初始化的仓库已默认启用）；
-2. **进入密钥设置**：
+::: steps
+1. **启用触发工作流**
+
+   在内容仓库中，将 `.github/workflows/trigger-build.yml.example` 重命名为 `.github/workflows/trigger-build.yml`（通过 `pnpm content:eject` 初始化的仓库已默认启用）。
+
+2. **配置仓库密钥 Secret**
+
    - 打开你的**个人内容仓库**（例如 `my-blog-content`）；
    - 点击顶部导航栏的 **Settings**；
    - 在左侧菜单中展开 **Secrets and variables**，选择 **Actions**；
@@ -78,25 +83,34 @@ sequenceDiagram
    - **Name**：必须填入 `DISPATCH_TOKEN`（全大写）；
    - **Secret**：粘贴第一步中复制的个人访问令牌；
    - 点击 **Add secret** 保存。
+:::
 
 ---
 
 ## 第三步：在主题代码仓启用部署工作流
 
-1. 打开你的**主题代码仓库**；
-2. 进入目录 `.github/workflows/`；
-3. 将示例工作流 `deploy.yml.example` 重命名为 `deploy.yml`；
-4. 修改文件开头的环境变量配置：
+::: steps
+1. **重命名并启用部署工作流**
+
+   打开你的**主题代码仓库**，进入目录 `.github/workflows/`，将示例工作流 `deploy.yml.example` 重命名为 `deploy.yml`。
+
+2. **配置内容仓库环境变量**
+
+   修改文件开头的环境变量配置：
+
    ```yaml
    env:
      # 替换为你的内容仓库路径
      CONTENT_REPOSITORY: yourname/my-blog-content
      CONTENT_WORKING_COPY: .content-src
    ```
-5. **如果内容仓是私有仓库**：
+
+3. **私有仓库读取鉴权（若内容仓为私有）**
+
    - 生成一个具备内容仓读取权限的个人访问令牌；
    - 在主题代码仓的 **Settings** -> **Secrets and variables** -> **Actions** 中添加 Secret，名称为 `CONTENT_REPO_TOKEN`，值为该令牌；
-6. 提交并推送到代码仓的主分支。
+   - 提交并推送到代码仓的主分支。
+:::
 
 ---
 
@@ -110,9 +124,19 @@ git commit -m "feat: 发布一篇新文章"
 git push origin main
 ```
 
-1. 打开内容仓库的 **Actions** 页面，你将看到 `Trigger Theme Build` 工作流被自动触发并成功派发事件；
-2. 随后打开代码仓库的 **Actions** 页面，主题代码仓正在全自动拉取内容并完成编译部署；
-3. 构建完成后，刷新你的博客网站，新文章即可完成全网发布。
+::: steps
+1. **查看内容仓触发状态**
+
+   打开内容仓库的 **Actions** 页面，你将看到 `Trigger Theme Build` 工作流被自动触发并成功派发事件。
+
+2. **查看代码仓构建进度**
+
+   随后打开代码仓库的 **Actions** 页面，主题代码仓正在全自动拉取内容并完成编译部署。
+
+3. **全网发布上线**
+
+   构建完成后，刷新你的博客网站，新文章即可完成全网发布。
+:::
 
 ---
 

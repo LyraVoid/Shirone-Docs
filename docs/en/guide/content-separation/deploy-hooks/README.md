@@ -29,70 +29,121 @@ sequenceDiagram
 
 ## 1. Cloudflare Pages
 
-### Step 1: Create Pages Project
-1. In Cloudflare Dashboard, go to **Compute (Workers & Pages)** -> **Create** -> **Pages**;
-2. Connect your GitHub account and select your theme repository;
-3. Set build configuration:
-   - **Framework preset**: None or Astro
-   - **Build command**: `pnpm run build`
-   - **Build output directory**: `dist`
+::: steps
+1. **Import Project & Build Settings**
 
-![Cloudflare Pages Setup](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
+   - In Cloudflare Dashboard, go to **Compute (Workers & Pages)** -> **Create** -> **Pages**;
+   - Connect your GitHub account and select your theme repository;
+   - Set build configuration:
+     - **Framework preset**: None or Astro
+     - **Build command**: `pnpm run build`
+     - **Build output directory**: `dist`
 
-### Step 2: Environment Variables
-Add environment variables under **Settings** -> **Environment variables**:
+   ![Cloudflare Pages Setup](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
 
-| Variable | Recommended Value | Description |
-| :--- | :--- | :--- |
-| `NODE_VERSION` | `22` | Node.js 22 runtime |
-| `GIT_TERMINAL_PROMPT` | `0` | Disable interactive git prompts |
-| `CONTENT_REPO_URL` | `https://x-access-token:TOKEN@github.com/USER/REPO.git` | Clone URL with token for private repos |
+2. **Configure Environment Variables**
 
-![Cloudflare Environment Variables](/images/content-separation/04-deploy/02-hook/06-env-config.png)
+   Add environment variables under **Settings** -> **Environment variables**:
 
-### Step 3: Create Deploy Hook
-1. Go to **Settings** -> **Builds & deployments**;
-2. Under **Deploy hooks**, click **Add deploy hook**;
-3. Name it `content-update`, branch `main`, and copy the webhook URL.
+   | Variable | Recommended Value | Description |
+   | :--- | :--- | :--- |
+   | `NODE_VERSION` | `22` | Node.js 22 runtime |
+   | `GIT_TERMINAL_PROMPT` | `0` | Disable interactive git prompts |
+   | `CONTENT_REPO_URL` | `https://x-access-token:TOKEN@github.com/USER/REPO.git` | Clone URL with token for private repos |
 
-![Cloudflare Deploy Hook](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+   ![Cloudflare Environment Variables](/images/content-separation/04-deploy/02-hook/06-env-config.png)
 
-### Step 4: Add Secret to Content Repo
-In your content repository's **Settings** -> **Secrets and variables** -> **Actions**:
-- **Name**: `CLOUDFLARE_DEPLOY_HOOK`
-- **Secret**: Paste the webhook URL.
+3. **Create Deploy Hook**
+
+   - Go to **Settings** -> **Builds & deployments**;
+   - Under **Deploy hooks**, click **Add deploy hook**;
+   - Name it `content-update`, branch `main`, and copy the webhook URL.
+
+   ![Cloudflare Deploy Hook](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+
+4. **Add Secret to Content Repository**
+
+   In your content repository's **Settings** -> **Secrets and variables** -> **Actions**:
+   - **Name**: `CLOUDFLARE_DEPLOY_HOOK`
+   - **Secret**: Paste the webhook URL.
+:::
 
 ---
 
 ## 2. Vercel
 
-1. Import your theme repository in Vercel;
-2. Set Build Command to `pnpm run build` and Output Directory to `dist`;
-3. Add Environment Variables: `NODE_VERSION` (22), `GIT_TERMINAL_PROMPT` (0), and `CONTENT_REPO_URL`;
-4. Under **Settings** -> **Git** -> **Deploy Hooks**, create a hook for `main`;
-5. Add the URL as `VERCEL_DEPLOY_HOOK` in your content repository secrets.
+::: steps
+1. **Import Project & Configure Build**
+
+   - Import your theme repository in Vercel;
+   - Set Build Command to `pnpm run build` and Output Directory to `dist`.
+
+2. **Add Environment Variables**
+
+   Under **Environment Variables**, configure:
+   - `NODE_VERSION`: `22`
+   - `GIT_TERMINAL_PROMPT`: `0`
+   - `CONTENT_REPO_URL`: `https://x-access-token:TOKEN@github.com/USER/REPO.git`
+
+3. **Create Deploy Hook**
+
+   - Under **Settings** -> **Git** -> **Deploy Hooks**, create a hook for `main`;
+   - Copy the generated Webhook URL.
+
+4. **Add Secret to Content Repository**
+
+   Add the URL as `VERCEL_DEPLOY_HOOK` in your content repository's Actions secrets.
+:::
 
 ---
 
 ## 3. Tencent Cloud EdgeOne Pages
 
-1. Create a Pages application linked to your theme repository;
-2. Set build command to `pnpm run build` and output directory to `dist`;
-3. Add environment variables: `NODE_VERSION`, `GIT_TERMINAL_PROMPT`, and `CONTENT_REPO_URL`;
-4. Under **Triggers**, create a Deploy Hook for `main`;
+::: steps
+1. **Create Pages Application**
 
-![EdgeOne Deploy Hook](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+   - Create a Pages application linked to your theme repository;
+   - Set build command to `pnpm run build` and output directory to `dist`.
 
-5. Add the URL as `EDGEONE_DEPLOY_HOOK` in your content repository secrets.
+2. **Add Environment Variables**
+
+   Add `NODE_VERSION`, `GIT_TERMINAL_PROMPT`, and `CONTENT_REPO_URL`.
+
+3. **Create Deploy Hook Trigger**
+
+   - Under **Triggers**, create a Deploy Hook for `main`;
+   - Copy the trigger URL.
+
+   ![EdgeOne Deploy Hook](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+
+4. **Add Secret to Content Repository**
+
+   Add the URL as `EDGEONE_DEPLOY_HOOK` in your content repository's Actions secrets.
+:::
 
 ---
 
 ## 4. Netlify
 
-1. Import theme repo and set build command to `pnpm run build`, publish directory to `dist`;
-2. Configure environment variables in Site settings;
-3. Under **Build & deploy** -> **Build hooks**, create a hook for `main`;
-4. Add the URL as `NETLIFY_DEPLOY_HOOK` in your content repository secrets.
+::: steps
+1. **Import Project & Configure Build**
+
+   - Import theme repo in Netlify;
+   - Set build command to `pnpm run build` and publish directory to `dist`.
+
+2. **Configure Environment Variables**
+
+   In **Site configuration** -> **Environment variables**, add `NODE_VERSION`, `GIT_TERMINAL_PROMPT`, and `CONTENT_REPO_URL`.
+
+3. **Create Build Hook**
+
+   - Under **Build & deploy** -> **Continuous deployment** -> **Build hooks**, click **Add build hook**;
+   - Name it and choose branch `main`, then save and copy the URL.
+
+4. **Add Secret to Content Repository**
+
+   Add the URL as `NETLIFY_DEPLOY_HOOK` in your content repository's Actions secrets.
+:::
 
 ---
 

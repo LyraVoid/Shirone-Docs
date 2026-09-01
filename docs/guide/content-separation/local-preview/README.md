@@ -24,55 +24,59 @@ permalink: /guide/content-separation/local-preview/
 
 ## 方式一：快速单次同步预览
 
-### 1. 配置路径并启动
+:::: steps
+1. **配置路径并执行内容同步**
 
-进入**主题代码仓库**根目录，依次执行：
+   进入**主题代码仓库**根目录，依次执行：
 
-::: tabs
-@tab Windows (PowerShell)
-```powershell
-# 1. 设置内容仓库的本地路径（请替换为你电脑上的真实绝对路径）
-$env:CONTENT_DIR = "D:\Code\my-blog-content"
+   ::: tabs
+   @tab Windows (PowerShell)
+   ```powershell
+   # 1. 设置内容仓库的本地路径（请替换为你电脑上的真实绝对路径）
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
-# 2. 执行一次内容同步与配置合并
-pnpm.cmd content:sync
+   # 2. 执行一次内容同步与配置合并
+   pnpm.cmd content:sync
 
-# 3. 启动本地开发服务器
-pnpm.cmd dev
-```
+   # 3. 启动本地开发服务器
+   pnpm.cmd dev
+   ```
 
-@tab Linux / macOS (Bash / Zsh)
-```bash
-# 1. 设置内容仓库的本地路径
-export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+   @tab Linux / macOS (Bash / Zsh)
+   ```bash
+   # 1. 设置内容仓库的本地路径
+   export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
-# 2. 执行一次内容同步与配置合并
-pnpm content:sync
+   # 2. 执行一次内容同步与配置合并
+   pnpm content:sync
 
-# 3. 启动本地开发服务器
-pnpm dev
-```
-:::
+   # 3. 启动本地开发服务器
+   pnpm dev
+   ```
+   :::
 
-设置内容路径并执行同步：
+   设置内容路径并执行同步：
 
-![设置内容仓库路径与执行同步](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
+   ![设置内容仓库路径与执行同步](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
 
-启动开发服务器并在终端查看输出：
+2. **启动本地开发服务器**
 
-![终端启动开发服务器输出界面](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
+   启动开发服务器并在终端查看输出：
 
-### 2. 在浏览器中查看效果
+   ![终端启动开发服务器输出界面](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
 
-终端输出本地访问地址后：
+3. **在浏览器中查看效果**
 
-```text
-  Local    http://localhost:4321/
-```
+   终端输出本地访问地址后：
 
-在浏览器中打开 `http://localhost:4321/`，即可看到由你的私有内容仓库驱动的博客页面：
+   ```text
+     Local    http://localhost:4321/
+   ```
 
-![本地浏览器预览博客效果](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
+   在浏览器中打开 `http://localhost:4321/`，即可看到由你的私有内容仓库驱动的博客页面：
+
+   ![本地浏览器预览博客效果](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
+::::
 
 ---
 
@@ -81,16 +85,21 @@ pnpm dev
 如果你正在频繁撰写 Markdown 文章或调试 YAML 配置，反复手动执行同步命令较为繁琐。
 你可以开启**实时增量监听模式**：
 
-1. **终端窗口 1**（启动本地预览服务）：
+::: steps
+1. **启动本地预览服务（终端窗口 1）**
+
    ```powershell
-   $env:CONTENT_DIR = "D:\Code\my-blog-content"
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd dev
    ```
-2. **终端窗口 2**（启动实时增量监听）：
+
+2. **启动实时增量监听（终端窗口 2）**
+
    ```powershell
-   $env:CONTENT_DIR = "D:\Code\my-blog-content"
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd content:watch
    ```
+:::
 
 此时，只要你在外部编辑器（如 Obsidian、VS Code、Typora）中按 `Ctrl + S` 保存任何 Markdown 文件或修改 YAML 配置，监听器会自动捕获增量变更并同步至代码仓，触发浏览器的局部热重载，体验与单仓开发完全一致。
 

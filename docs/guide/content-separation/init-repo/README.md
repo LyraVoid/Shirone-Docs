@@ -23,65 +23,67 @@ permalink: /guide/content-separation/init-repo/
 - **代码仓安全防护**：自动在代码仓的 `.gitignore` 中追加忽略规则并安全取消 Git 跟踪，同时物理保留本地文件，本地开发预览完全不受影响；
 - **自动绑定本地路径**：自动将代码仓的开发环境与迁出的外部目录建立本地关联。
 
-### 第一步：在代码仓运行一键解耦命令
+### 操作步骤
 
-打开终端进入你的**主题代码仓库**根目录，运行解耦命令：
+:::: steps
+1. **在代码仓运行一键解耦命令**
 
-::: tabs
-@tab Windows (PowerShell)
-```powershell
-# 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
-pnpm.cmd content:eject
+   打开终端进入你的**主题代码仓库**根目录，运行解耦命令：
 
-# 2. 确认无误后执行迁出（默认导出至上一级目录的 ../shirone-content）
-pnpm.cmd content:eject --yes
+   ::: tabs
+   @tab Windows (PowerShell)
+   ```powershell
+   # 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
+   pnpm.cmd content:eject
 
-# 也可以通过 --out 参数指定自定义导出路径：
-pnpm.cmd content:eject --yes --out "D:\Code\my-blog-content"
-```
+   # 2. 确认无误后执行迁出（默认导出至上一级目录的 ../shirone-content）
+   pnpm.cmd content:eject --yes
 
-@tab Linux / macOS (Bash)
-```bash
-# 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
-pnpm content:eject
+   # 也可以通过 --out 参数指定自定义导出路径：
+   pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
+   ```
 
-# 2. 确认无误后执行迁出
-pnpm content:eject --yes
+   @tab Linux / macOS (Bash)
+   ```bash
+   # 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
+   pnpm content:eject
 
-# 自定义导出路径
-pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
-```
-:::
+   # 2. 确认无误后执行迁出
+   pnpm content:eject --yes
 
-### 第二步：在 GitHub 上创建空白私有仓库
+   # 自定义导出路径
+   pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
+   ```
+   :::
 
-1. 登录 GitHub 账号；
-2. 点击右上角 **+** 号，选择 **New repository**；
-3. 填写仓库信息：
+2. **在 GitHub 上创建空白私有仓库**
+
+   - 登录 GitHub 账号，点击右上角 **+** 号选择 **New repository**；
    - **Repository name**：建议命名为 `my-blog-content` 或 `shirone-content`；
    - **Visibility**：**务必勾选 Private（私有仓库）**；
    - **Initialize this repository with**：**不要勾选**任何初始化选项（保持完全空白）；
-4. 点击底部的 **Create repository** 创建仓库。
+   - 点击底部的 **Create repository** 创建仓库。
 
-![GitHub 新建私有仓库界面](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
+   ![GitHub 新建私有仓库界面](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
 
-### 第三步：将导出的内容仓库推送到 GitHub
+3. **将导出的内容仓库推送到 GitHub**
 
-打开终端进入刚刚导出的内容仓库目录，执行 Git 初始化与推送：
+   打开终端进入刚刚导出的内容仓库目录，执行 Git 初始化与推送：
 
-```bash
-# 1. 进入导出的外部内容目录
-cd ../shirone-content
+   ```bash
+   # 1. 进入导出的外部内容目录
+   cd ../shirone-content
 
-# 2. 初始化 Git 仓库并提交
-git init -b main
-git add .
-git commit -m "feat: 初始化博客私有内容仓库"
+   # 2. 初始化 Git 仓库并提交
+   git init -b main
+   git add .
+   git commit -m "feat: 初始化博客私有内容仓库"
 
-# 3. 关联你的 GitHub 私有仓库地址并推送
-git remote add origin git@github.com:你的用户名/my-blog-content.git
-git push -u origin main
-```
+   # 3. 关联你的 GitHub 私有仓库地址并推送
+   git remote add origin git@github.com:你的用户名/my-blog-content.git
+   git push -u origin main
+   ```
+::::
 
 至此，你的独立私有内容仓库已初始化完毕。
 
@@ -91,44 +93,50 @@ git push -u origin main
 
 如果你希望从头开始建立一个全新的空白内容仓库，可以直接克隆官方模板仓库。
 
-### 第一步：在 GitHub 上创建空白私有仓库
-按照上述步骤在 GitHub 上创建一个空白的 Private 私有仓库（保持完全空白，不勾选任何初始化文件）。
+### 操作步骤
 
-![GitHub 空白仓库指引页面](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
+::: steps
+1. **在 GitHub 上创建空白私有仓库**
 
-### 第二步：克隆官方内容模板到本地
-在终端中运行：
+   按照上述步骤在 GitHub 上创建一个空白的 Private 私有仓库（保持完全空白，不勾选任何初始化选项）。
 
-```bash
-# 1. 克隆官方内容模板仓库
-git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
+   ![GitHub 初始页面](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
 
-# 2. 进入克隆下来的目录
-cd my-blog-content
-```
+2. **克隆官方内容模板到本地**
 
-![终端运行克隆命令输出](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
+   在终端中运行：
 
-### 第三步：将远程地址重定向为你自己的私有仓库
+   ```bash
+   # 1. 克隆官方内容模板仓库
+   git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
 
-```bash
-# 将远程仓库 origin 的地址更换为你第一步创建的私有仓库地址
-git remote set-url origin git@github.com:你的用户名/my-blog-content.git
+   # 2. 进入克隆下来的目录
+   cd my-blog-content
+   ```
 
-# 验证远程地址是否修改成功
-git remote -v
-```
+   ![终端运行克隆命令输出](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
 
-![个人仓库地址](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
+3. **将远程地址重定向为你自己的私有仓库**
 
-### 第四步：推送首次提交到你的私有仓库
+   ```bash
+   # 将远程仓库 origin 的地址更换为你第一步创建的私有仓库地址
+   git remote set-url origin git@github.com:你的用户名/my-blog-content.git
 
-```bash
-# 将模板内容推送到你的私有仓库 main 分支
-git push -u origin main
-```
+   # 验证远程地址是否修改成功
+   git remote -v
+   ```
 
-![终端运行推送命令输出](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
+   ![个人仓库地址](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
+
+4. **推送首次提交到你的私有仓库**
+
+   ```bash
+   # 将模板内容推送到你的私有仓库 main 分支
+   git push -u origin main
+   ```
+
+   ![终端运行推送命令输出](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
+:::
 
 推送完成后，刷新 GitHub 页面即可看到完整的目录结构：
 

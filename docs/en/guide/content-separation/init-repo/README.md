@@ -21,107 +21,115 @@ There are two recommended methods to set up your standalone content repository:
 - **Theme Repo Protection**: Adds gitignore rules and safely unstages content files from Git while keeping physical files intact for local preview;
 - **Automatic Local Binding**: Connects your theme development workspace to the newly created external directory.
 
-### Step 1: Run Eject Command
+### Step-by-Step Guide
 
-Open your terminal in the **theme code repository** root:
+:::: steps
+1. **Run Eject Command in Theme Repository**
 
-::: tabs
-@tab Windows (PowerShell)
-```powershell
-# 1. Dry run: preview files to be ejected (zero disk changes)
-pnpm.cmd content:eject
+   Open your terminal in the **theme code repository** root and run:
 
-# 2. Confirm and execute eject (default destination: ../shirone-content)
-pnpm.cmd content:eject --yes
+   ::: tabs
+   @tab Windows (PowerShell)
+   ```powershell
+   # 1. Dry run: preview files to be ejected (zero disk changes)
+   pnpm.cmd content:eject
 
-# Or specify a custom output directory:
-pnpm.cmd content:eject --yes --out "D:\Code\my-blog-content"
-```
+   # 2. Confirm and execute eject (default destination: ../shirone-content)
+   pnpm.cmd content:eject --yes
 
-@tab Linux / macOS (Bash)
-```bash
-# 1. Dry run: preview files to be ejected
-pnpm content:eject
+   # Or specify a custom output directory:
+   pnpm.cmd content:eject --yes --out "D:\\Code\\my-blog-content"
+   ```
 
-# 2. Confirm and execute eject
-pnpm content:eject --yes
+   @tab Linux / macOS (Bash)
+   ```bash
+   # 1. Dry run: preview files to be ejected
+   pnpm content:eject
 
-# Custom output path:
-pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
-```
-:::
+   # 2. Confirm and execute eject
+   pnpm content:eject --yes
 
-### Step 2: Create a Blank Private Repo on GitHub
+   # Custom output path:
+   pnpm content:eject --yes --out "/Users/yourname/Code/my-blog-content"
+   ```
+   :::
 
-1. Log in to GitHub;
-2. Click the **+** icon in the top right corner and select **New repository**;
-3. Fill in details:
+2. **Create a Blank Private Repo on GitHub**
+
+   - Log in to GitHub, click the **+** icon in the top right corner and select **New repository**;
    - **Repository name**: e.g., `my-blog-content` or `shirone-content`;
    - **Visibility**: **Must select Private**;
    - **Initialize with**: **Do not select** any initialization files (keep completely empty);
-4. Click **Create repository**.
+   - Click **Create repository**.
 
-![GitHub Create Private Repo](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
+   ![GitHub Create Private Repo](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
 
-### Step 3: Push Content Repository to GitHub
+3. **Push Content Repository to GitHub**
 
-In your terminal, navigate to the ejected directory and push:
+   In your terminal, navigate to the ejected directory and push:
 
-```bash
-# 1. Enter the external content directory
-cd ../shirone-content
+   ```bash
+   # 1. Enter the external content directory
+   cd ../shirone-content
 
-# 2. Initialize Git repository and commit
-git init -b main
-git add .
-git commit -m "feat: initialize private blog content repo"
+   # 2. Initialize Git repository and commit
+   git init -b main
+   git add .
+   git commit -m "feat: initialize private blog content repo"
 
-# 3. Add remote origin and push
-git remote add origin git@github.com:YOUR_USERNAME/my-blog-content.git
-git push -u origin main
-```
+   # 3. Add remote origin and push
+   git remote add origin git@github.com:YOUR_USERNAME/my-blog-content.git
+   git push -u origin main
+   ```
+::::
 
 ---
 
 ## Method 2: Clone from Official Template
 
-### Step 1: Create a Blank Private Repo on GitHub
-Create an empty private repository on GitHub without adding a README or gitignore.
+### Step-by-Step Guide
 
-![GitHub Initial Page](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
+::: steps
+1. **Create a Blank Private Repo on GitHub**
 
-### Step 2: Clone the Template Repository
-Run in your terminal:
+   Create an empty private repository on GitHub without adding a README or gitignore.
 
-```bash
-# 1. Clone the template
-git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
+   ![GitHub Initial Page](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
 
-# 2. Enter the directory
-cd my-blog-content
-```
+2. **Clone the Template Repository**
 
-![Git Clone Output](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
+   Run in your terminal:
 
-### Step 3: Reset Remote URL to Your Private Repo
+   ```bash
+   # 1. Clone the template
+   git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
 
-```bash
-# Point remote origin to your new private repository
-git remote set-url origin git@github.com:YOUR_USERNAME/my-blog-content.git
+   # 2. Enter the directory
+   cd my-blog-content
+   ```
 
-# Verify remote URL
-git remote -v
-```
+   ![Git Clone Output](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
 
-![Git Remote Output](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
+3. **Reset Remote URL to Your Private Repo**
 
-### Step 4: Push to Your Private Repository
+   ```bash
+   # Point remote origin to your new private repository
+   git remote set-url origin git@github.com:YOUR_USERNAME/my-blog-content.git
 
-```bash
-git push -u origin main
-```
+   # Verify remote URL
+   git remote -v
+   ```
 
-![Git Push Output](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
+   ![Git Remote Output](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
+
+4. **Push to Your Private Repository**
+
+   ```bash
+   git push -u origin main
+   ```
+
+   ![Git Push Output](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
+:::
 
 Refresh your GitHub page to see the repository ready for authoring:
 

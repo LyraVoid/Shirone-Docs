@@ -24,55 +24,59 @@ Install dependencies in the theme repository:
 
 ## Method 1: Single Sync Preview
 
-### 1. Configure Path and Start Server
+:::: steps
+1. **Configure Path and Sync Content**
 
-Navigate to the **theme code repository** root and run:
+   Navigate to the **theme code repository** root and run:
 
-::: tabs
-@tab Windows (PowerShell)
-```powershell
-# 1. Set the absolute path of your content repository
-$env:CONTENT_DIR = "D:\Code\my-blog-content"
+   ::: tabs
+   @tab Windows (PowerShell)
+   ```powershell
+   # 1. Set the absolute path of your content repository
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
 
-# 2. Run a single sync to materialize content
-pnpm.cmd content:sync
+   # 2. Run a single sync to materialize content
+   pnpm.cmd content:sync
 
-# 3. Start local development server
-pnpm.cmd dev
-```
+   # 3. Start local development server
+   pnpm.cmd dev
+   ```
 
-@tab Linux / macOS (Bash / Zsh)
-```bash
-# 1. Set the path of your content repository
-export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+   @tab Linux / macOS (Bash / Zsh)
+   ```bash
+   # 1. Set the path of your content repository
+   export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
 
-# 2. Run a single sync
-pnpm content:sync
+   # 2. Run a single sync
+   pnpm content:sync
 
-# 3. Start development server
-pnpm dev
-```
-:::
+   # 3. Start development server
+   pnpm dev
+   ```
+   :::
 
-Set content path and execute sync:
+   Set content path and execute sync:
 
-![Set Content Path and Run Sync](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
+   ![Set Content Path and Run Sync](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
 
-Start development server in terminal:
+2. **Start Local Development Server**
 
-![Terminal Server Output](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
+   Start development server in terminal:
 
-### 2. View in Browser
+   ![Terminal Server Output](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
 
-Once the terminal outputs the local URL:
+3. **View in Browser**
 
-```text
-  Local    http://localhost:4321/
-```
+   Once the terminal outputs the local URL:
 
-Open `http://localhost:4321/` in your browser to see your blog rendered from your private content repository:
+   ```text
+     Local    http://localhost:4321/
+   ```
 
-![Browser Preview](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
+   Open `http://localhost:4321/` in your browser to see your blog rendered from your private content repository:
+
+   ![Browser Preview](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
+::::
 
 ---
 
@@ -81,16 +85,21 @@ Open `http://localhost:4321/` in your browser to see your blog rendered from you
 When frequently drafting Markdown posts or tweaking YAML styles, running sync manually can be tedious.
 Use **live incremental watch mode**:
 
-1. **Terminal 1** (Development server):
+::: steps
+1. **Launch Development Server (Terminal 1)**
+
    ```powershell
-   $env:CONTENT_DIR = "D:\Code\my-blog-content"
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd dev
    ```
-2. **Terminal 2** (Incremental watcher):
+
+2. **Launch Incremental Watcher (Terminal 2)**
+
    ```powershell
-   $env:CONTENT_DIR = "D:\Code\my-blog-content"
+   $env:CONTENT_DIR = "D:\\Code\\my-blog-content"
    pnpm.cmd content:watch
    ```
+:::
 
 Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian, VS Code, or Typora), changes will be synced incrementally in milliseconds and trigger browser hot module replacement.
 

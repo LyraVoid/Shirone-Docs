@@ -35,10 +35,23 @@ flowchart LR
     D -->|Static Build| E[Global CDN & Hosting Platforms]
 ```
 
-1. **Write in Content Repo**: Write Markdown posts or adjust YAML configurations, then push to your content repository;
-2. **Automated Pipeline Trigger**: Actions in the content repo dispatch a build signal to the theme repo, or hosting deploy hooks receive the update;
-3. **Materialization & Config Merging**: The theme repo fetches the content and recursively merges YAML overrides with theme defaults;
-4. **Compile & Deploy**: The theme repo subsets Chinese fonts, renders static HTML, optimizes assets, and deploys to hosting platforms.
+::: steps
+1. **Write in Content Repo**
+
+   Write Markdown posts or adjust YAML configurations, then push to your content repository.
+
+2. **Automated Pipeline Trigger**
+
+   Actions in the content repo dispatch a build signal to the theme repo, or hosting deploy hooks receive the update.
+
+3. **Materialization & Config Merging**
+
+   The theme repo fetches the content and recursively merges YAML overrides with theme defaults.
+
+4. **Compile & Deploy**
+
+   The theme repo subsets Chinese fonts, renders static HTML, optimizes assets, and deploys to hosting platforms.
+:::
 
 ---
 

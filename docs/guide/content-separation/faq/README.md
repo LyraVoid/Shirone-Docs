@@ -22,11 +22,20 @@ HttpError: Resource not accessible by integration
 内容仓配置的 `DISPATCH_TOKEN` 权限不足，未能获得对主题代码仓的写权限。
 
 ### 解决方案
-1. 登录 GitHub 前往 **Settings** -> **Developer Settings** -> **Personal access tokens**；
-2. 检查生成的细粒度令牌：
+::: steps
+1. **前往个人访问令牌设置**
+
+   登录 GitHub 前往 **Settings** -> **Developer Settings** -> **Personal access tokens**。
+
+2. **检查细粒度令牌权限**
+
    - **Repository access**：确认已选中**主题代码仓库**；
-   - **Permissions**：确认已将 **Contents** 权限设为 **Read and write**；
-3. 将重新生成的令牌值更新到内容仓的 `DISPATCH_TOKEN` Secret 中。
+   - **Permissions**：确认已将 **Contents** 权限设为 **Read and write**。
+
+3. **更新仓库 Secret**
+
+   将重新生成的令牌值更新到内容仓的 `DISPATCH_TOKEN` Secret 中。
+:::
 
 ---
 
@@ -57,15 +66,23 @@ fatal: Authentication failed for 'https://github.com/...'
 在内容仓的 `config/site.yaml` 或其他配置文件中修改了属性，但在本地预览或构建后未看到变化。
 
 ### 诊断步骤
-1. **运行安全预检命令**：
+::: steps
+1. **运行安全预检命令**
+
    ```bash
    pnpm content:validate
    ```
+
    查看是否有字段拼写错误提示（例如将 `title` 误写为 `titel`）。
-2. **检查合并策略**：
-   - 若修改的是数组列表（如 `nav-bar.yaml` 或 `sidebar.yaml` 中的 `components`），请注意数组遵循**整体替换**规则，必须列出完整的条目列表，而不能只写增量项；
-3. **检查文件名与目录**：
+
+2. **检查合并策略**
+
+   若修改的是数组列表（如 `nav-bar.yaml` 或 `sidebar.yaml` 中的 `components`），请注意数组遵循**整体替换**规则，必须列出完整的条目列表，而不能只写增量项。
+
+3. **检查文件名与目录**
+
    确认配置文件保存在内容仓的 `config/` 目录下，且文件名与领域名称严格匹配（如 `site.yaml`、`profile.yaml`）。
+:::
 
 ---
 

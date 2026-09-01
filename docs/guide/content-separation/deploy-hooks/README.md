@@ -31,115 +31,139 @@ sequenceDiagram
 
 ## 1. Cloudflare Pages 配置步骤
 
-### 第一步：导入项目与构建设置
-1. 登录 Cloudflare 控制台；
-2. 进入 **Compute (Workers & Pages)** -> **Create** -> 选择 **Pages** 选项卡（严禁选择 Worker 模式）；
-3. 连接你的 GitHub 账号，并选择你的主题代码仓库；
-4. 配置构建设置：
-   - **Framework preset**：选择 **None** 或 **Astro**；
-   - **Build command**：`pnpm run build`
-   - **Build output directory**：`dist`
+::: steps
+1. **导入项目与构建设置**
 
-![Cloudflare Pages 创建与设置](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
+   - 登录 Cloudflare 控制台；
+   - 进入 **Compute (Workers & Pages)** -> **Create** -> 选择 **Pages** 选项卡（严禁选择 Worker 模式）；
+   - 连接你的 GitHub 账号，并选择你的主题代码仓库；
+   - 配置构建设置：
+     - **Framework preset**：选择 **None** 或 **Astro**
+     - **Build command**：`pnpm run build`
+     - **Build output directory**：`dist`
 
-### 第二步：配置构建环境变量
-在项目创建向导或 **Settings** -> **Environment variables** 中，添加以下环境变量：
+   ![Cloudflare Pages 创建与设置](/images/content-separation/04-deploy/02-hook/02-pages-deploy.png)
 
-| 环境变量名 | 推荐值 | 说明 |
-| :--- | :--- | :--- |
-| `NODE_VERSION` | `22` | **必填**，指定 Node.js 22 运行环境 |
-| `GIT_TERMINAL_PROMPT` | `0` | **必填**，防止 Git 产生终端交互等待 |
-| `CONTENT_REPO_URL` | `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git` | **私有内容仓必填**，附带访问令牌的克隆地址 |
-| `BILI_SESSDATA` | `你的凭证` | *可选*，用于追番私密列表同步 |
+2. **配置构建环境变量**
 
-![Cloudflare 环境变量配置](/images/content-separation/04-deploy/02-hook/06-env-config.png)
+   在项目创建向导或 **Settings** -> **Environment variables** 中，添加以下环境变量：
 
-### 第三步：创建 Deploy Hook
-1. 进入该 Pages 项目的 **Settings** -> **Builds & deployments**；
-2. 向下滚动找到 **Deploy hooks**，点击 **Add deploy hook**；
-3. 填写名称（如 `content-update`），分支选择 `main`，点击 **Add hook**；
-4. 复制生成的 Webhook URL。
+   | 环境变量名 | 推荐值 | 说明 |
+   | :--- | :--- | :--- |
+   | `NODE_VERSION` | `22` | **必填**，指定 Node.js 22 运行环境 |
+   | `GIT_TERMINAL_PROMPT` | `0` | **必填**，防止 Git 产生终端交互等待 |
+   | `CONTENT_REPO_URL` | `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git` | **私有内容仓必填**，附带访问令牌的克隆地址 |
+   | `BILI_SESSDATA` | `你的凭证` | *可选*，用于追番私密列表同步 |
 
-![Cloudflare Deploy Hook 配置](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+   ![Cloudflare 环境变量配置](/images/content-separation/04-deploy/02-hook/06-env-config.png)
 
-### 第四步：在 GitHub 内容仓库中配置 Secret
-1. 打开你的 **GitHub 私有内容仓库** -> **Settings** -> **Secrets and variables** -> **Actions**；
-2. 点击 **New repository secret**；
-3. 填写配置项：
-   - **Name**：必须填入 `CLOUDFLARE_DEPLOY_HOOK`（全大写）
-   - **Secret**：粘贴刚才复制的 Cloudflare 部署钩子 URL；
-4. 点击 **Add secret** 保存。
+3. **创建 Deploy Hook**
+
+   - 进入该 Pages 项目的 **Settings** -> **Builds & deployments**；
+   - 向下滚动找到 **Deploy hooks**，点击 **Add deploy hook**；
+   - 填写名称（如 `content-update`），分支选择 `main`，点击 **Add hook**；
+   - 复制生成的 Webhook URL。
+
+   ![Cloudflare Deploy Hook 配置](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+
+4. **在 GitHub 内容仓库中配置 Secret**
+
+   - 打开你的 **GitHub 私有内容仓库** -> **Settings** -> **Secrets and variables** -> **Actions**；
+   - 点击 **New repository secret**；
+   - 填写配置项：
+     - **Name**：必须填入 `CLOUDFLARE_DEPLOY_HOOK`（全大写）
+     - **Secret**：粘贴刚才复制的 Cloudflare 部署钩子 URL
+   - 点击 **Add secret** 保存。
+:::
 
 ---
 
 ## 2. Vercel 配置步骤
 
-### 第一步：导入项目与构建设置
-1. 登录 Vercel 控制台，点击 **Add New...** -> **Project**；
-2. 导入你的主题代码仓库；
-3. 构建命令填入 `pnpm run build`，输出目录填入 `dist`。
+::: steps
+1. **导入项目与构建设置**
 
-### 第二步：配置构建环境变量
-在 **Environment Variables** 设置中添加：
-- `NODE_VERSION`: `22`
-- `GIT_TERMINAL_PROMPT`: `0`
-- `CONTENT_REPO_URL`: `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git`（私有仓必填）
+   - 登录 Vercel 控制台，点击 **Add New...** -> **Project**；
+   - 导入你的主题代码仓库；
+   - 构建命令填入 `pnpm run build`，输出目录填入 `dist`。
 
-### 第三步：创建 Deploy Hook
-1. 进入项目 **Settings** -> **Git**；
-2. 找到 **Deploy Hooks** 区域，点击 **Create Hook**；
-3. 填写 Hook 名称与分支 `main`，点击 **Create** 并复制生成的 URL。
+2. **配置构建环境变量**
 
-### 第四步：在 GitHub 内容仓库中配置 Secret
-在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-- **Name**：`VERCEL_DEPLOY_HOOK`
-- **Secret**：粘贴复制的 Vercel Deploy Hook URL。
+   在 **Environment Variables** 设置中添加：
+   - `NODE_VERSION`: `22`
+   - `GIT_TERMINAL_PROMPT`: `0`
+   - `CONTENT_REPO_URL`: `https://x-access-token:你的令牌@github.com/用户名/内容仓名.git`（私有仓必填）
+
+3. **创建 Deploy Hook**
+
+   - 进入项目 **Settings** -> **Git**；
+   - 找到 **Deploy Hooks** 区域，点击 **Create Hook**；
+   - 填写 Hook 名称与分支 `main`，点击 **Create** 并复制生成的 URL。
+
+4. **在 GitHub 内容仓库中配置 Secret**
+
+   在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
+   - **Name**：`VERCEL_DEPLOY_HOOK`
+   - **Secret**：粘贴复制的 Vercel Deploy Hook URL。
+:::
 
 ---
 
 ## 3. 腾讯云 EdgeOne Pages 配置步骤
 
-### 第一步：创建 Pages 应用
-1. 登录腾讯云 EdgeOne 控制台；
-2. 点击 **新建 Pages 应用**，授权并绑定你的主题代码仓库；
-3. 构建命令填入 `pnpm run build`，产物目录填入 `dist`。
+::: steps
+1. **创建 Pages 应用**
 
-### 第二步：配置环境变量
-在构建设置中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
+   - 登录腾讯云 EdgeOne 控制台；
+   - 点击 **新建 Pages 应用**，授权并绑定你的主题代码仓库；
+   - 构建命令填入 `pnpm run build`，产物目录填入 `dist`。
 
-### 第三步：创建部署钩子触发器
-1. 进入应用的 **触发器** 设置页面；
-2. 新建 **部署钩子**，选择分支为 `main`；
-3. 保存并复制生成的触发 URL。
+2. **配置环境变量**
 
-![EdgeOne 钩子创建位置](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+   在构建设置中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
 
-### 第四步：在 GitHub 内容仓库中配置 Secret
-在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-- **Name**：`EDGEONE_DEPLOY_HOOK`
-- **Secret**：粘贴复制的 EdgeOne 部署钩子 URL。
+3. **创建部署钩子触发器**
+
+   - 进入应用的 **触发器** 设置页面；
+   - 新建 **部署钩子**，选择分支为 `main`；
+   - 保存并复制生成的触发 URL。
+
+   ![EdgeOne 钩子创建位置](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+
+4. **在 GitHub 内容仓库中配置 Secret**
+
+   在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
+   - **Name**：`EDGEONE_DEPLOY_HOOK`
+   - **Secret**：粘贴复制的 EdgeOne 部署钩子 URL。
+:::
 
 ---
 
 ## 4. Netlify 配置步骤
 
-### 第一步：导入项目与构建设置
-1. 登录 Netlify 控制台，点击 **Add new site** -> **Import an existing project**；
-2. 选择 **GitHub** 并授权选择你的主题代码仓库；
-3. 配置构建命令为 `pnpm run build`，输出目录为 `dist`。
+::: steps
+1. **导入项目与构建设置**
 
-### 第二步：配置构建环境变量
-在 **Site configuration** -> **Environment variables** 中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
+   - 登录 Netlify 控制台，点击 **Add new site** -> **Import an existing project**；
+   - 选择 **GitHub** 并授权选择你的主题代码仓库；
+   - 配置构建命令为 `pnpm run build`，输出目录为 `dist`。
 
-### 第三步：创建 Build Hook
-1. 进入项目的 **Site configuration** -> **Build & deploy** -> **Continuous deployment**；
-2. 找到 **Build hooks**，点击 **Add build hook**；
-3. 填写名称并将分支指定为 `main`，点击 **Save** 并复制生成的 Webhook URL。
+2. **配置构建环境变量**
 
-### 第四步：在 GitHub 内容仓库中配置 Secret
-在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
-- **Name**：`NETLIFY_DEPLOY_HOOK`
-- **Secret**：粘贴复制的 Netlify Webhook URL。
+   在 **Site configuration** -> **Environment variables** 中添加 `NODE_VERSION`、`GIT_TERMINAL_PROMPT` 与 `CONTENT_REPO_URL`。
+
+3. **创建 Build Hook**
+
+   - 进入项目的 **Site configuration** -> **Build & deploy** -> **Continuous deployment**；
+   - 找到 **Build hooks**，点击 **Add build hook**；
+   - 填写名称并将分支指定为 `main`，点击 **Save** 并复制生成的 Webhook URL。
+
+4. **在 GitHub 内容仓库中配置 Secret**
+
+   在私有内容仓库的 **Settings** -> **Secrets and variables** -> **Actions** 中添加：
+   - **Name**：`NETLIFY_DEPLOY_HOOK`
+   - **Secret**：粘贴复制的 Netlify Webhook URL。
+:::
 
 ---
 
