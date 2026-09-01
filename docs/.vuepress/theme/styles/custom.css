@@ -1,27 +1,27 @@
 /* ==========================================================================
-   Material 3 Expressive (M3e) Visual Design System for Shirone Docs
+   Material 3 Expressive (M3e) Comprehensive Design System for Shirone Docs
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. Design Tokens & Color Roles
+   1. Design Tokens & M3e Color Palette
    -------------------------------------------------------------------------- */
 :root {
-  /* M3e Primary & Secondary Color Roles (Light Theme) */
+  /* M3e Primary Tonal Palette (Shirone Signature Ocean-Teal) */
   --vp-c-brand-1: #006874;
   --vp-c-brand-2: #0e8390;
   --vp-c-brand-3: #20a0ae;
   --vp-c-brand-soft: rgba(0, 104, 116, 0.12);
-  --vp-c-brand-subtle: rgba(0, 104, 116, 0.06);
+  --vp-c-brand-subtle: rgba(0, 104, 116, 0.05);
 
   /* M3e Surface Container Hierarchy (Light) */
-  --vp-c-bg: #f8fafc;
-  --vp-c-bg-alt: #f1f5f9;
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #f6fafc;
   --vp-c-bg-elv: #ffffff;
-  --vp-c-bg-soft: #edf2f7;
+  --vp-c-bg-soft: #edf4f7;
 
   /* M3e Surface Outlines & Dividers */
   --vp-c-gutter: rgba(15, 23, 42, 0.08);
-  --vp-c-border: rgba(15, 23, 42, 0.1);
+  --vp-c-border: rgba(15, 23, 42, 0.12);
   --vp-c-divider: rgba(15, 23, 42, 0.06);
 
   /* M3e Text Hierarchy */
@@ -29,22 +29,20 @@
   --vp-c-text-2: #334155;
   --vp-c-text-3: #64748b;
 
-  /* M3e Shadows */
-  --vp-shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  --vp-shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --vp-shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --vp-shadow-hover: 0 14px 28px -6px rgba(0, 104, 116, 0.18), 0 6px 12px -4px rgba(0, 0, 0, 0.06);
+  /* M3e Expressive Shadows & Ambient Glows */
+  --vp-shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --vp-shadow-2: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
+  --vp-shadow-3: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  --vp-shadow-hover: 0 14px 30px -4px rgba(0, 104, 116, 0.18), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
 
-  /* M3e Easing & Transitions */
+  /* M3e Motion Curves */
   --vp-m3-ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --vp-m3-ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
   --vp-m3-ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
-  --vp-t-color: 0.25s var(--vp-m3-ease-standard);
-  --vp-t-transform: 0.28s var(--vp-m3-ease-standard);
 
-  /* Hero Gradient & Aura */
+  /* Home Hero Aesthetics */
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(135deg, #006874 15%, #0e8390 50%, #20a0ae 100%);
+  --vp-home-hero-name-background: linear-gradient(135deg, #006874 10%, #0e8390 50%, #20a0ae 100%);
   --vp-home-hero-tagline: var(--vp-c-text-2);
   --vp-home-hero-text: var(--vp-c-text-1);
   --vp-home-hero-image-background-image: radial-gradient(circle, rgba(0, 104, 116, 0.22) 0%, rgba(32, 160, 174, 0.08) 60%, transparent 80%);
@@ -52,48 +50,48 @@
 }
 
 /* --------------------------------------------------------------------------
-   2. Dark Mode Color Roles (M3e Dark Tone Palette)
+   2. Dark Mode M3e Palette (Luminous Night Tier)
    -------------------------------------------------------------------------- */
 [data-theme="dark"] {
-  /* M3e Primary & Secondary Color Roles (Dark Theme) */
+  /* M3e Primary Tonal Palette (Dark) */
   --vp-c-brand-1: #4fd8eb;
   --vp-c-brand-2: #2dd4bf;
   --vp-c-brand-3: #80eec0;
   --vp-c-brand-soft: rgba(79, 216, 235, 0.16);
-  --vp-c-brand-subtle: rgba(79, 216, 235, 0.08);
+  --vp-c-brand-subtle: rgba(79, 216, 235, 0.07);
 
   /* M3e Surface Container Hierarchy (Dark) */
-  --vp-c-bg: #0b1013;
-  --vp-c-bg-alt: #0f1519;
-  --vp-c-bg-elv: #131a1e;
-  --vp-c-bg-soft: #172126;
+  --vp-c-bg: #0d1418;
+  --vp-c-bg-alt: #121b20;
+  --vp-c-bg-elv: #182329;
+  --vp-c-bg-soft: #1e2c34;
 
-  /* M3e Surface Outlines & Dividers (Dark) */
-  --vp-c-gutter: rgba(255, 255, 255, 0.09);
+  /* M3e Surface Outlines (Dark) */
+  --vp-c-gutter: rgba(255, 255, 255, 0.08);
   --vp-c-border: rgba(255, 255, 255, 0.12);
   --vp-c-divider: rgba(255, 255, 255, 0.06);
 
   /* M3e Text Hierarchy (Dark) */
-  --vp-c-text-1: #f1f5f9;
+  --vp-c-text-1: #f8fafc;
   --vp-c-text-2: #cbd5e1;
   --vp-c-text-3: #94a3b8;
 
   /* M3e Shadows (Dark) */
-  --vp-shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.35);
-  --vp-shadow-2: 0 4px 8px -1px rgba(0, 0, 0, 0.45);
-  --vp-shadow-3: 0 12px 20px -3px rgba(0, 0, 0, 0.55);
-  --vp-shadow-hover: 0 16px 32px -6px rgba(79, 216, 235, 0.22), 0 8px 16px -4px rgba(0, 0, 0, 0.5);
+  --vp-shadow-1: 0 1px 4px 0 rgba(0, 0, 0, 0.35);
+  --vp-shadow-2: 0 6px 14px -2px rgba(0, 0, 0, 0.45);
+  --vp-shadow-3: 0 16px 28px -4px rgba(0, 0, 0, 0.6);
+  --vp-shadow-hover: 0 16px 36px -6px rgba(79, 216, 235, 0.22), 0 6px 14px -4px rgba(0, 0, 0, 0.45);
 
-  /* Hero Gradient & Aura (Dark) */
+  /* Home Hero (Dark) */
   --vp-home-hero-name-background: linear-gradient(135deg, #4fd8eb 15%, #2dd4bf 55%, #80eec0 100%);
-  --vp-home-hero-image-background-image: radial-gradient(circle, rgba(79, 216, 235, 0.26) 0%, rgba(45, 212, 191, 0.1) 60%, transparent 80%);
+  --vp-home-hero-image-background-image: radial-gradient(circle, rgba(79, 216, 235, 0.28) 0%, rgba(45, 212, 191, 0.1) 60%, transparent 80%);
 }
 
 /* --------------------------------------------------------------------------
-   3. Global Typography & Smooth Rendering
+   3. Global Typography & M3e Smoothing
    -------------------------------------------------------------------------- */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
@@ -101,213 +99,331 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
 }
 
 /* --------------------------------------------------------------------------
-   4. Navbar (M3e Frosted Glass & Navigation Indicator)
+   4. Navbar (M3e Glass Acrylic Bar)
    -------------------------------------------------------------------------- */
 .vp-nav {
   backdrop-filter: blur(20px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid var(--vp-c-gutter) !important;
-  transition: background-color var(--vp-t-color), border-color var(--vp-t-color);
+  background-color: rgba(255, 255, 255, 0.85) !important;
+  transition: background-color 0.25s var(--vp-m3-ease-standard), border-color 0.25s var(--vp-m3-ease-standard);
+}
+
+[data-theme="dark"] .vp-nav {
+  background-color: rgba(13, 20, 24, 0.86) !important;
 }
 
 .vp-nav-link {
   border-radius: 9999px !important;
-  transition: all var(--vp-t-color);
+  padding: 4px 12px !important;
+  transition: all 0.2s var(--vp-m3-ease-standard) !important;
 }
 
 .vp-nav-link:hover,
 .vp-nav-link.active {
   color: var(--vp-c-brand-1) !important;
+  background-color: var(--vp-c-brand-soft) !important;
 }
 
 /* --------------------------------------------------------------------------
-   5. Sidebar Navigation Drawer (M3e Pill Items)
+   5. Sidebar Navigation Drawer (M3e Clean Item Alignment)
    -------------------------------------------------------------------------- */
 .vp-sidebar {
   border-right: 1px solid var(--vp-c-gutter) !important;
 }
 
+/* Reset any unwanted padding/margin on the tree wrapper */
 .vp-sidebar-item {
-  border-radius: 12px !important;
-  margin: 2px 0 !important;
-  padding: 6px 12px !important;
-  transition: all 0.2s var(--vp-m3-ease-standard) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  border-left: none !important;
 }
 
-.vp-sidebar-item:hover {
-  background-color: var(--vp-c-bg-soft) !important;
+.vp-sidebar-item.level-0 {
+  padding-bottom: 16px !important;
 }
 
-.vp-sidebar-item.is-active {
+/* Style the actual row element inside each sidebar item */
+.vp-sidebar-item > .item {
+  border-radius: 10px !important;
+  padding: 3px 8px !important;
+  margin: 1px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: background-color 0.18s var(--vp-m3-ease-standard), color 0.18s var(--vp-m3-ease-standard) !important;
+}
+
+.vp-sidebar-item > .item:hover {
+  background-color: var(--vp-c-brand-subtle) !important;
+}
+
+.vp-sidebar-item.is-active > .item {
   background-color: var(--vp-c-brand-soft) !important;
-  color: var(--vp-c-brand-1) !important;
-  font-weight: 600 !important;
 }
 
-.vp-sidebar-item.is-active .vp-sidebar-item-link {
+.vp-sidebar-item.is-active > .item .link > .text,
+.vp-sidebar-item.is-active > .item > .text {
   color: var(--vp-c-brand-1) !important;
+  font-weight: 650 !important;
+}
+
+/* Prevent text wrapping and keep badge inline */
+.vp-sidebar-item .text {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  padding: 3px 0 !important;
+  line-height: 22px !important;
+  font-size: 13.5px !important;
+}
+
+.vp-sidebar-item.level-0 > .item > .text {
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+}
+
+.vp-sidebar-item .text > span:first-child {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Sidebar Menu Badge - Compact Pill */
+.vp-sidebar-item .text .vp-menu-badge,
+.vp-sidebar-item .text :deep(.vp-menu-badge) {
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 10px !important;
+  font-weight: 650 !important;
+  padding: 1px 6px !important;
+  line-height: 1.2 !important;
+  border-radius: 9999px !important;
+  margin-left: 6px !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0.02em !important;
+  vertical-align: middle !important;
 }
 
 /* --------------------------------------------------------------------------
-   6. Home Hero Section (M3e Expressive Actions & Aura)
+   6. Home Action Buttons (M3e Filled & Tonal Shapes)
    -------------------------------------------------------------------------- */
-.vp-home-hero .name {
-  font-size: 3.5rem !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.04em !important;
-}
-
-.vp-home-hero .actions .action-btn {
+.vp-button {
   border-radius: 9999px !important;
-  font-weight: 600 !important;
-  padding: 12px 28px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.01em !important;
+  padding: 0 26px !important;
+  height: 44px !important;
+  line-height: 44px !important;
   font-size: 15px !important;
-  transition: all var(--vp-t-transform), box-shadow var(--vp-t-color) !important;
+  transition: all 0.25s var(--vp-m3-ease-decelerate) !important;
 }
 
-.vp-home-hero .actions .action-btn.brand {
-  box-shadow: 0 4px 14px 0 var(--vp-c-brand-soft);
+.vp-button.brand {
+  background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px -2px rgba(0, 104, 116, 0.35) !important;
 }
 
-.vp-home-hero .actions .action-btn.brand:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -2px var(--vp-c-brand-soft);
+.vp-button.brand:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 20px -3px rgba(0, 104, 116, 0.45) !important;
 }
 
-.vp-home-hero .actions .action-btn.alt {
-  border: 1px solid var(--vp-c-border) !important;
-  background-color: var(--vp-c-bg-elv) !important;
+[data-theme="dark"] .vp-button.brand {
+  background: linear-gradient(135deg, #4fd8eb 0%, #2dd4bf 100%) !important;
+  color: #0b1114 !important;
+  box-shadow: 0 4px 16px -2px rgba(79, 216, 235, 0.4) !important;
 }
 
-.vp-home-hero .actions .action-btn.alt:hover {
-  transform: translateY(-2px);
+[data-theme="dark"] .vp-button.brand:hover {
+  box-shadow: 0 8px 24px -3px rgba(79, 216, 235, 0.55) !important;
+}
+
+.vp-button.alt {
   background-color: var(--vp-c-bg-soft) !important;
+  color: var(--vp-c-text-1) !important;
+  border: 1px solid var(--vp-c-border) !important;
+}
+
+.vp-button.alt:hover {
+  background-color: var(--vp-c-bg-alt) !important;
   border-color: var(--vp-c-brand-1) !important;
   color: var(--vp-c-brand-1) !important;
+  transform: translateY(-2px) !important;
 }
 
 /* --------------------------------------------------------------------------
-   7. Home Features Grid (M3e Large Rounded Cards)
+   7. Home Features Grid (M3e Expressive Cards)
    -------------------------------------------------------------------------- */
 .vp-home-feature {
   border-radius: 20px !important;
-  background-color: var(--vp-c-bg-elv) !important;
   border: 1px solid var(--vp-c-gutter) !important;
+  background-color: var(--vp-c-bg-elv) !important;
   box-shadow: var(--vp-shadow-1) !important;
-  transition: all 0.3s var(--vp-m3-ease-decelerate) !important;
+  padding: 24px !important;
+  transition: all 0.28s var(--vp-m3-ease-decelerate) !important;
 }
 
 .vp-home-feature:hover {
   transform: translateY(-4px) !important;
-  border-color: var(--vp-c-brand-1) !important;
   box-shadow: var(--vp-shadow-hover) !important;
+  border-color: var(--vp-c-brand-2) !important;
 }
 
 .vp-home-feature .icon {
+  width: 44px !important;
+  height: 44px !important;
   border-radius: 14px !important;
   background-color: var(--vp-c-brand-soft) !important;
   color: var(--vp-c-brand-1) !important;
-  transition: transform 0.3s var(--vp-m3-ease-decelerate) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: transform 0.32s var(--vp-m3-ease-decelerate) !important;
 }
 
 .vp-home-feature:hover .icon {
-  transform: scale(1.08) !important;
+  transform: scale(1.1) rotate(2deg) !important;
 }
 
 .vp-home-feature .title {
-  font-size: 17px !important;
+  font-size: 16.5px !important;
   font-weight: 700 !important;
   letter-spacing: -0.015em !important;
+  margin-top: 14px !important;
 }
 
 .vp-home-feature .details {
   line-height: 1.6 !important;
+  font-size: 13.5px !important;
   color: var(--vp-c-text-2) !important;
 }
 
 /* --------------------------------------------------------------------------
-   8. Markdown Containers & Enhancements (M3e Card Geometry)
+   8. M3e Expressive Marker Highlight (Clean, Seamless Capsule)
    -------------------------------------------------------------------------- */
+mark {
+  --vp-mark-bg-image: none !important;
+  background-image: none !important;
+  background-position: initial !important;
+  background-size: initial !important;
+  animation: none !important;
+  display: inline;
+  background-color: rgba(0, 104, 116, 0.12) !important;
+  color: inherit !important;
+  padding: 1px 6px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  border: 1px solid rgba(0, 104, 116, 0.15);
+  transition: background-color 0.2s var(--vp-m3-ease-standard);
+}
 
-/* Steps Container */
+[data-theme="dark"] mark {
+  background-color: rgba(79, 216, 235, 0.16) !important;
+  color: #e0f7fa !important;
+  border: 1px solid rgba(79, 216, 235, 0.25);
+}
+
+mark.secondary {
+  background-color: rgba(14, 165, 164, 0.14) !important;
+  border-color: rgba(14, 165, 164, 0.25);
+}
+
+mark.tip {
+  background-color: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+[data-theme="dark"] mark.tip {
+  background-color: rgba(52, 211, 153, 0.18) !important;
+  color: #a7f3d0 !important;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+mark.warning {
+  background-color: rgba(245, 158, 11, 0.14) !important;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+[data-theme="dark"] mark.warning {
+  background-color: rgba(251, 191, 36, 0.18) !important;
+  color: #fef08a !important;
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+mark.error,
+mark.danger {
+  background-color: rgba(239, 68, 68, 0.14) !important;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="dark"] mark.error,
+[data-theme="dark"] mark.danger {
+  background-color: rgba(248, 113, 113, 0.18) !important;
+  color: #fecdd3 !important;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+mark.info {
+  background-color: rgba(14, 165, 233, 0.14) !important;
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+[data-theme="dark"] mark.info {
+  background-color: rgba(56, 189, 248, 0.18) !important;
+  color: #bae6fd !important;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   9. M3e Steps Timeline (Expressive Circular Badges)
+   -------------------------------------------------------------------------- */
 .vp-steps {
   margin: 24px 0 !important;
-  padding: 16px 20px !important;
+  padding: 18px 24px !important;
   background-color: var(--vp-c-bg-soft) !important;
   border-radius: 20px !important;
   border: 1px solid var(--vp-c-gutter) !important;
+  box-shadow: var(--vp-shadow-1) !important;
 }
 
 .vp-steps > ol > li::before {
   border-radius: 50% !important;
-  background-color: var(--vp-c-brand-1) !important;
+  background: linear-gradient(135deg, var(--vp-c-brand-1) 0%, var(--vp-c-brand-2) 100%) !important;
   color: #ffffff !important;
   font-weight: 700 !important;
-  box-shadow: 0 2px 6px var(--vp-c-brand-soft);
+  box-shadow: 0 3px 8px var(--vp-c-brand-soft) !important;
 }
 
-/* Badges (Pill Shape) */
-.vp-badge {
+/* --------------------------------------------------------------------------
+   10. M3e Badges (Pill Shape in Content)
+   -------------------------------------------------------------------------- */
+.vp-doc .vp-badge:not(.vp-menu-badge) {
   border-radius: 9999px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  padding: 2px 10px !important;
+  font-size: 11.5px !important;
+  font-weight: 650 !important;
+  padding: 2px 8px !important;
   letter-spacing: 0.02em !important;
-  line-height: 1.5 !important;
+  line-height: 1.4 !important;
   vertical-align: middle !important;
 }
 
-.vp-badge.tip {
-  background-color: var(--vp-c-brand-soft) !important;
-  color: var(--vp-c-brand-1) !important;
-  border: 1px solid rgba(0, 104, 116, 0.2) !important;
-}
-
-/* Marker Highlighting */
-mark {
-  background-color: rgba(254, 240, 138, 0.5) !important;
-  color: inherit !important;
-  padding: 2px 6px !important;
-  border-radius: 6px !important;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
-
-[data-theme="dark"] mark {
-  background-color: rgba(250, 204, 21, 0.22) !important;
-  color: #fef08a !important;
-}
-
-mark.secondary {
-  background-color: var(--vp-c-brand-soft) !important;
-  color: var(--vp-c-brand-1) !important;
-}
-
-mark.error {
-  background-color: rgba(239, 68, 68, 0.15) !important;
-  color: #ef4444 !important;
-}
-
-[data-theme="dark"] mark.error {
-  background-color: rgba(239, 68, 68, 0.25) !important;
-  color: #fca5a5 !important;
-}
-
-mark.tip {
-  background-color: rgba(16, 185, 129, 0.15) !important;
-  color: #059669 !important;
-}
-
-[data-theme="dark"] mark.tip {
-  background-color: rgba(16, 185, 129, 0.25) !important;
-  color: #6ee7b7 !important;
-}
-
-/* Callout / Custom Containers */
+/* --------------------------------------------------------------------------
+   11. Callouts & Admonitions (M3e Tonal Containers)
+   -------------------------------------------------------------------------- */
 .custom-container {
   border-radius: 18px !important;
   border: 1px solid var(--vp-c-gutter) !important;
@@ -321,12 +437,12 @@ mark.tip {
 }
 
 .custom-container.warning {
-  background-color: rgba(245, 158, 11, 0.08) !important;
+  background-color: rgba(245, 158, 11, 0.07) !important;
   border-left: 4px solid #f59e0b !important;
 }
 
 .custom-container.danger {
-  background-color: rgba(239, 68, 68, 0.08) !important;
+  background-color: rgba(239, 68, 68, 0.07) !important;
   border-left: 4px solid #ef4444 !important;
 }
 
@@ -335,19 +451,21 @@ mark.tip {
   border-radius: 16px !important;
 }
 
-/* Code Blocks & Tabs */
+/* --------------------------------------------------------------------------
+   12. Code Blocks, Trees & Tables
+   -------------------------------------------------------------------------- */
+div[class*="language-"] {
+  border-radius: 16px !important;
+  margin: 18px 0 !important;
+  border: 1px solid var(--vp-c-gutter) !important;
+}
+
 .vp-code-group {
   border-radius: 18px !important;
   overflow: hidden !important;
   box-shadow: var(--vp-shadow-1) !important;
 }
 
-div[class*="language-"] {
-  border-radius: 18px !important;
-  margin: 18px 0 !important;
-}
-
-/* File Tree & Code Tree */
 .vp-file-tree,
 .vp-code-tree {
   border-radius: 18px !important;
@@ -357,7 +475,6 @@ div[class*="language-"] {
   padding: 18px 20px !important;
 }
 
-/* Tables */
 table {
   border-radius: 14px !important;
   overflow: hidden !important;
@@ -370,7 +487,7 @@ th {
 }
 
 /* --------------------------------------------------------------------------
-   9. Footer (Clean Surface & Subtle Copyright)
+   13. Footer
    -------------------------------------------------------------------------- */
 .vp-footer {
   border-top: 1px solid var(--vp-c-gutter) !important;
@@ -380,6 +497,6 @@ th {
 
 .vp-footer .copyright {
   font-size: 13px !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.015em !important;
   color: var(--vp-c-text-3) !important;
 }
