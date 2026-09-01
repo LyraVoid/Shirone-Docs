@@ -43,7 +43,7 @@ config:
       -
         title: 极致性能与字体裁剪
         icon: material-symbols:speed-outline
-        details: 基于 Astro 5 + Vite 6 构建，全站中文字体按需提取子集裁剪，体积降低 80% 以上。
+        details: 基于 Astro 7 + Vite 8 构建，全站中文字体按需提取子集裁剪，体积降低 80% 以上。
         link: /guide/optimize-build/
       -
         title: 追番同步与多模态

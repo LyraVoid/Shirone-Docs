@@ -4,7 +4,7 @@ createTime: 2026/09/01 03:00:00
 permalink: /guide/project-structure/
 ---
 
-Shirone 是一个基于 ==**Astro 5 + Svelte 5 + Tailwind CSS + TypeScript**== 构建的高性能现代化静态博客系统。项目遵循 ==**关注点分离（SoC）**== 与 ==**原子化设计规范（Atomic Design）**==，具备清晰的模块边界与强类型配置约束。
+Shirone 是一个基于 ==**Astro 7 + Svelte 5 + Tailwind CSS + TypeScript**== 构建的高性能现代化静态博客系统。项目遵循 ==**关注点分离（SoC）**== 与 ==**原子化设计规范（Atomic Design）**==，具备清晰的模块边界与强类型配置约束。
 
 本篇将通过文件树与代码树等多种展示形态，深入剖析 Shirone 的工程骨架与模块协作机制。
 
@@ -92,7 +92,7 @@ import { withUserConfig } from "../utils/config";
 export const siteConfig = withUserConfig("site", {
   title: "Shirone",
   subtitle: "Seeing the world from scratch",
-  description: "基于 Astro 5 + Svelte 5 的现代化静态博客",
+  description: "基于 Astro 7 + Svelte 5 的现代化静态博客",
   author: "Matsuzaka Yuki",
   avatar: "/avatar.webp",
   favicon: "/favicon.svg",

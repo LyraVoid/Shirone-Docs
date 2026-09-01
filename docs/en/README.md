@@ -43,7 +43,7 @@ config:
       -
         title: Build & Font Optimization
         icon: material-symbols:speed-outline
-        details: Built on Astro 5 + Vite 6 with automated CJK glyph extraction and subsetting for 80%+ smaller fonts.
+        details: Built on Astro 7 + Vite 8 with automated CJK glyph extraction and subsetting for 80%+ smaller fonts.
         link: /en/guide/optimize-build/
       -
         title: Anime Tracker & Media

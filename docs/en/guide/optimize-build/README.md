@@ -4,13 +4,13 @@ createTime: 2026/09/01 02:40:00
 permalink: /en/guide/optimize-build/
 ---
 
-Shirone is engineered from the ground up for maximum build efficiency and peak first-paint performance. Combining Astro 5, Vite 6, Svelte 5 with zero client-side runtime overhead on content pages, automated CJK font subsetting, offline Iconify sprite generation, Sharp image pipelines, and Pagefind WASM indexing, Shirone achieves ==12-second full builds for 100+ articles== and ==100% Lighthouse performance scores==.
+Shirone is engineered from the ground up for maximum build efficiency and peak first-paint performance. Combining Astro 7, Vite 8, Svelte 5 with zero client-side runtime overhead on content pages, automated CJK font subsetting, offline Iconify sprite generation, Sharp image pipelines, and Pagefind WASM indexing, Shirone achieves ==12-second full builds for 100+ articles== and ==100% Lighthouse performance scores==.
 
 This guide details Shirone's 7-stage production build pipeline, performance tuning strategies, and observability tooling.
 
 ---
 
-## 7-Stage Production Build Pipeline <Badge text="Astro 5" color="#bc52ee" vertical="middle" /> <Badge text="Vite 6" color="#646cff" vertical="middle" /> <Badge text="Svelte 5" color="#ff3e00" vertical="middle" />
+## 7-Stage Production Build Pipeline <Badge text="Astro 7" color="#bc52ee" vertical="middle" /> <Badge text="Vite 8" color="#646cff" vertical="middle" /> <Badge text="Svelte 5" color="#ff3e00" vertical="middle" />
 
 Executing `pnpm build` triggers Shirone's 7 sequential build stages:
 

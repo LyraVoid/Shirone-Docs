@@ -4,13 +4,13 @@ createTime: 2026/09/01 02:40:00
 permalink: /guide/optimize-build/
 ---
 
-Shirone 在架构设计上将「极速构建」与「极致首屏体验」作为核心工程目标。通过 Astro 5、Vite 6、Svelte 5 零客户端运行时架构，结合自动化中文字体子集化、本地图标离线预生成、Sharp 缩略图管线与 Pagefind 离线 WASM 搜索索引，Shirone 实现了 ==百篇级文章 12 秒全量构建== 与 ==Lighthouse 性能满分==。
+Shirone 在架构设计上将「极速构建」与「极致首屏体验」作为核心工程目标。通过 Astro 7、Vite 8、Svelte 5 零客户端运行时架构，结合自动化中文字体子集化、本地图标离线预生成、Sharp 缩略图管线与 Pagefind 离线 WASM 搜索索引，Shirone 实现了 ==百篇级文章 12 秒全量构建== 与 ==Lighthouse 性能满分==。
 
 本篇深入解析 Shirone 内部的七阶段构建管线、性能调优策略与实战命令。
 
 ---
 
-## 七阶段生产构建流水线 <Badge text="Astro 5" color="#bc52ee" vertical="middle" /> <Badge text="Vite 6" color="#646cff" vertical="middle" /> <Badge text="Svelte 5" color="#ff3e00" vertical="middle" />
+## 七阶段生产构建流水线 <Badge text="Astro 7" color="#bc52ee" vertical="middle" /> <Badge text="Vite 8" color="#646cff" vertical="middle" /> <Badge text="Svelte 5" color="#ff3e00" vertical="middle" />
 
 当你在终端执行 `pnpm build` 时，Shirone 会按序执行以下 7 个阶段：
 
