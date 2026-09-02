@@ -30,6 +30,7 @@ draft: false
 | --- | --- | --- | --- |
 | `title` | `string` | 是 | 文章标题 |
 | `published` | `date` | 是 | 发布日期，参与排序与展示 |
+| `publishedAt` | `datetime` | 否 | 精确发布时间戳，用于同日多篇排序、时区换算与固定链接占位符 |
 | `description` | `string` | 否 | 摘要，显示在文章列表卡片与元数据中 |
 | `image` | `string` | 否 | 封面图。相对路径（`./cover.webp`）、`public` 绝对路径（`/img/x.webp`）或远程 URL |
 | `tags` | `array` | 否 | 标签，驱动标签页与侧栏标签云 |
@@ -83,7 +84,19 @@ draft: false
 
 ## 时间与时区
 
-`published` / `updated` 按站点配置的 `timeZone`（见[基础配置](/guide/layout/site-config/)）解释与展示。写日期（`2026-08-26`）即可，需要精确到时刻时写完整时间戳。
+`published` / `publishedAt` / `updated` 均按站点配置的 `timeZone`（见[基础配置](/guide/layout/site-config/)）进行解释与展示。
+
+### 纯日期与精确时刻
+
+- **纯日期发布**：大多数文章直接写日期（如 `published: 2026-08-26`）即可。当 `published` 仅为日期且时间为 UTC `00:00:00` 时，Shirone 将其视为 ==纯日期==，不会因时区换算而跨日。
+- **精确时刻控制**：若需要精确到时分秒，可使用完整时间戳（如 `published: 2026-08-26T14:30:00+08:00`）或显式声明 `publishedAt`。
+
+> [!TIP] 同一日发布多篇文章的排序
+> 文章列表默认按发布时间倒序排列。如果同一天内发布了多篇文章，且均填写了纯日期 `YYYY-MM-DD`，文章排序将按文章 ID 兜底决胜。
+>
+> 若希望严格控制同日多篇文章的前后顺序，建议通过以下两种方式之一提供带时分秒的时间：
+> 1. 直接在 `published` 填写完整时间戳：`published: 2026-08-26T15:30:00+08:00`
+> 2. 配合使用 `publishedAt`：保持 `published: 2026-08-26`，并设置 `publishedAt: 2026-08-26T15:30:00+08:00`
 
 ## YAML 语法注意
 
@@ -106,4 +119,8 @@ draft: false
 - description 和正文首段什么关系
 
   `description` 优先用于列表卡片、SEO meta 与 RSS；未填写时回退到正文截取。两者职责不同：description 是给读者的「预告」，正文首段是内容本身。
+
+- 同一天发布多篇文章怎么控制先后顺序
+
+  文章列表按发布时间倒序排列。如果多篇文章使用相同的纯日期（如 `2026-08-26`），系统会按文章 ID 进行排序。若需要精准指定谁先谁后，为较晚发表的文章指定更晚的时分秒时间戳（通过 `published` 完整时间或 `publishedAt` 字段）即可。
 :::

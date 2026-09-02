@@ -30,6 +30,7 @@ Content begins here.
 | --- | --- | --- | --- |
 | `title` | `string` | Yes | Post title displayed in listings and header |
 | `published` | `date` | Yes | Publication date used for chronological sorting and display |
+| `publishedAt` | `datetime` | No | Precise publication timestamp for same-day ordering, timezone conversion, and permalink tokens |
 | `description` | `string` | No | Summary shown on post cards and in SEO metadata |
 | `image` | `string` | No | Cover image: relative path (`./cover.webp`), `public` path (`/img/x.webp`), or remote URL |
 | `tags` | `array` | No | Tags powering the tag archive and tag cloud widget |
@@ -83,7 +84,19 @@ Content begins here.
 
 ## Time and Timezone
 
-`published` and `updated` are formatted according to `siteConfig.timeZone` (see [Site Configuration](/en/guide/layout/site-config/)). Specifying a date (`2026-08-26`) is sufficient; full timestamps with timezone offsets are also supported.
+`published`, `publishedAt`, and `updated` are formatted according to `siteConfig.timeZone` (see [Site Configuration](/en/guide/layout/site-config/)).
+
+### Plain Dates vs. Precise Timestamps
+
+- **Date-Only Posts**: For most posts, specifying a plain date (`published: 2026-08-26`) is sufficient. When `published` is a date-only value at UTC `00:00:00`, Shirone treats it as a ==plain date==, avoiding unintended day shifts from timezone conversion.
+- **Precise Timing**: When hour and minute precision is required, supply a full ISO timestamp (`published: 2026-08-26T14:30:00+08:00`) or declare `publishedAt`.
+
+> [!TIP] Ordering Multiple Posts on the Same Day
+> Post archives sort posts in reverse chronological order. When multiple posts share the same plain date `YYYY-MM-DD`, ties are broken by post ID.
+>
+> To explicitly control the display order of posts published on the same day:
+> 1. Specify a full timestamp directly in `published`: `published: 2026-08-26T15:30:00+08:00`
+> 2. Or pair `published: 2026-08-26` with `publishedAt: 2026-08-26T15:30:00+08:00`
 
 ## YAML Syntax Notes
 
@@ -106,4 +119,8 @@ Content begins here.
 - Relationship between description and opening paragraph
 
   `description` is explicitly prioritized for list cards, SEO meta tags, and RSS feeds. When omitted, the build falls back to extracting the opening paragraph.
+
+- How to control the order of multiple posts published on the same day
+
+  Post lists sort in reverse chronological order. If multiple posts use the same date (such as `2026-08-26`), the system sorts ties by post ID. To precisely determine the order, assign a later timestamp with hours and minutes (via the `published` timestamp or `publishedAt` field) to the post you want to appear first.
 :::

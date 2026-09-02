@@ -68,10 +68,14 @@ Recommended workflow:
 
 ## Ordering and Pinning
 
-Post lists sort by `published` in descending order. Two controls:
+Post lists sort in reverse chronological order. Key controls:
 
 - **Pin**: `pinned: true` places the post at the top (pinned posts still sort by publish date among themselves)
+- **Same-Day Ordering**: When publishing multiple posts on the same date, specify timestamps with hours and minutes or use `publishedAt` to control order (ties fallback to post ID)
 - **Backfilling old posts**: set `published` to the actual date to place them correctly—no file migration needed
+
+> [!TIP] Precise Timestamp Control
+> Date-only values (`YYYY-MM-DD`) work well for general posts. For fine-grained ordering on the same calendar day, supply a full timestamp or use `publishedAt`. See [Frontmatter Time and Timezone](/en/guide/frontmatter/#time-and-timezone).
 
 ## Categories and Tags
 
