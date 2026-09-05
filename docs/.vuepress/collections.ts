@@ -22,6 +22,7 @@ const zhGuideDoc = defineCollection({
       items: [
         { text: '介绍', link: 'intro/', icon: 'ri:information-line' },
         { text: '快速开始', link: 'get-started/', icon: 'ri:rocket-line', badge: { type: 'tip', text: '起步' } },
+        { text: 'npm 包', link: 'npm-package/', icon: 'ri:npmjs-line', badge: { type: 'info', text: '可选' } },
         { text: '项目结构', link: 'project-structure/', icon: 'ri:node-tree', badge: { type: 'info', text: '架构' } },
         {
           text: '部署',
@@ -317,6 +318,7 @@ const enGuideDoc = defineCollection({
       items: [
         { text: 'Introduction', link: 'intro/', icon: 'ri:information-line' },
         { text: 'Quick Start', link: 'get-started/', icon: 'ri:rocket-line', badge: { type: 'tip', text: 'Start' } },
+        { text: 'npm Package', link: 'npm-package/', icon: 'ri:npmjs-line', badge: { type: 'info', text: 'Alternative' } },
         { text: 'Project Structure', link: 'project-structure/', icon: 'ri:node-tree', badge: { type: 'info', text: 'Structure' } },
         {
           text: 'Deployment',

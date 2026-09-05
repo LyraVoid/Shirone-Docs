@@ -48,6 +48,7 @@ Whether you are writing long-form technical articles, fleeting daily thoughts, o
 <CardGrid>
   <RepoCard repo="LyraVoid/Shirone" />
   <RepoCard repo="LyraVoid/Shirone-Content" />
+  <RepoCard repo="yCENzh/shirones" />
 </CardGrid>
 
 - Live Demo: [shirone.mysqil.com](https://shirone.mysqil.com/)
