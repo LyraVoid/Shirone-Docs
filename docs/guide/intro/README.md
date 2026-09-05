@@ -48,6 +48,7 @@ Shirone 是一个基于 ==M3E 规范==、富有表现力的现代化二次元个
 <CardGrid>
   <RepoCard repo="LyraVoid/Shirone" />
   <RepoCard repo="LyraVoid/Shirone-Content" />
+  <RepoCard repo="yCENzh/shirones" />
   <Card title="QQ 交流群" icon="ri:qq-line">
     官方交流群号：<code>1062166377</code> <Badge text="欢迎加入" type="tip" />，欢迎加入与其他博主共同探讨主题配置、功能定制与排版经验。
   </Card>
