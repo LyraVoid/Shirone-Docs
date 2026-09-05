@@ -6,6 +6,10 @@ permalink: /en/guide/get-started/
 
 Set up your own Shirone blog from scratch.
 
+::: tip Don't want to clone the repository?
+Shirone is also published as the `shirones` npm package — run `npx shirones init` in an empty folder to initialize your blog. See [npm Package](/en/guide/npm-package/).
+:::
+
 ## Requirements
 
 - [Node.js](https://nodejs.org/) ==**22.12** or higher==

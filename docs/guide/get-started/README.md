@@ -6,6 +6,10 @@ permalink: /guide/get-started/
 
 从零开始搭建属于你的 Shirone 博客。
 
+::: tip 不想克隆仓库？
+Shirone 也以 `shirones` npm 包的形式发布，在空文件夹中执行 `npx shirones init` 即可初始化博客，详见 [npm 包](/guide/npm-package/)。
+:::
+
 ## 环境要求
 
 - [Node.js](https://nodejs.org/) ==**22.12** 或更高版本==
