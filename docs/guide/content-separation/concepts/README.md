@@ -41,7 +41,7 @@ shirone-content/
 │   ├── font.yaml            # 全站字体与字形裁剪配置
 │   ├── anime.yaml           # 追番追剧页面与同步数据源
 │   ├── music.yaml           # 侧栏播放器模式与歌单配置
-│   ├── comment.yaml         # Twikoo 评论系统配置
+│   ├── comment.yaml         # 评论系统配置（Twikoo / Giscus）
 │   ├── article.yaml         # 文章排版与阅读提醒配置
 │   ├── post-list.yaml       # 首页文章列表与分页模式
 │   ├── devices.yaml         # 数码装备分类与筛选规则

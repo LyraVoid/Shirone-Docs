@@ -41,7 +41,7 @@ shirone-content/
 │   ├── font.yaml            # Typography and font subsetting rules
 │   ├── anime.yaml           # Anime tracker and sync provider settings
 │   ├── music.yaml           # Music player modes and playlist settings
-│   ├── comment.yaml         # Twikoo comment system settings
+│   ├── comment.yaml         # Comment system settings (Twikoo / Giscus)
 │   ├── article.yaml         # Reading time, typography, and outdated alerts
 │   ├── post-list.yaml       # Post list layout and pagination settings
 │   ├── devices.yaml         # Hardware devices category rules
