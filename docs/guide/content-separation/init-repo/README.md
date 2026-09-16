@@ -168,6 +168,7 @@ shirone-content/
 │   ├── projects.ts          # 开源项目清单
 │   ├── skills.ts            # 技能图谱
 │   ├── devices.ts           # 硬件装备
+│   ├── games.ts            # 游戏清单
 │   ├── timeline.ts          # 大事记时间线
 │   └── friends.ts           # 友情链接
 ├── assets/                  # 高清原始媒体 -> 映射至 src/assets/ (参与构建期压缩优化)

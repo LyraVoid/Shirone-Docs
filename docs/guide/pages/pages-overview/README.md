@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:20:00
 permalink: /guide/pages/pages-overview/
 ---
 
-Shirone 内置一组独立的个人内容页面：关于、瞬间、友链、相册、番剧、罗盘、技能、项目、设备、时间线。本篇讲它们的整体组织方式——开关体系、导航联动与页面标识；各页面专属配置见后续分篇。
+Shirone 内置一组独立的个人内容页面：关于、瞬间、友链、相册、番剧、罗盘、技能、项目、设备、游戏、时间线。本篇讲它们的整体组织方式——开关体系、导航联动与页面标识；各页面专属配置见后续分篇。
 
 ## 页面清单
 
@@ -19,11 +19,12 @@ Shirone 内置一组独立的个人内容页面：关于、瞬间、友链、相
 | 技能 | `/skills/` | `src/data/skills.ts` | `skillsConfig.ts` |
 | 项目 | `/projects/` | `src/data/projects.ts` | `projectsConfig.ts` |
 | 设备 | `/devices/` | `src/data/devices.ts` | `devicesConfig.ts` |
+| 游戏 | `/games/` | `src/data/games.ts` | `gamesConfig.ts` |
 | 时间线 | `/timeline/` | `src/data/timeline.ts` | `timelineConfig.ts` |
 
 ## 开关体系：enable 与导航联动
 
-带行为配置的页面（技能、项目、设备、时间线、番剧）共享同一套开关规则：
+带行为配置的页面（技能、项目、设备、游戏、时间线、番剧）共享同一套开关规则：
 
 ```ts
 enable: true,   // false 时：
@@ -52,14 +53,14 @@ enable: true,   // false 时：
 
 ```text
 home | archive | friends | moments | anime | compass | skills |
-projects | devices | timeline | albums | about | post | categories | tags
+projects | devices | games | timeline | albums | about | post | categories | tags
 ```
 
 例如公告 widget 默认 `pages: ["home"]`、悬浮目录 `pages: ["post"]`（见[侧栏布局](/guide/layout/sidebar/)与[悬浮控制流](/guide/article/fab/)）。
 
 ## 导航挂载
 
-所有页面的地址都已登记在 `LinkPresets` 预设表。默认导航中，常用页面直接挂载，低频页面（时间线、项目、设备、技能）收进「更多」下拉分组——同样受各自 `enable` 条件控制。调整见[导航栏配置](/guide/layout/navbar/)。
+所有页面的地址都已登记在 `LinkPresets` 预设表。默认导航中，常用页面直接挂载，低频页面（时间线、项目、设备、游戏、技能）收进「更多」下拉分组——同样受各自 `enable` 条件控制。调整见[导航栏配置](/guide/layout/navbar/)。
 
 ## 常见问题
 
