@@ -122,6 +122,7 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 | `config/music.yaml` | 侧栏音乐播放器模式、网易云歌单与自定义曲目 | 对象递归合并 |
 | `config/comment.yaml` | 评论系统服务提供商与 Twikoo / Giscus 连接参数 | 对象递归合并 |
 | `config/devices.yaml` | 个人数码设备展示页分类与筛选规则 | 对象合并（`categories` 数组替换） |
+| `config/games.yaml` | 游戏展示页分类与筛选规则 | 对象合并（`categories` 数组替换） |
 | `config/projects.yaml` | 开源项目展示页分类与阶段筛选规则 | 对象合并（`categories` 数组替换） |
 | `config/skills.yaml` | 技能图谱页分类与熟练度规则 | 对象合并（`categories` 数组替换） |
 | `config/timeline.yaml` | 大事记时间线分类与展示规则 | 对象合并（`categories` 数组替换） |

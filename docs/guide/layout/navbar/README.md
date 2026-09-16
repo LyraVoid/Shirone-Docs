@@ -8,7 +8,7 @@ permalink: /guide/layout/navbar/
 
 ## 预设表（LinkPresets）
 
-主题内置 15 个命名预设，名称、地址、图标单点维护、可整体复用：
+主题内置 16 个命名预设，名称、地址、图标单点维护、可整体复用：
 
 | 预设 | 地址 | 说明 |
 | --- | --- | --- |
@@ -21,6 +21,7 @@ permalink: /guide/layout/navbar/
 | `Skills` | `/skills/` | 技能 |
 | `Projects` | `/projects/` | 项目 |
 | `Devices` | `/devices/` | 设备 |
+| `Games` | `/games/` | 游戏 |
 | `Timeline` | `/timeline/` | 时间线 |
 | `Albums` | `/albums/` | 相册 |
 | `Categories` | `/categories/` | 分类 |
@@ -49,6 +50,7 @@ const defaultNavBarConfig: NavBarConfig = {
         ...(timelineConfig.enable ? [LinkPresets.Timeline] : []),
         ...(projectsConfig.enable ? [LinkPresets.Projects] : []),
         ...(devicesConfig.enable ? [LinkPresets.Devices] : []),
+        ...(gamesConfig.enable ? [LinkPresets.Games] : []),
         ...(skillsConfig.enable ? [LinkPresets.Skills] : []),
         LinkPresets.About,
         LinkPresets.GitHub,

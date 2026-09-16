@@ -45,6 +45,7 @@ shirone-content/
 │   ├── article.yaml         # Reading time, typography, and outdated alerts
 │   ├── post-list.yaml       # Post list layout and pagination settings
 │   ├── devices.yaml         # Hardware devices category rules
+│   ├── games.yaml          # Games showcase category rules
 │   ├── projects.yaml        # Open source project category rules
 │   ├── skills.yaml          # Technical skill graph category rules
 │   ├── timeline.yaml        # Career timeline milestones rules
@@ -66,6 +67,7 @@ shirone-content/
 │   ├── anime.ts             # Local anime snapshot data
 │   ├── compass.ts           # Navigation bookmarks and links
 │   ├── devices.ts           # Hardware devices showcase data
+│   ├── games.ts            # Games showcase entries
 │   ├── friends.ts           # Friends and blogroll entities
 │   ├── music.ts             # Local music tracks metadata
 │   ├── projects.ts          # Open source project portfolio

@@ -163,6 +163,7 @@ shirone-content/
 │   ├── projects.ts          # Open source projects
 │   ├── skills.ts            # Technical skills
 │   ├── devices.ts           # Hardware devices
+│   ├── games.ts            # Games
 │   ├── timeline.ts          # Career milestones
 │   └── friends.ts           # Friends and blogroll
 ├── assets/                  # High-resolution media -> Mapped to src/assets/ (Built-in optimization)

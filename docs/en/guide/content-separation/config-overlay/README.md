@@ -116,6 +116,7 @@ All config files reside under `config/` in your content repository, partitioned 
 | `config/music.yaml` | Sidebar music player modes and playlist | Recursive Object Merge |
 | `config/comment.yaml` | Comment providers and Twikoo / Giscus settings | Recursive Object Merge |
 | `config/devices.yaml` | Hardware device showcase categories | Object Merge (`categories` Array Replacement) |
+| `config/games.yaml` | Games showcase categories | Object Merge (`categories` Array Replacement) |
 | `config/projects.yaml` | Open source project categories | Object Merge (`categories` Array Replacement) |
 | `config/skills.yaml` | Skill graph categories | Object Merge (`categories` Array Replacement) |
 | `config/timeline.yaml` | Milestones timeline categories | Object Merge (`categories` Array Replacement) |
