@@ -108,19 +108,11 @@ Grouping articles into a series takes just two easy steps:
 
 Once configured, readers enjoy three complementary discovery surfaces:
 
-:::: card-grid cols="3"
-::: card title="1. In-Post Series Navigation" icon="ri:compass-3-line"
-A dedicated series section appears at the bottom (or top) of each post, showing the series title, status pill (Ongoing / Completed), current progress (e.g. "Part 2 of 5"), and direct links to previous/next chapters.
-:::
-
-::: card title="2. Site-Wide Overview (/series/)" icon="ri:layout-grid-line"
-Spacious overview cards present all collections on your site, complete with descriptions, post counts, and latest update timestamps.
-:::
-
-::: card title="3. Collection Detail (/series/[slug]/)" icon="ri:list-check-2"
-Highlights the series preface banner and cleanly lists every chapter in sequential order for linear reading.
-:::
-::::
+| Surface | Location / URL | Description |
+| --- | --- | --- |
+| **In-Post Navigation** | Post bottom (or top) | Displays the series title, status pill (Ongoing / Completed), current progress (e.g. "Part 2 of 5"), and one-click links to the previous and next articles. |
+| **Series Overview Page** | `/series/` | Full-width cards showcasing all collections with descriptions, post counts, and latest update timestamps. |
+| **Series Detail & Syllabus** | `/series/<series-slug>/` | Highlights the collection's preface banner and cleanly lists every chapter in sequential order. |
 
 ---
 
