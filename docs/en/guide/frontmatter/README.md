@@ -35,6 +35,8 @@ Content begins here.
 | `image` | `string` | No | Cover image: relative path (`./cover.webp`), `public` path (`/img/x.webp`), or remote URL |
 | `tags` | `array` | No | Tags powering the tag archive and tag cloud widget |
 | `category` | `string` | No | Category powering the category archive and sidebar |
+| `series` | `string` | No | Parent series slug, linking to `content/series/<slug>.md` |
+| `seriesOrder` | `number` | No | Order index within the series (integer, falls back to published date) |
 | `draft` | `boolean` | No | `true` marks as draft (hidden in production builds) |
 | `updated` | `date` | No | Last updated date, triggers the "Last updated" banner |
 | `pinned` | `boolean` | No | `true` pins the post to the top of listings |
@@ -57,6 +59,7 @@ Content begins here.
 
 - Cover images render on post cards; missing images fallback to clean typography
 - A post may have multiple tags but only one category; both are automatically aggregated across the site
+- Declaring `series` links the article to a serial collection, with optional `seriesOrder` specifying its sequence index
 
 ### Lifecycle & State
 

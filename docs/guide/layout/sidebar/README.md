@@ -38,7 +38,7 @@ dual 模式的响应式退化是自动的：1024px ~ 1279px 之间优雅退化�
 
 ## Widget 清单（components）
 
-8 种组件类型：
+9 种组件类型：
 
 | type | 组件 | 补充配置来源 |
 | --- | --- | --- |
@@ -46,6 +46,7 @@ dual 模式的响应式退化是自动的：1024px ~ 1279px 之间优雅退化�
 | `music` | 音乐播放器 | `musicConfig.ts` + `src/data/music.ts` |
 | `announcement` | 公告 | `announcementConfig.ts` |
 | `categories` | 分类 | 文章内容自动聚合 |
+| `series` | 系列连载 | 文章系列自动聚合（受 seriesConfig.enable 门控） |
 | `tags` | 标签云 | 文章内容自动聚合 |
 | `stats` | 站点统计 | 自动统计 |
 | `calendar` | 日历 | 自动生成 |
@@ -60,7 +61,7 @@ dual 模式的响应式退化是自动的：1024px ~ 1279px 之间优雅退化�
   slot: "sticky",          // "top"（固定顶部）| "sticky"（滚动吸顶）
   column: "primary",       // "primary"（主栏，默认）| "secondary"（副栏，仅 dual 生效）
   pages: ["home", "post"], // 仅在指定页面展示，省略时全页面展示
-  collapseAfter: 5,        // 折叠阈值（适用于 categories/tags，超出条数显示展开按钮）
+  collapseAfter: 5,        // 折叠阈值（适用于 categories/tags/series，超出条数显示展开按钮）
 }
 ```
 
@@ -71,7 +72,7 @@ dual 模式的响应式退化是自动的：1024px ~ 1279px 之间优雅退化�
 
 ### pages：页面过滤
 
-可用的页面标识：`home`、`archive`、`friends`、`moments`、`anime`、`compass`、`skills`、`projects`、`devices`、`timeline`、`albums`、`about`、`post`、`categories`、`tags`。
+可用的页面标识：`home`、`archive`、`friends`、`moments`、`anime`、`compass`、`skills`、`projects`、`devices`、`games`、`series`、`timeline`、`albums`、`about`、`post`、`categories`、`tags`。
 
 例如默认配置中 `announcement` 仅在首页展示（`pages: ["home"]`），`toc` 仅在文章页（`pages: ["post"]`）。
 
@@ -86,6 +87,8 @@ components: [
   { type: "announcement", enable: true, slot: "top", pages: ["home"] },
   { type: "categories", enable: true, slot: "sticky", collapseAfter: 5,
     pages: [/* 列表页 + 文章页 */] },
+  { type: "series", enable: true, slot: "sticky", collapseAfter: 5,
+    pages: [/* 列表页 + 文章页（不含 series 自身页） */] },
   { type: "tags", enable: true, slot: "sticky", collapseAfter: 6,
     pages: [/* 列表页 + 文章页 */] },
   { type: "stats", enable: true, slot: "top", column: "secondary",

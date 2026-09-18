@@ -123,6 +123,7 @@ All config files reside under `config/` in your content repository, partitioned 
 | `config/friends.yaml` | Friend links grouping and health check | Object Merge (`groups` Array Replacement) |
 | `config/umami.yaml` | Umami analytics tracking | Recursive Object Merge |
 | `config/llms.yaml` | LLM AI search enhancement | Recursive Object Merge |
+| `config/series.yaml` | Serial post series layout and index settings | Recursive Object Merge |
 
 ---
 

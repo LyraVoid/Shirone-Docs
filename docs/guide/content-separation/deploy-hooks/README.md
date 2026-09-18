@@ -75,8 +75,11 @@ sequenceDiagram
        runs-on: ubuntu-latest
        steps:
          - name: Call Cloudflare Deploy Hook
+           env:
+             CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+           if: ${{ env.CLOUDFLARE_DEPLOY_HOOK != '' }}
            run: |
-             curl -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}"
+             curl -s -S -X POST "${{ env.CLOUDFLARE_DEPLOY_HOOK }}"
    ```
 :::
 

@@ -72,11 +72,16 @@ sequenceDiagram
        runs-on: ubuntu-latest
        steps:
          - name: Dispatch build event to theme repository
-           uses: peter-evans/repository-dispatch@v3
+           env:
+             DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+           if: ${{ env.DISPATCH_TOKEN != '' }}
+           uses: peter-evans/repository-dispatch@v4
            with:
-             token: ${{ secrets.DISPATCH_TOKEN }}
+             token: ${{ env.DISPATCH_TOKEN }}
              repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 请替换为你的主题代码仓路径
-             event-type: content-update
+             event-type: content-updated
+             client-payload: >-
+               {"sha": "${{ github.sha }}", "ref": "${{ github.ref }}", "repo": "${{ github.repository }}"}
    ```
 
 4. **在主题代码仓库中配置响应工作流**
@@ -90,7 +95,7 @@ sequenceDiagram
      push:
        branches: [main]
      repository_dispatch:
-       types: [content-update] # 响应内容仓库发送的派发事件
+       types: [content-updated] # 响应内容仓库发送的派发事件
      workflow_dispatch:
 
    jobs:

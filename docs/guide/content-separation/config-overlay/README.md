@@ -129,6 +129,7 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 | `config/friends.yaml` | 友情链接分组规则与丢失检测策略 | 对象合并（`groups` 数组替换） |
 | `config/umami.yaml` | Umami 访问统计分析 | 对象递归合并 |
 | `config/llms.yaml` | 大模型 AI 检索增强 | 对象递归合并 |
+| `config/series.yaml` | 系列连载展示与索引配置 | 对象递归合并 |
 
 ---
 

@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:43:00
 permalink: /guide/widgets/basic-widgets/
 ---
 
-六个数据自动聚合、无需专属配置文件的组件：分类、标签、站点统计、日历、目录、资料卡。它们的「配置」只有编排属性（开关、位置、页面过滤、折叠阈值）——放在 `sidebarConfig` 的条目里。
+七个数据自动聚合、无需专属配置文件的组件：分类、标签、系列连载、站点统计、日历、目录、资料卡。它们的「配置」只有编排属性（开关、位置、页面过滤、折叠阈值）——放在 `sidebarConfig` 的条目里。
 
 ## 分类（categories）
 
@@ -24,6 +24,16 @@ permalink: /guide/widgets/basic-widgets/
 
 ```ts
 { type: "tags", enable: true, slot: "sticky", collapseAfter: 6 }
+```
+
+## 系列连载（series）
+
+- **数据源**：`src/content/series/*.md` 实体与全站文章的 `series` 字段自动聚合（`getSeriesCatalog()` + `getSortedPostsList()`）
+- **渲染**：系列列表（名称 + 篇数徽标），按最近更新降序；超出折叠阈值时底部显示「查看全部系列」入口
+- **专属属性**：`collapseAfter`（默认 5）；受 `seriesConfig.enable` 门控，站点无系列时不渲染
+
+```ts
+{ type: "series", enable: true, slot: "sticky", collapseAfter: 5 }
 ```
 
 ## 站点统计（stats）

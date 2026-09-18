@@ -72,11 +72,16 @@ sequenceDiagram
        runs-on: ubuntu-latest
        steps:
          - name: Dispatch build event to theme repository
-           uses: peter-evans/repository-dispatch@v3
+           env:
+             DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
+           if: ${{ env.DISPATCH_TOKEN != '' }}
+           uses: peter-evans/repository-dispatch@v4
            with:
-             token: ${{ secrets.DISPATCH_TOKEN }}
+             token: ${{ env.DISPATCH_TOKEN }}
              repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
-             event-type: content-update
+             event-type: content-updated
+             client-payload: >-
+               {"sha": "${{ github.sha }}", "ref": "${{ github.ref }}", "repo": "${{ github.repository }}"}
    ```
 
 4. **Configure Dispatch Receiver in Theme Repository**
@@ -90,7 +95,7 @@ sequenceDiagram
      push:
        branches: [main]
      repository_dispatch:
-       types: [content-update]
+       types: [content-updated]
      workflow_dispatch:
 
    jobs:

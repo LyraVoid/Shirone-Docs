@@ -57,11 +57,13 @@ shirone-content/
 │   ├── license.yaml         # Creative Commons license settings
 │   ├── llms.yaml            # LLM AI search enhancement
 │   ├── umami.yaml           # Umami analytics tracking
+│   ├── series.yaml          # Serial post series layout and index settings
 │   ├── footer.yaml          # Footer copyright and ICP registration
 │   └── footer.html          # Custom injected footer HTML snippet
 ├── content/                 # Blog articles, moments, and spec pages
 │   ├── posts/               # Markdown and MDX posts (e.g., guide.md)
 │   ├── moments/             # Microblog moments (e.g., first-moment.md)
+│   ├── series/              # Serial post series entities (e.g., guide-series.md)
 │   └── spec/                # Spec pages (about.md, friends.md)
 ├── data/                    # Structured data entities (TypeScript modules)
 │   ├── anime.ts             # Local anime snapshot data

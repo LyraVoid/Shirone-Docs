@@ -35,6 +35,8 @@ draft: false
 | `image` | `string` | 否 | 封面图。相对路径（`./cover.webp`）、`public` 绝对路径（`/img/x.webp`）或远程 URL |
 | `tags` | `array` | 否 | 标签，驱动标签页与侧栏标签云 |
 | `category` | `string` | 否 | 分类，驱动分类页与侧栏分类 |
+| `series` | `string` | 否 | 所属系列 slug，关联 `content/series/<slug>.md` 连载专题 |
+| `seriesOrder` | `number` | 否 | 系列内展示顺位序号（整数），缺省按发布日期升序排序 |
 | `draft` | `boolean` | 否 | `true` 为草稿，不对访客可见 |
 | `updated` | `date` | 否 | 更新时间，触发文章页「最后更新」提示 |
 | `pinned` | `boolean` | 否 | `true` 时在列表置顶 |
@@ -57,6 +59,7 @@ draft: false
 
 - 封面图出现在文章卡片，无图时使用默认样式
 - 标签一篇文章可多个，分类只有一个；两者由全站文章自动聚合，无需单独维护清单
+- 声明 `series` 即可将文章收录入指定系列连载，配合 `seriesOrder` 可精确指定在系列内的阅读顺位
 
 ### 状态控制
 

@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:20:00
 permalink: /en/guide/pages/pages-overview/
 ---
 
-Shirone ships with a set of standalone personal pages: About, Moments, Friends, Albums, Anime, Compass, Skills, Projects, Devices, Games, and Timeline. This page explains their overall organization—the enable system, navigation linkage, and page identifiers. Page-specific configs follow in later pages.
+Shirone ships with a set of standalone personal pages: About, Moments, Friends, Albums, Anime, Compass, Skills, Projects, Devices, Games, Series, and Timeline. This page explains their overall organization—the enable system, navigation linkage, and page identifiers. Page-specific configs follow in later pages.
 
 ## Page List
 
@@ -20,11 +20,12 @@ Shirone ships with a set of standalone personal pages: About, Moments, Friends, 
 | Projects | `/projects/` | `src/data/projects.ts` | `projectsConfig.ts` |
 | Devices | `/devices/` | `src/data/devices.ts` | `devicesConfig.ts` |
 | Games | `/games/` | `src/data/games.ts` | `gamesConfig.ts` |
+| Series | `/series/` | `src/content/series/*.md` | `seriesConfig.ts` |
 | Timeline | `/timeline/` | `src/data/timeline.ts` | `timelineConfig.ts` |
 
 ## Enable System and Navigation Linkage
 
-Pages with behavior configs (Skills, Projects, Devices, Games, Timeline, Anime) share one rule:
+Pages with behavior configs (Skills, Projects, Devices, Games, Series, Timeline, Anime) share one rule:
 
 ```ts
 enable: true,   // when false:
@@ -53,7 +54,7 @@ Every page has a unified identifier used for `pages` filtering in sidebar widget
 
 ```text
 home | archive | friends | moments | anime | compass | skills |
-projects | devices | games | timeline | albums | about | post | categories | tags
+projects | devices | games | series | timeline | albums | about | post | categories | tags
 ```
 
 For example, the announcement widget defaults to `pages: ["home"]` and the floating TOC to `pages: ["post"]` (see [Sidebar Layout](/en/guide/layout/sidebar/) and [Floating Controls](/en/guide/article/fab/)).

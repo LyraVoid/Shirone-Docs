@@ -8,7 +8,7 @@ permalink: /en/guide/layout/navbar/
 
 ## Presets Table (LinkPresets)
 
-Shirone provides type-safe presets for standard pages:
+Shirone provides 17 type-safe presets for standard pages:
 
 | Preset Identifier | Target Route | Description |
 | --- | --- | --- |
@@ -17,7 +17,18 @@ Shirone provides type-safe presets for standard pages:
 | `LinkPresets.Friends` | `/friends/` | Friend links page |
 | `LinkPresets.Moments` | `/moments/` | Microblogging / status stream |
 | `LinkPresets.Anime` | `/anime/` | Bangumi / anime watchlist |
+| `LinkPresets.Compass` | `/compass/` | Site navigation bookmarks |
+| `LinkPresets.Skills` | `/skills/` | Skills matrix |
+| `LinkPresets.Projects` | `/projects/` | Project showcase |
+| `LinkPresets.Devices` | `/devices/` | Hardware devices list |
+| `LinkPresets.Games` | `/games/` | Games showcase |
+| `LinkPresets.Timeline` | `/timeline/` | Milestones timeline |
+| `LinkPresets.Albums` | `/albums/` | Photography albums |
+| `LinkPresets.Categories` | `/categories/` | Categories index |
+| `LinkPresets.Tags` | `/tags/` | Tags index |
+| `LinkPresets.Series` | `/series/` | Serial post series index |
 | `LinkPresets.About` | `/about/` | About page |
+| `LinkPresets.GitHub` | External URL | Theme GitHub repository |
 
 ## Navigation Structure (links)
 

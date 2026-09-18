@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:43:00
 permalink: /en/guide/widgets/basic-widgets/
 ---
 
-Six widgets aggregate data automatically and need no dedicated config file: Categories, Tags, Site Stats, Calendar, TOC, and the Profile card. Their only "configuration" is the orchestration properties (switch, position, page filter, collapse threshold) on their `sidebarConfig` entries.
+Seven widgets aggregate data automatically and need no dedicated config file: Categories, Tags, Series, Site Stats, Calendar, TOC, and the Profile card. Their only "configuration" is the orchestration properties (switch, position, page filter, collapse threshold) on their `sidebarConfig` entries.
 
 ## Categories
 
@@ -24,6 +24,16 @@ Six widgets aggregate data automatically and need no dedicated config file: Cate
 
 ```ts
 { type: "tags", enable: true, slot: "sticky", collapseAfter: 6 }
+```
+
+## Series
+
+- **Data source**: aggregated from `content/series/*.md` entities and posts declaring `series` (`getSeriesCatalog()` + `getSortedPostsList()`)
+- **Rendering**: series list (name + post count badge) sorted by latest post updates; displays a "View All Series" button when exceeding threshold
+- **Dedicated property**: `collapseAfter` (default 5); gated by `seriesConfig.enable`, renders nothing if no series exist
+
+```ts
+{ type: "series", enable: true, slot: "sticky", collapseAfter: 5 }
 ```
 
 ## Site Stats (stats)

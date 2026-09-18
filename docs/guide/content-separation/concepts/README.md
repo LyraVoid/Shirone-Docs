@@ -57,11 +57,13 @@ shirone-content/
 │   ├── license.yaml         # 原创知识共享协议 (CC)
 │   ├── llms.yaml            # 大模型 AI 检索增强
 │   ├── umami.yaml           # Umami 访问统计分析
+│   ├── series.yaml          # 系列连载展示与索引配置
 │   ├── footer.yaml          # 页脚文案与备案信息
 │   └── footer.html          # 自定义注入的页脚 HTML 片段
 ├── content/                 # 原创文章、说说与页面文案
 │   ├── posts/               # Markdown 与 MDX 博客长文 (如 guide.md)
 │   ├── moments/             # 动态生活说说 (如 first-moment.md)
+│   ├── series/              # 系列连载实体与导读 (如 guide-series.md)
 │   └── spec/                # 特殊页面文案 (about.md, friends.md)
 ├── data/                    # 结构化数据实体 TypeScript 模块
 │   ├── anime.ts             # 追番本地数据快照

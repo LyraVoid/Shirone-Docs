@@ -158,6 +158,7 @@ shirone-content/
 ├── content/                 # Posts and moments -> Mapped to src/content/
 │   ├── posts/               # Markdown and MDX articles
 │   ├── moments/             # Microblog moments
+│   ├── series/              # Serial post series entities -> Mapped to src/content/series/
 │   └── spec/                # About and spec pages
 ├── data/                    # Structured data entities -> Mapped to src/data/
 │   ├── projects.ts          # Open source projects

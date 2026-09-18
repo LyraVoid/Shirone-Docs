@@ -31,7 +31,7 @@ export const sidebarConfig = withUserConfig("sidebar", {
 
 ## Widget Types (components)
 
-Shirone provides 8 built-in widget types:
+Shirone provides 9 built-in widget types:
 
 | type | Widget | Configuration Source |
 | --- | --- | --- |
@@ -39,6 +39,7 @@ Shirone provides 8 built-in widget types:
 | `music` | Music Player | `musicConfig.ts` + `src/data/music.ts` |
 | `announcement` | Site Announcement | `announcementConfig.ts` |
 | `categories` | Category Tree | Automatically aggregated |
+| `series` | Serial Post Series | Automatically aggregated (gated by seriesConfig.enable) |
 | `tags` | Tag Cloud | Automatically aggregated |
 | `stats` | Site Statistics | Automatically aggregated |
 | `calendar` | Activity Calendar | Generated from post dates |
@@ -53,7 +54,7 @@ Shirone provides 8 built-in widget types:
   slot: "sticky",          // "top" (static header) | "sticky" (scroll follower)
   column: "primary",       // "primary" (default) | "secondary" (dual mode only)
   pages: ["home", "post"], // Target pages (omitted = all pages)
-  collapseAfter: 5,        // Max visible items before collapse button
+  collapseAfter: 5,        // Max visible items before collapse button (categories/tags/series)
 }
 ```
 
@@ -67,6 +68,7 @@ components: [
   { type: "music", enable: true, slot: "top" },
   { type: "announcement", enable: true, slot: "top", pages: ["home"] },
   { type: "categories", enable: true, slot: "sticky", collapseAfter: 5, pages: ["home", "archive", "post"] },
+  { type: "series", enable: true, slot: "sticky", collapseAfter: 5, pages: ["home", "archive", "post"] },
   { type: "tags", enable: true, slot: "sticky", collapseAfter: 6, pages: ["home", "archive", "post"] },
   { type: "stats", enable: true, slot: "top", column: "secondary", pages: ["home", "archive", "categories", "tags"] },
   { type: "calendar", enable: true, slot: "top", column: "secondary" },

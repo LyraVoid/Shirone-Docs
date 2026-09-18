@@ -9,12 +9,25 @@ The post-field contract lives in `src/content.config.ts`. Astro Content Collecti
 ## Schema and Fields
 
 ```ts
+// Posts Collection (src/content/posts)
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: () => z.object({
     title: z.string(),
     published: z.coerce.date(),
+    series: z.string().optional().default(""),
+    seriesOrder: z.number().int().optional(),
     draft: z.boolean().default(false),
+  }),
+});
+
+// Series Collection (src/content/series)
+const series = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/series" }),
+  schema: () => z.object({
+    title: z.string(),
+    status: z.enum(["ongoing", "completed"]).optional().default("ongoing"),
+    defaultCategory: z.string().optional().default(""),
   }),
 });
 ```

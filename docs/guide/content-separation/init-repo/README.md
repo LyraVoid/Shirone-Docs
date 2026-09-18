@@ -163,6 +163,7 @@ shirone-content/
 ├── content/                 # 原创文章与生活动态 -> 映射至 src/content/
 │   ├── posts/               # Markdown 与 MDX 博客长文
 │   ├── moments/             # 动态生活说说
+│   ├── series/              # 系列连载实体 -> 映射至 src/content/series/
 │   └── spec/                # 关于与自定义说明文案
 ├── data/                    # 结构化数据实体 -> 映射至 src/data/
 │   ├── projects.ts          # 开源项目清单

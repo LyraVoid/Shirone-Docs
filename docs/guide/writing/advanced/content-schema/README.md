@@ -9,12 +9,25 @@ permalink: /guide/writing/advanced/content-schema/
 ## Schema 与字段
 
 ```ts
+// 文章集合（src/content/posts）
 const posts = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: () => z.object({
     title: z.string(),
     published: z.coerce.date(),
+    series: z.string().optional().default(""),
+    seriesOrder: z.number().int().optional(),
     draft: z.boolean().default(false),
+  }),
+});
+
+// 系列集合（src/content/series）
+const series = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/series" }),
+  schema: () => z.object({
+    title: z.string(),
+    status: z.enum(["ongoing", "completed"]).optional().default("ongoing"),
+    defaultCategory: z.string().optional().default(""),
   }),
 });
 ```
