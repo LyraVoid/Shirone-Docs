@@ -75,6 +75,12 @@ shirone-content/
 │   ├── projects.ts          # Open source project portfolio
 │   ├── skills.ts            # Skills proficiency ratings
 │   └── timeline.ts          # Major life and career milestones
+├── assets/                  # Your own high-resolution images (Synced to src/assets/, compressed at build time)
+│   ├── images/
+│   │   ├── banner/          # Top banner wallpapers, split into desktop/ and mobile/
+│   │   ├── music/           # Covers for local music tracks
+│   │   └── demo-avatar.webp # Your avatar
+│   └── games/               # Wide cover images for the games page
 ├── public/                  # Static assets (Published as-is without re-encoding)
 │   ├── assets/              # Anime covers and media caches
 │   └── images/              # Blog images and photo albums
@@ -84,11 +90,17 @@ shirone-content/
 └── shirone.content.json     # Content repo metadata identifier & mount manifest
 ```
 
+> [!NOTE] Why is there no `assets/` folder in the template?
+> Because it is optional. Without this folder, the site simply keeps using the banner images, avatar, and music covers that ship with the theme — nothing breaks. When you want to replace them with your own images later, just create the folder following the structure above.
+>
+> The one thing to watch out for: once you start putting images in it, include **every** image your site is currently using (if you swap in a new banner, do not leave out the avatar and covers). Dropping in only an empty `.gitkeep` placeholder would actually wipe the theme's built-in images and leave broken images on your site.
+
 ### Functional Area Breakdown
 
 - **`config/` (Declarative Config Overlays)**: Lightweight YAML files partitioned by domain, strictly adhering to the ==minimal overlay principle==;
 - **`content/` (Core Authoring Workspace)**: Houses all Markdown/MDX posts, microblog moments, and spec pages;
 - **`data/` (Structured Data Entities)**: TypeScript data files managing projects, hardware, skills, timeline events, and friend links;
+- **`assets/` (Auto-Compressed Images)**: Stores high-resolution originals such as avatars, banners, music covers, and game covers; they are synced to `src/assets/` in the code repository and compressed automatically at build time. Reference them in config files with simple relative paths (e.g., `assets/images/...`);
 - **`public/` (Static Media & Galleries)**: Stores raw photos, anime cover caches, and gallery albums published directly to the static root;
 - **`shirone.content.json` (Mount Manifest)**: Declares repository metadata, mount points, and protected file rules.
 
