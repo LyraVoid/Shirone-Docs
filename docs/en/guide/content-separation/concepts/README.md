@@ -90,10 +90,12 @@ shirone-content/
 └── shirone.content.json     # Content repo metadata identifier & mount manifest
 ```
 
-> [!NOTE] Why is there no `assets/` folder in the template?
-> Because it is optional. Without this folder, the site simply keeps using the banner images, avatar, and music covers that ship with the theme — nothing breaks. When you want to replace them with your own images later, just create the folder following the structure above.
+> [!NOTE] The `assets/` folder is optional
+> The template ships with a set of sample images (banners, avatar, and music covers) you can use as-is. You can also delete the whole folder — the site will simply fall back to the theme's built-in images, and nothing breaks.
 >
-> The one thing to watch out for: once you start putting images in it, include **every** image your site is currently using (if you swap in a new banner, do not leave out the avatar and covers). Dropping in only an empty `.gitkeep` placeholder would actually wipe the theme's built-in images and leave broken images on your site.
+> To use your own images, put them in the same locations and make sure the filenames match the paths written in `config/site.yaml` and `config/profile.yaml` (replacing files with the same names is easiest, or update those config files to point to your new files).
+>
+> One important thing: as soon as this folder contains any image, the theme's built-in images no longer act as a fallback. So either provide the **full set** your site is using (banners, avatar, and covers — do not leave any out) or delete the folder entirely. Leaving only an empty `.gitkeep` placeholder inside would leave broken images on your site.
 
 ### Functional Area Breakdown
 
