@@ -161,12 +161,15 @@ shirone-content/
 │   ├── series/              # Serial post series entities -> Mapped to src/content/series/
 │   └── spec/                # About and spec pages
 ├── data/                    # Structured data entities -> Mapped to src/data/
+│   ├── anime.ts             # Anime tracking data and snapshots
+│   ├── compass.ts           # Navigation recommendations and compass links
+│   ├── devices.ts           # Hardware devices
+│   ├── friends.ts           # Friends and blogroll
+│   ├── games.ts             # Games
+│   ├── music.ts             # Local music tracks and playlists
 │   ├── projects.ts          # Open source projects
 │   ├── skills.ts            # Technical skills
-│   ├── devices.ts           # Hardware devices
-│   ├── games.ts            # Games
-│   ├── timeline.ts          # Career milestones
-│   └── friends.ts           # Friends and blogroll
+│   └── timeline.ts          # Career milestones
 ├── assets/                  # High-resolution media -> Mapped to src/assets/ (Built-in optimization)
 │   └── images/
 ├── public/                  # Raw static assets -> Mapped to public/ (Published as-is)

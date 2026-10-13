@@ -66,9 +66,9 @@ You can insert custom external or internal navigation items:
 
 ## Content Repo Overlay (Dual-Repo Mode)
 
-In dual-repo setups, create `config/navbar.yaml` in the content repo:
+In dual-repo setups, create `config/nav-bar.yaml` in the content repo:
 
-```yaml title="config/navbar.yaml"
+```yaml title="config/nav-bar.yaml"
 links:
   - Home
   - Archive

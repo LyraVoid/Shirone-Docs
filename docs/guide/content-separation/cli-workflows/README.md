@@ -25,11 +25,11 @@ Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无�
 ## 1. 单次内容同步：`content:sync` <Badge text="核心" type="tip" />
 
 ```bash title="content:sync"
-# 1. 增量同步（仅复制或拉取修改过的文件，速度极快）
+# 1. 增量同步（物化外部内容并自动编译 TS 配置覆盖层）
 pnpm content:sync
 
-# 2. 全量强制同步（重新覆盖所有文章、相册与数据文件）
-pnpm content:sync --clean-temp
+# 2. 预演模式（仅比对和统计变更，不写入磁盘）
+pnpm content:sync --dry-run
 ```
 
 ### 适用场景

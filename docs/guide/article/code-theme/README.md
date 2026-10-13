@@ -67,7 +67,7 @@ export const expressiveCodeConfig = withUserConfig("expressiveCode", {
 
 ## 相关阅读
 
-代码块的语法能力（文件树、代码树、行装饰、折叠）见写作板块的[代码展示](/guide/writing/code/)；本篇只涉及颜色主题。
+代码块的语法能力（文件树、代码树、行装饰、折叠）见写作板块的[代码块语法特性](/guide/writing/codeblock/highlight/)与[代码树](/guide/writing/markdown/code-tree/)；本篇只涉及颜色主题。
 
 ## 常见问题
 

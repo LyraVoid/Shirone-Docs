@@ -25,11 +25,11 @@ Shirone provides a dedicated suite of CLI commands engineered for content separa
 ## 1. Single Sync: `content:sync` <Badge text="Core" type="tip" />
 
 ```bash title="content:sync"
-# 1. Incremental sync (fast incremental copy based on mtime)
+# 1. Incremental sync (materializes external content and compiles TS config overlay)
 pnpm content:sync
 
-# 2. Full clean sync (re-materialize all posts, albums, and configs)
-pnpm content:sync --clean-temp
+# 2. Dry-run mode (previews changes without writing to disk)
+pnpm content:sync --dry-run
 ```
 
 ### Key Mechanics

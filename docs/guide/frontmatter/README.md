@@ -46,6 +46,8 @@ draft: false
 | `password` | `string` | 否 | 加密密码，设置后隐式启用加密 |
 | `passwordHint` | `string` | 否 | 密码输入框下的提示语 |
 | `hideHomeContent` | `boolean` | 否 | 加密文章配合使用：在首页、归档、RSS 中隐藏摘要与字数 |
+| `permalink` | `string` | 否 | 自定义文章公开访问路径（最高优先级，详见[固定链接](/guide/writing/advanced/permalink/)） |
+| `alias` | `string` | 否 | 文章别名路径（生成 `/posts/<alias>/`） |
 
 ## 分组详解
 
@@ -70,6 +72,13 @@ draft: false
 | `updated` | 填写后文章页显示「最后更新于」提示 |
 | `lang` | 声明文章语言，不影响界面语言 |
 | `comment: false` | 单篇关闭评论 |
+
+### 路由与固定链接
+
+`permalink` 与 `alias` 用于自定义文章的 URL 访问路径（详见[固定链接](/guide/writing/advanced/permalink/)）：
+
+- `permalink: /start-here/`：为单篇文章指定根路径地址，无论是否启用全局固定链接模板，均享有最高路由优先级；
+- `alias: my-post`：指定别名，生成 `/posts/my-post/` 访问地址。
 
 ### 加密字段
 

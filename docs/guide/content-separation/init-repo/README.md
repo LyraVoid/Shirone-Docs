@@ -166,12 +166,15 @@ shirone-content/
 │   ├── series/              # 系列连载实体 -> 映射至 src/content/series/
 │   └── spec/                # 关于与自定义说明文案
 ├── data/                    # 结构化数据实体 -> 映射至 src/data/
+│   ├── anime.ts             # 追番数据与离线快照
+│   ├── compass.ts           # 罗盘导航与精选推荐
+│   ├── devices.ts           # 硬件装备
+│   ├── friends.ts           # 友情链接
+│   ├── games.ts             # 游戏清单
+│   ├── music.ts             # 本地音乐曲目数据
 │   ├── projects.ts          # 开源项目清单
 │   ├── skills.ts            # 技能图谱
-│   ├── devices.ts           # 硬件装备
-│   ├── games.ts            # 游戏清单
-│   ├── timeline.ts          # 大事记时间线
-│   └── friends.ts           # 友情链接
+│   └── timeline.ts          # 大事记时间线
 ├── assets/                  # 高清原始媒体 -> 映射至 src/assets/ (参与构建期压缩优化)
 │   └── images/
 ├── public/                  # 静态多媒体资源 -> 映射至 public/ (原样发布不转码)

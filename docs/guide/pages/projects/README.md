@@ -99,7 +99,7 @@ categories: [
 
 - 封面图放哪里
 
-  `cover` 支持相对 `public` 的绝对路径（`/assets/projects/xxx.webp`）等写法，路径规则同文章图片（见[图片画廊与文件组织](/guide/writing/gallery/)）。
+  `cover` 支持相对 `public` 的绝对路径（`/assets/projects/xxx.webp`）等写法，路径规则同文章图片（见[图片画廊与排版](/guide/writing/markdown/image-grid/)）。
 
 - phase 有哪些取值
 

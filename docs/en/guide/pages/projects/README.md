@@ -99,7 +99,7 @@ categories: [
 
 - Where do cover images go
 
-  `cover` supports absolute paths relative to `public` (`/assets/projects/xxx.webp`) and similar forms; path rules match post images (see [Image Gallery & File Organization](/en/guide/writing/gallery/)).
+  `cover` supports absolute paths relative to `public` (`/assets/projects/xxx.webp`) and similar forms; path rules match post images (see [Image Gallery & Layout](/en/guide/writing/markdown/image-grid/)).
 
 - What values does phase take
 

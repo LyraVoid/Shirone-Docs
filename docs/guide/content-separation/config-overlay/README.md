@@ -101,6 +101,7 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 | `config/nav-bar.yaml` | 顶部导航栏条目清单、预设条目与下拉子菜单 | ==数组整体替换== |
 | `config/sidebar.yaml` | 侧边栏单双栏模式、侧栏组件排布与吸顶规则 | 对象合并（`components` 数组替换） |
 | `config/font.yaml` | 全站中文字体、西文字体、等宽代码字体与子集化裁剪 | 对象合并（`fontFamilies` 数组替换） |
+| `config/image-bloom.yaml` | 图片自适应色调辉光与泛光滤镜 | 对象递归合并 |
 | `config/context-menu.yaml` | 桌面端右键上下文菜单、快捷动作清单与页面过滤 | 对象合并（`actions` 数组替换） |
 | `config/footer.yaml` | 页脚文案与备案信息 | 对象递归合并 |
 | `config/footer.html` | 自定义注入的页脚 HTML 片段 | 完整替换 |
@@ -110,7 +111,10 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 | 配置文件路径 | 负责的功能领域 | 默认覆盖策略 |
 | :--- | :--- | :--- |
 | `config/post-list.yaml` | 文章列表分页大小、列表或网格排版模式 | 对象递归合并 |
+| `config/permalink.yaml` | 全局文章固定链接格式与占位符规则 | 对象递归合并 |
 | `config/article.yaml` | 文章阅读时长、长期未更新提醒、相关文章推荐与海报分享 | 对象递归合并 |
+| `config/license.yaml` | 原创知识共享协议 (CC) 与保留条款 | 对象递归合并 |
+| `config/fab.yaml` | 悬浮动作按钮 (FAB) 触发流与页面显示规则 | 对象递归合并 |
 | `config/announcement.yaml` | 全局浮动公告栏配置 | 对象递归合并 |
 | `config/expressive-code.yaml` | 代码高亮主题与代码块行号显示 | 对象递归合并 |
 

@@ -95,6 +95,7 @@ All config files reside under `config/` in your content repository, partitioned 
 | `config/nav-bar.yaml` | Top navigation items and dropdowns | ==Array Replacement== |
 | `config/sidebar.yaml` | Single/dual column layout and widgets | Object Merge (`components` Array Replacement) |
 | `config/font.yaml` | Web fonts and subsetting rules | Object Merge (`fontFamilies` Array Replacement) |
+| `config/image-bloom.yaml` | Adaptive image bloom filter and glow effects | Recursive Object Merge |
 | `config/context-menu.yaml` | Desktop right-click context menu actions | Object Merge (`actions` Array Replacement) |
 | `config/footer.yaml` | Footer copyright and ICP registration | Recursive Object Merge |
 | `config/footer.html` | Custom injected footer HTML snippet | Full Replacement |
@@ -104,7 +105,10 @@ All config files reside under `config/` in your content repository, partitioned 
 | File Path | Functional Domain | Default Strategy |
 | :--- | :--- | :--- |
 | `config/post-list.yaml` | Post pagination and card grid layout | Recursive Object Merge |
+| `config/permalink.yaml` | Global permalink format and placeholder rules | Recursive Object Merge |
 | `config/article.yaml` | Reading time, outdated alerts, recommendations | Recursive Object Merge |
+| `config/license.yaml` | Creative Commons license and copyright terms | Recursive Object Merge |
+| `config/fab.yaml` | Floating Action Button (FAB) workflow & display | Recursive Object Merge |
 | `config/announcement.yaml` | Global floating announcement banner | Recursive Object Merge |
 | `config/expressive-code.yaml` | Syntax highlighting and code block numbers | Recursive Object Merge |
 

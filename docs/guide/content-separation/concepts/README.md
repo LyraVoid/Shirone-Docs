@@ -35,6 +35,7 @@ shirone-content/
 │       └── trigger-build.yml.example # 跨仓触发 GitHub Actions 模板
 ├── config/                  # 全站声明式配置 YAML 文件群
 │   ├── site.yaml            # 站点标识、时区、色彩与横幅壁纸
+│   ├── permalink.yaml       # 全局文章固定链接与占位符规则
 │   ├── profile.yaml         # 博主头像、昵称、签名与社交外链
 │   ├── nav-bar.yaml         # 顶部导航栏条目与下拉菜单
 │   ├── sidebar.yaml         # 侧边栏布局与组件清单
@@ -45,13 +46,14 @@ shirone-content/
 │   ├── article.yaml         # 文章排版与阅读提醒配置
 │   ├── post-list.yaml       # 首页文章列表与分页模式
 │   ├── devices.yaml         # 数码装备分类与筛选规则
-│   ├── games.yaml          # 游戏展示分类与筛选规则
+│   ├── games.yaml           # 游戏展示分类与筛选规则
 │   ├── projects.yaml        # 开源项目分类与阶段规则
 │   ├── skills.yaml          # 技能图谱分类与熟练度规则
 │   ├── timeline.yaml        # 大事记时间线分类规则
 │   ├── friends.yaml         # 友情链接分组规则
 │   ├── announcement.yaml    # 全局浮动公告栏配置
 │   ├── expressive-code.yaml # 代码高亮与代码块行号
+│   ├── context-menu.yaml    # 桌面端右键增强菜单与操作项
 │   ├── fab.yaml             # 悬浮动作按钮 (FAB)
 │   ├── image-bloom.yaml     # 图片泛光视觉滤镜
 │   ├── license.yaml         # 原创知识共享协议 (CC)

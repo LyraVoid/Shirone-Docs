@@ -48,11 +48,11 @@ const defaultNavBarConfig: NavBarConfig = {
       name: i18n(I18nKey.more),
       icon: "material-symbols:apps-rounded",
       children: [
-        ...(timelineConfig.enable ? [LinkPresets.Timeline] : []),
-        ...(projectsConfig.enable ? [LinkPresets.Projects] : []),
-        ...(devicesConfig.enable ? [LinkPresets.Devices] : []),
-        ...(gamesConfig.enable ? [LinkPresets.Games] : []),
-        ...(skillsConfig.enable ? [LinkPresets.Skills] : []),
+        LinkPresets.Timeline,
+        LinkPresets.Projects,
+        LinkPresets.Devices,
+        LinkPresets.Games,
+        LinkPresets.Skills,
         LinkPresets.About,
         LinkPresets.GitHub,
       ],
@@ -65,8 +65,8 @@ const defaultNavBarConfig: NavBarConfig = {
 
 - **顺序即展示顺序**：顶栏按 `links` 数组顺序渲染
 - **分组**：带 `children` 的条目渲染为下拉菜单（顶栏）与子列表（抽屉）
-- **条件挂载**：`more` 分组内通过各页面 Config 的 `enable` 条件展开——关闭时间线页时导航入口同步消失
-- **分类/标签默认不进导航**：预设已登记但被注释，需要时取消注释即可
+- **自动联动裁剪**：子项直接引用预设，指向已关闭页面（`enable: false`）的入口会在运行时自动被系统裁剪隐藏
+- **分类/标签默认不进导航**：预设已登记但未加入默认列表，需要时按需添加即可
 
 ## 自定义链接
 

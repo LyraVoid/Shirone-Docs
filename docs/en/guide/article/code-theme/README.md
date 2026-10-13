@@ -67,7 +67,7 @@ Code block themes are **fixed palettes** and do not participate in HCT dynamic c
 
 ## Related Reading
 
-Code block syntax capabilities (file trees, code trees, line decorations, collapsing) are covered in [Code Display](/en/guide/writing/code/) in the Writing section; this page is only about color themes.
+Code block syntax capabilities (file trees, code trees, line decorations, collapsing) are covered in [Code Block Highlighting](/en/guide/writing/codeblock/highlight/) and [Code Tree](/en/guide/writing/markdown/code-tree/) in the Writing section; this page is only about color themes.
 
 ## FAQ
 

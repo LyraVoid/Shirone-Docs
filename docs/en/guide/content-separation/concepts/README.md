@@ -35,6 +35,7 @@ shirone-content/
 │       └── trigger-build.yml.example # Cross-repo GitHub Actions workflow template
 ├── config/                  # Declarative configuration overlay YAML files
 │   ├── site.yaml            # Site identity, timezone, colors, and banner wallpaper
+│   ├── permalink.yaml       # Global article permalink template and placeholder rules
 │   ├── profile.yaml         # Author avatar, bio, and social links
 │   ├── nav-bar.yaml         # Top navigation items and dropdown menus
 │   ├── sidebar.yaml         # Sidebar layout and widget configuration
@@ -45,13 +46,14 @@ shirone-content/
 │   ├── article.yaml         # Reading time, typography, and outdated alerts
 │   ├── post-list.yaml       # Post list layout and pagination settings
 │   ├── devices.yaml         # Hardware devices category rules
-│   ├── games.yaml          # Games showcase category rules
+│   ├── games.yaml           # Games showcase category rules
 │   ├── projects.yaml        # Open source project category rules
 │   ├── skills.yaml          # Technical skill graph category rules
 │   ├── timeline.yaml        # Career timeline milestones rules
 │   ├── friends.yaml         # Friends and blogroll group rules
 │   ├── announcement.yaml    # Global floating announcement banner
 │   ├── expressive-code.yaml # Syntax highlighting and code block numbers
+│   ├── context-menu.yaml    # Desktop right-click context menu actions
 │   ├── fab.yaml             # Floating action button (FAB)
 │   ├── image-bloom.yaml     # Image bloom visual filter
 │   ├── license.yaml         # Creative Commons license settings

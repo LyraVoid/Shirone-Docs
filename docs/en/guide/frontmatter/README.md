@@ -46,6 +46,8 @@ Content begins here.
 | `password` | `string` | No | Encryption password (implicitly enables encryption) |
 | `passwordHint` | `string` | No | Hint text displayed beneath the password input |
 | `hideHomeContent` | `boolean` | No | Conceals summary and word count on homepage, archive, and RSS |
+| `permalink` | `string` | No | Custom post URL path (highest priority, see [Permalink](/en/guide/writing/advanced/permalink/)) |
+| `alias` | `string` | No | Post alias sub-path (generates `/posts/<alias>/`) |
 
 ## Field Groups
 
@@ -70,6 +72,13 @@ Content begins here.
 | `updated` | Displays "Last updated at" banner on the article page |
 | `lang` | Explicitly specifies post language |
 | `comment: false` | Disables comment box for this specific post |
+
+### Routing & Permalinks
+
+`permalink` and `alias` customize the public URL path of an individual article (see [Permalink](/en/guide/writing/advanced/permalink/)):
+
+- `permalink: /start-here/`: Specifies a root custom path with highest route priority, regardless of whether global permalink templates are enabled;
+- `alias: my-post`: Specifies an alias that generates a `/posts/my-post/` access URL.
 
 ### Client-Side Encryption Fields
 
