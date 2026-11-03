@@ -21,6 +21,17 @@ For single repository setups where content is located directly in `src/content/`
 `pnpm build` already runs `content:sync`; keep the build command as `pnpm build`.
 :::
 
+## Choose the build location first
+
+Vercel supports two setups. Pick one:
+
+| Setup | Who builds | How the content repo triggers it | Vercel configuration |
+| --- | --- | --- | --- |
+| Git integration / Deploy Hook | Vercel builder | Content repo POSTs `VERCEL_DEPLOY_HOOK` | Set `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT` |
+| GitHub Actions | Theme repo Actions | `repository_dispatch` event | Disable Vercel's Git auto-build; Actions runs `vercel deploy dist --prod` |
+
+Keeping both causes duplicate deployments. With Deploy Hook, Vercel builds the content branch HEAD. Use GitHub Actions when you need to build an exact commit.
+
 ## Method 1: Git Integration (Recommended)
 
 ::: steps
@@ -36,7 +47,7 @@ For single repository setups where content is located directly in `src/content/`
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. Expand **Environment Variables** and add variables directly on the import screen. For dual-repo mode, set at least `CONTENT_REPO_URL`; add `CONTENT_REPO_REF` if you need to pin a branch, and set `GIT_TERMINAL_PROMPT=0`. You can also use **Import .env** or add them later under **Settings → Environment Variables**.
+3. Expand **Environment Variables** and add variables directly on the import screen. For dual-repo mode, set at least `CONTENT_REPO_URL`; add `CONTENT_REPO_REF` if you need to pin a branch, and set `GIT_TERMINAL_PROMPT=0`. You can also use **Import .env** or add them later under **Deployments → Environments**.
 
    | Key | Value |
    | --- | --- |

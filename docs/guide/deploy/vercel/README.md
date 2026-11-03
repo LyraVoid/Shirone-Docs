@@ -21,6 +21,17 @@ Vercel 的配置项较少：推送 Git 后自动构建，提供全球边缘网�
 `pnpm build` 已包含 `content:sync`，构建命令保持 `pnpm build` 即可，不需要再写 `pnpm content:sync &&`。
 :::
 
+## 先选构建位置
+
+Vercel 有两种接法，选一种即可：
+
+| 方式 | 谁执行构建 | 内容仓如何触发 | Vercel 侧配置 |
+| --- | --- | --- | --- |
+| Git 集成 / Deploy Hook | Vercel 构建机 | 内容仓 POST `VERCEL_DEPLOY_HOOK` | 配置 `CONTENT_REPO_URL`、`CONTENT_REPO_REF`、`GIT_TERMINAL_PROMPT` |
+| GitHub Actions | 主题仓 Actions | `repository_dispatch` 事件 | 关闭 Vercel 的 Git 自动构建，由 Actions 执行 `vercel deploy dist --prod` |
+
+两种都保留会重复部署。用 Deploy Hook 时，Vercel 构建的是内容仓分支的最新 HEAD；需要精确按某次提交构建时，用 GitHub Actions 模式。
+
 ## 方式一：Git 集成部署（推荐）
 
 ::: steps
@@ -36,7 +47,7 @@ Vercel 的配置项较少：推送 Git 后自动构建，提供全球边缘网�
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. 展开 **Environment Variables**，可以直接在导入页面添加变量。双仓模式至少填写 `CONTENT_REPO_URL`；需要固定分支时再填 `CONTENT_REPO_REF`，并设置 `GIT_TERMINAL_PROMPT=0`。也可以点 **Import .env** 导入本地 `.env` 文件，或在部署完成后到 **Settings** -> **Environment Variables** 补填。
+3. 展开 **Environment Variables**，可以直接在导入页面添加变量。双仓模式至少填写 `CONTENT_REPO_URL`；需要固定分支时再填 `CONTENT_REPO_REF`，并设置 `GIT_TERMINAL_PROMPT=0`。也可以点 **Import .env** 导入本地 `.env` 文件，或在部署完成后到 **Deployments** -> **Environments** 补填。
 
    | Key | Value |
    | --- | --- |

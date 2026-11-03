@@ -27,8 +27,12 @@ sequenceDiagram
 
 See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and private repo token formats.
 
+Deploy Hooks and [cross-repo GitHub Actions dispatch](/en/guide/content-separation/ci-dispatch/) are mutually exclusive. With only `DISPATCH_TOKEN`, the theme repo Actions builds. With only a `*_DEPLOY_HOOK` secret, the platform builds. Configuring both causes two deployments for one push.
+
 ::: tip Start from the official trigger template
-You do not need a separate workflow per platform. The content repo's `.github/workflows/trigger-build.yml.example` already contains Cloudflare, Vercel, EdgeOne, and Netlify hook steps; each is skipped when its secret is absent. Copy it to `trigger-build.yml` and add only the secrets you need.
+You do not need a separate workflow per platform. The content repo's `.github/workflows/trigger-build.yml.example` already contains Cloudflare, Vercel, EdgeOne, and Netlify hook steps; each is skipped when its secret is absent.
+
+After copying it to `trigger-build.yml`, replace two placeholders: `repository` must point to your theme repo, and the `validate` job's `theme_repository` must point to the same repo. Then add only the secrets you need.
 
 If you want validation first, its `validate` job calls the theme repo's `content-validate.yml`.
 :::
@@ -108,7 +112,7 @@ If you want validation first, its `validate` job calls the theme repo's `content
 
    Under **Settings** -> **General** -> **Node.js Version**, select `26.x`. Vercel does not read a `NODE_VERSION` environment variable.
 
-   You can add environment variables on the import screen under **Environment Variables**, or later under **Settings** -> **Environment Variables**:
+   You can add environment variables on the import screen under **Environment Variables**, or later under **Deployments** -> **Environments**:
 
    | Variable | Value |
    | --- | --- |
