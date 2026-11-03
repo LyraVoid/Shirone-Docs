@@ -4,7 +4,7 @@ createTime: 2026/08/31 21:56:00
 permalink: /guide/deploy/docker/
 ---
 
-用 Docker 部署 Shirone 可以做到「一次构建，随处运行」：环境完全隔离、版本可回滚、迁移服务器只需迁移镜像。
+Docker 部署把构建环境固定在镜像里。同一份镜像可以在不同服务器运行，版本回滚和迁移都不依赖宿主机的 Node 版本。
 
 ## 架构说明
 
@@ -35,7 +35,6 @@ dist
 .github
 docs
 tests
-scripts
 public/assets/moments/thumbnails
 ```
 
@@ -47,8 +46,8 @@ FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-# 启用 corepack 以使用仓库锁定的 pnpm 版本
-RUN corepack enable
+# Node.js 25+ 已不再内置 corepack，直接安装仓库锁定的 pnpm 版本
+RUN npm install -g pnpm@11.28.2
 
 # 先复制依赖清单，充分利用镜像层缓存
 COPY package.json pnpm-lock.yaml .npmrc ./
@@ -71,6 +70,24 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ::: tip 层缓存技巧
 依赖清单与源码分两次 `COPY`，使得只有依赖变更时才会重新执行 `pnpm install`。日常改文章重新构建时，安装步骤直接命中缓存，构建时间大幅缩短。
+:::
+
+::: tip 双仓模式
+上面的 Dockerfile 默认只构建当前仓库。若使用 Shirone-Content 双仓模式，需要在构建阶段把 `CONTENT_REPO_URL` 传给 `pnpm build`。不要把带 Token 的 URL 写进 `ARG`/`ENV`，否则可能留在镜像层历史中；推荐用 BuildKit secret：
+
+```dockerfile
+# syntax=docker/dockerfile:1
+RUN --mount=type=secret,id=content_repo_url \
+    CONTENT_REPO_URL="$(cat /run/secrets/content_repo_url)" pnpm build
+```
+
+```bash
+echo "https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git" > .content-repo-url
+docker build --secret id=content_repo_url,src=.content-repo-url -t shirone-blog .
+rm .content-repo-url
+```
+
+也可以在镜像外先由 CI 构建好 `dist/`，再用 Nginx 镜像直接托管产物。
 :::
 
 ### nginx.conf
@@ -141,6 +158,7 @@ server {
 services:
   shirone:
     build: .
+    image: shirone-blog:latest
     container_name: shirone-blog
     ports:
       - "8080:80"
@@ -161,11 +179,12 @@ git pull                    # 拉取最新内容
 docker compose up -d --build   # 重建镜像并滚动替换容器
 ```
 
-旧镜像会保留在本地，出问题时可一键回滚：
+旧镜像会保留在本地，需要时可以切回旧版本：
 
 ```bash
 docker tag <old-image-id> shirone-blog:rollback
-docker compose up -d shirone-blog  # 需要回滚时切回旧 tag
+# 将 docker-compose.yml 中的 image 临时改为 shirone-blog:rollback 后执行
+docker compose up -d shirone
 ```
 
 ## 对外暴露：反代与 HTTPS
@@ -192,7 +211,7 @@ server {
 ::: collapse
 - 构建失败：`only-allow pnpm` 或依赖安装报错
 
-  使用了 `npm install` 而非 pnpm，或未启用 corepack。严格按 Dockerfile 写法：`corepack enable` + `pnpm install --frozen-lockfile`。
+  使用了 `npm install` 而非 pnpm，或没有安装仓库锁定的 pnpm。严格按 Dockerfile 写法：`npm install -g pnpm@11.28.2` + `pnpm install --frozen-lockfile`。注意 Node.js 25+ 已不再内置 corepack，不要只写 `corepack enable`。
 
 - 构建阶段 OOM
 

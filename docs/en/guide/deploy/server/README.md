@@ -101,8 +101,11 @@ In your GitHub repository, navigate to **Settings** -> **Secrets and variables**
 | `SERVER_TARGET` | Absolute path to the web root directory | `/var/www/shirone` |
 
 > [!TIP] Content Separation Setup
-> If using a private content repository, also add:
-> - `CONTENT_ACCESS_TOKEN`: GitHub Personal Access Token with read permissions to your private content repository.
+> Dual-repo mode needs two secrets in two different repositories:
+> - Content repo: `DISPATCH_TOKEN`, with `Contents: Read and write` on the ==theme repo==, used for `repository_dispatch`.
+> - Theme repo: `CONTENT_REPO_TOKEN`, with `Contents: Read` on the ==private content repo==, used to check it out.
+>
+> Site config belongs in the content repo's `config/site.yaml`; only single-repo setups edit `src/config/siteConfig.ts` directly.
 
 ---
 
@@ -157,18 +160,38 @@ name: Trigger Theme Build
 on:
   push:
     branches: [main]
+    paths:
+      - "content/**"
+      - "config/**"
+      - "data/**"
+      - "assets/**"
+      - "public/**"
+      - "shirone.content.json"
   workflow_dispatch:
 
+concurrency:
+  group: trigger-build
+  cancel-in-progress: true
+
 jobs:
+  validate:
+    uses: LyraVoid/Shirone/.github/workflows/content-validate.yml@main
+    with:
+      theme_repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
+      theme_ref: main
+
   dispatch:
+    needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Dispatch build event to theme repository
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.DISPATCH_TOKEN }}
           repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
-          event-type: content-update
+          event-type: content-updated
+          client-payload: '{"sha": "${{ github.sha }}"}'
 ```
 
 @tab Theme Code Repo Deploy
@@ -179,8 +202,15 @@ on:
   push:
     branches: [main]
   repository_dispatch:
-    types: [content-update]
+    types: [content-updated]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -193,13 +223,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 26.13.0
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -207,9 +235,11 @@ jobs:
 
       - name: Sync Private Content & Build
         env:
-          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+          CONTENT_REPO_REF: ${{ github.event.client_payload.sha || 'main' }}
+          BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
         run: |
-          pnpm content:sync
+          pnpm anime:sync --if-stale
           pnpm build
 
       - name: Deploy to Server via rsync
@@ -249,13 +279,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 26.13.0
           cache: "pnpm"
 
       - name: Install Dependencies

@@ -4,7 +4,7 @@ createTime: 2026/08/31 21:56:00
 permalink: /en/guide/deploy/docker/
 ---
 
-Containerized deployment with Docker isolates build environments, provides version rollback, and simplifies server migration.
+Docker deployment fixes the build environment in an image. The same image can run on different servers, and version rollbacks and migrations do not depend on the host's Node version.
 
 ## Multi-Stage Build Architecture
 
@@ -34,9 +34,10 @@ FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.28.2 --activate
+# Node.js 25+ no longer bundles corepack; install the pinned pnpm directly
+RUN npm install -g pnpm@11.28.2
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
@@ -83,6 +84,24 @@ server {
 > **Memory Allocation for Build Stage**
 > Shirone runs font subsetting and search indexing during build. Allocate at least 4 GB RAM to Docker or pass `--memory=4g` to prevent out-of-memory (OOM) errors.
 
+::: tip Dual-repo mode
+The Dockerfile above builds the current repo only. For Shirone-Content, pass `CONTENT_REPO_URL` to `pnpm build` at build time. Do not bake a token-bearing URL into `ARG`/`ENV`; use a BuildKit secret:
+
+```dockerfile
+# syntax=docker/dockerfile:1
+RUN --mount=type=secret,id=content_repo_url \
+    CONTENT_REPO_URL="$(cat /run/secrets/content_repo_url)" pnpm build
+```
+
+```bash
+echo "https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git" > .content-repo-url
+docker build --secret id=content_repo_url,src=.content-repo-url -t shirone:latest .
+rm .content-repo-url
+```
+
+Keep `scripts/` in the build context: `pnpm build` runs `scripts/content/sync.mjs` and the font checker.
+:::
+
 ## Build and Run
 
 ::: steps
@@ -112,7 +131,7 @@ server {
 ::: collapse
 - Build failure: `only-allow pnpm` or dependency installation error
 
-  Occurs when running `npm install` instead of pnpm, or when corepack is not enabled. Follow the Dockerfile instructions strictly: run `corepack enable` and `pnpm install --frozen-lockfile`.
+  Occurs when running `npm install` instead of pnpm, or when the pinned pnpm is missing. Follow the Dockerfile strictly: run `npm install -g pnpm@11.28.2` and `pnpm install --frozen-lockfile`. Node.js 25+ no longer bundles corepack, so a bare `corepack enable` will fail.
 
 - Out of Memory (OOM) during build phase
 

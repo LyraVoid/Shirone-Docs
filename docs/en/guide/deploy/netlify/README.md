@@ -9,7 +9,11 @@ Netlify is an established static hosting platform offering Git-based continuous 
 ## Prerequisites
 
 - Code hosted on GitHub, GitLab, Bitbucket, or Azure DevOps
-- `site` configured in `src/config/siteConfig.ts` with your official domain
+- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo)
+
+::: tip Single repo vs dual repo
+For dual-repo mode, set `CONTENT_REPO_URL` (private: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; keep the build command as `pnpm build`.
+:::
 
 ## Method 1: Netlify Dashboard
 
@@ -76,7 +80,15 @@ Every push to non-production branches and every pull request generates an isolat
 ::: collapse
 - Build Failure: Package Manager Mismatch
 
-  Ensure `NODE_VERSION = 26` is defined in environment variables. If necessary, update the build command to explicitly enable corepack: `corepack enable && pnpm build`.
+  `NODE_VERSION` controls Node, not pnpm. Netlify reads `package.json` `packageManager` (this repo pins `pnpm@11.28.2`), and newer images may install pnpm via mise. If the log still shows a mismatched pnpm, change the build command:
+
+  ```toml
+  [build]
+    command = "npm i -g pnpm@11.28.2 && pnpm build"
+    publish = "dist"
+  ```
+
+  Node.js 26 no longer bundles corepack, so bare `corepack enable` fails. If you must use corepack, run `npm i -g corepack` first.
 
 - Artifact Size Limits
 

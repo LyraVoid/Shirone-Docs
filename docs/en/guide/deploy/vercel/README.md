@@ -4,15 +4,21 @@ createTime: 2026/08/31 21:50:00
 permalink: /en/guide/deploy/vercel/
 ---
 
-Vercel is the most seamless platform for deploying Shirone: automatic builds on Git push, global edge distribution, preview deployments out of the box, and a generous free tier for personal blogs.
+Vercel requires little configuration: it builds on Git push, provides a global edge network and preview deployments, and its free tier is usually enough for a personal blog.
 
 ## Prerequisites
 
 - Code hosted on GitHub, GitLab, or Bitbucket
-- `site` configured in `src/config/siteConfig.ts` with your official domain (e.g., `https://your-domain.com`), keeping `base` as `/`
+- `site` set to your official domain (e.g., `https://your-domain.com`), keeping `base` as `/`. Single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo
 
 ::: tip Single Repo vs Dual Repo
-For single repository setups where content is located directly in `src/content/`, follow this guide directly. For dual repository setups using Shirone-Content, set the `CONTENT_REPO_URL` environment variable in Vercel so `content:sync` can pull content during the build.
+For single repository setups where content is located directly in `src/content/`, follow this guide directly. For dual repository setups using Shirone-Content, set these Vercel environment variables:
+
+- `CONTENT_REPO_URL`: private repos use `https://x-access-token:<TOKEN>@github.com/...`
+- `CONTENT_REPO_REF`: optional, defaults to `main`
+- `GIT_TERMINAL_PROMPT`: `0`
+
+`pnpm build` already runs `content:sync`; keep the build command as `pnpm build`.
 :::
 
 ## Method 1: Git Integration (Recommended)
@@ -30,7 +36,7 @@ For single repository setups where content is located directly in `src/content/`
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. Under **Environment Variables**, add `NODE_VERSION = 26` to ensure the build environment meets Node.js ≥ 26.13.0 (Node.js 26 LTS) requirements.
+3. Under **Settings → General → Node.js Version**, select `26.x`. Vercel does **not** read a `NODE_VERSION` environment variable; it selects Node from project settings or `package.json` `engines.node`. This repo requires `>=26.13.0`, so Node 26 is selected automatically in most cases.
 
 4. Click **Deploy**. The initial build takes approximately 2-5 minutes, producing a `*.vercel.app` domain.
 
@@ -83,7 +89,7 @@ The repository root includes `vercel.json` to customize platform behavior, such 
 ::: collapse
 - Build Failure: Unsupported Node Version
 
-  If the log reports `Unsupported engine` or syntax errors, verify that `NODE_VERSION` is set to `26` in environment variables.
+  If the log reports `Unsupported engine` or syntax errors, check **Settings → General → Node.js Version** and select `26.x`. Setting a `NODE_VERSION` environment variable has no effect on Vercel.
 
 - Build Timeout
 

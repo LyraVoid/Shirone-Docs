@@ -9,7 +9,11 @@ Netlify 是老牌静态托管平台，与 Vercel 定位相近：Git 推送自动
 ## 前置条件
 
 - 代码已托管在 GitHub / GitLab / Bitbucket / Azure DevOps
-- `src/config/siteConfig.ts` 中的 `site` 已设置为正式域名
+- 站点配置中的 `site` 已设置为正式域名（单仓改 `src/config/siteConfig.ts`，双仓改内容仓的 `config/site.yaml`）
+
+::: tip 单仓 vs 双仓
+双仓模式需在 Netlify 环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式）、可选的 `CONTENT_REPO_REF`，以及 `GIT_TERMINAL_PROMPT=0`。`pnpm build` 已包含 `content:sync`，构建命令保持 `pnpm build` 即可。
+:::
 
 ## 方式一：控制台导入
 
@@ -78,14 +82,15 @@ netlify deploy --build --prod   # 构建并部署到生产
 ::: collapse
 - 构建失败：pnpm 版本不符
 
-  Netlify 内置的 pnpm 版本可能与仓库锁定的 `pnpm@11.28.2` 不一致。通过环境变量固定版本：
+  `NODE_VERSION` 只控制 Node，不控制 pnpm。Netlify 优先读取 `package.json` 的 `packageManager`（本仓库为 `pnpm@11.28.2`），新构建镜像也可能通过 mise 安装 pnpm；若日志里的 pnpm 版本仍不匹配，直接改构建命令：
 
   ```toml
-  [build.environment]
-  NODE_VERSION = "26"
+  [build]
+    command = "npm i -g pnpm@11.28.2 && pnpm build"
+    publish = "dist"
   ```
 
-  若仍报 pnpm 相关错误，可在构建命令中显式启用 corepack：`corepack enable && pnpm build`。
+  Node.js 26 已不再内置 corepack，`corepack enable` 会直接找不到命令。若必须用 corepack，先执行 `npm i -g corepack`，再 `corepack enable`。
 
 - 构建产物体积超限
 

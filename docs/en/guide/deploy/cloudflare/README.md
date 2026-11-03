@@ -10,7 +10,7 @@ Cloudflare Pages provides global CDN acceleration, free SSL certificates, and un
 
 - Code hosted on GitHub or GitLab
 - A Cloudflare account
-- `site` configured in `src/config/siteConfig.ts` with your official domain
+- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml`)
 
 > [!IMPORTANT]
 > **Mandatory Node.js Version Variable**
@@ -33,9 +33,15 @@ Cloudflare Pages provides global CDN acceleration, free SSL certificates, and un
    | Build command | `pnpm build` |
    | Build output directory | `dist` |
 
-4. Under **Environment variables**, add `NODE_VERSION = 26` to satisfy Node.js ≥ 26.13.0 requirements.
+4. Under **Environment variables**, add:
 
-   **Important:** The default Node.js version in Cloudflare build images is older than 26. Adding this variable is required.
+   | Variable | Value | Why |
+   | --- | --- | --- |
+   | `NODE_VERSION` | `26` | Cloudflare's default image ships an older Node |
+   | `PNPM_VERSION` | `11.28.2` | Matches the repo's `packageManager` pin |
+   | `GIT_TERMINAL_PROMPT` | `0` | Prevents interactive credential prompts when pulling a private content repo |
+
+   For dual-repo mode, also set `CONTENT_REPO_URL` (private: `https://x-access-token:<TOKEN>@github.com/...`) and optional `CONTENT_REPO_REF=main`.
 
 5. Click **Save and Deploy**.
 
@@ -69,5 +75,13 @@ wrangler pages deploy dist --project-name=<your-project-name>
 ::: collapse
 - Build Error: Node Version Unsupported
 
-  Ensure `NODE_VERSION` is set to `26` in project Environment variables (under **Settings → Environment variables**).
+  Ensure `NODE_VERSION` is set to `26` in project Environment variables (under **Settings → Environment variables**) and `PNPM_VERSION=11.28.2`. Node.js 26 no longer bundles corepack; do not fall back to `corepack enable`. If you must install pnpm manually, use `npm i -g pnpm@11.28.2`.
+
+- Build Error: `__dirname is not defined`
+
+  The project was created as a **Worker**, not a **Pages** project. Workers do not provide Node's `__dirname`, so Shirone's build scripts fail. Delete the Worker project and create a **Pages** project connected to Git instead.
+
+- Dual-repo mode
+
+  Set `CONTENT_REPO_URL`, `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already includes `content:sync`; keep the build command as `pnpm build` and do not prepend another sync. Site config belongs in the content repo's `config/site.yaml`.
 :::

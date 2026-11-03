@@ -9,15 +9,15 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
 ## Highlights
 
 - Low latency for readers in China via optimized edge nodes
-- Generous free tier for personal static blogs
-- Direct GitHub integration with build on push
-- Automated SSL certificate management
+- A free tier that is usually enough for a personal static blog
+- GitHub import with builds on push
+- Automatic SSL certificates
 
 ## Prerequisites
 
 - Code hosted on GitHub
 - A Tencent Cloud account
-- `site` configured in `src/config/siteConfig.ts` with your official domain
+- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo)
 
 ## Deployment Steps
 
@@ -37,8 +37,11 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
    | Build Command | `pnpm build` |
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
+   | Node.js Version | `24` |
 
-5. Under **Environment Variables**, add `NODE_VERSION = 26` (to satisfy Node.js ≥ 26.13.0).
+   EdgeOne currently offers Node.js 24 as its highest selectable version. Shirone builds correctly on Node.js 24. Do not select 26: it is not available on this platform.
+
+5. For dual-repo mode, add `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`.
 
 6. Click **Confirm and Deploy**.
 
@@ -54,15 +57,15 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
 ::: collapse
 - Build failure: `npm ERR!` or `only-allow pnpm`
 
-  Ensure the build command uses pnpm (`pnpm build`). If the platform image has an outdated pnpm version causing lockfile mismatch, set environment variable `PNPM_VERSION=11` or execute `corepack enable && pnpm build`.
+  Ensure the build command uses pnpm (`pnpm build`). If the platform image has an outdated pnpm version causing a lockfile mismatch, change the build command to `npm i -g pnpm@11.28.2 && pnpm build`. EdgeOne has no documented `PNPM_VERSION` variable, and Node.js 24 does not bundle corepack.
 
 - Build failure: Node.js version incompatibility
 
-  Confirm Node.js is configured to `26`. Syntax errors in logs indicate an older Node.js runtime.
+  Confirm Node.js is configured to `24`. EdgeOne does not offer Node.js 26; selecting a nonexistent version can fall back or fail outright.
 
 - Dual-Repo Mode (Shirone-Content)
 
-  Configure `CONTENT_REPO_URL` in project environment variables. `content:sync` will automatically clone and sync your private content repo at build time.
+  Set `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; do not prepend `pnpm content:sync &&`. Site config belongs in the content repo's `config/site.yaml`.
 
 - Search feature is unavailable
 

@@ -4,20 +4,20 @@ createTime: 2026/08/31 21:54:00
 permalink: /guide/deploy/edgeone/
 ---
 
-EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、免费额度充足，是面向国内读者的 Shirone 博客的推荐部署方案。
+EdgeOne Pages 是腾讯云提供的静态托管服务，国内访问延迟较低，免费额度对个人博客通常够用。读者主要在中国大陆时，可以优先考虑。
 
 ## 为什么推荐 EdgeOne Pages
 
 - 国内边缘节点覆盖好，访问延迟显著低于 Vercel / Netlify / Cloudflare 的海外节点
-- 免费额度慷慨，个人博客基本零成本
-- 与 GitHub 深度集成，推送即构建
+- 免费额度对个人博客通常够用
+- 支持从 GitHub 导入仓库，推送后自动构建
 - 自动签发 SSL，无需备案也可绑定域名（但国内节点加速需备案域名）
 
 ## 前置条件
 
 - 代码已托管在 GitHub
 - 注册[腾讯云账号](https://cloud.tencent.com/)
-- `src/config/siteConfig.ts` 中的 `site` 已设置为正式域名
+- 站点配置中的 `site` 已设置为正式域名（单仓改 `src/config/siteConfig.ts`，双仓改内容仓的 `config/site.yaml`）
 
 ## 部署步骤
 
@@ -36,7 +36,7 @@ EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、
    | 框架预设 | `Astro` 或「静态网站」 |
    | 构建命令 | `pnpm build` |
    | 输出目录 | `dist` |
-   | Node.js 版本 | `26`（满足 Node.js ≥ 26.13.0） |
+   | Node.js 版本 | `24` |
 
    **注意：构建命令必须显式指定为 `pnpm build`。** 不要使用默认的 `npm run build`——Shirone 通过 `preinstall` 钩子强制使用 pnpm（`only-allow pnpm`），npm 构建会在安装依赖阶段直接失败。
 
@@ -66,15 +66,15 @@ EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、
 ::: collapse
 - 构建失败：`npm ERR!` 或 `only-allow pnpm`
 
-  构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，在环境变量中固定 `PNPM_VERSION=11` 或使用 `corepack enable && pnpm build`。
+  构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，把构建命令改为 `npm i -g pnpm@11.28.2 && pnpm build`。EdgeOne 没有文档化的 `PNPM_VERSION` 变量；Node.js 24 也不内置 corepack，不要写 `corepack enable`。
 
 - 构建失败：Node 版本不匹配
 
-  确认 Node.js 版本设置为 `26`。日志中出现 `SyntaxError`（如 `??` 运算符解析失败）通常就是 Node 版本过低。
+  确认 Node.js 版本设置为 `24`。EdgeOne 目前最高提供 Node.js 24，Shirone 在 Node.js 24 下可以正常构建；如果选了不存在的 26，构建环境反而会回退或直接失败。
 
 - 双仓模式（Shirone-Content）
 
-  在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），`content:sync` 会在构建时自动拉取内容仓。也可以参考主题仓库 `deploy.yml.example` 的变体 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
+  在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），需要固定分支时再设置 `CONTENT_REPO_REF=main`。`pnpm build` 已经包含 `content:sync`，构建命令不要再重复写 `pnpm content:sync &&`。站点配置优先放在内容仓的 `config/site.yaml`。也可以参考主题仓库 `deploy.yml.example` 的变体 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
 
 - 搜索不可用
 

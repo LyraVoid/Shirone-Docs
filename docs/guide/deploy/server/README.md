@@ -7,17 +7,17 @@ permalink: /guide/deploy/server/
 将 Shirone 部署到自己的服务器，可以获得最大的控制权：自定义缓存策略、无平台构建额度限制、与现有服务共用资源。
 
 ::: tip 适合谁
-有一台自己的服务器、能接受少量命令行操作的用户。如果你只想"推代码就有网站"，请回到 [Vercel](/guide/deploy/vercel/) 或 [EdgeOne Pages](/guide/deploy/edgeone/)，它们更省心。
+有一台自己的服务器、能接受少量命令行操作的用户。如果你希望推送代码后由平台完成构建和发布，可以看 [Vercel](/guide/deploy/vercel/) 或 [EdgeOne Pages](/guide/deploy/edgeone/)，它们的配置更少。
 :::
 
-## 核心思路
+## 部署思路
 
-Shirone 构建产物是**纯静态文件**。服务器部署的本质只有两件事：
+Shirone 构建产物是**纯静态文件**。服务器部署只涉及两件事：
 
 1. 把 `dist/` 目录放到服务器上
 2. 用 Nginx（或其他 Web 服务器）对外提供访问
 
-构建可以在本地、CI 或服务器上完成，本页以「本地构建 + rsync 上传」为主线路，这是最稳定且服务器压力最小的方案。
+构建可以在本地、CI 或服务器上完成。本页以「本地构建 + rsync 上传」为主，这种方式对服务器压力较小，也更容易排查问题。
 
 ## 第一步：本地构建
 
@@ -33,7 +33,7 @@ pnpm preview   # http://localhost:4321
 ```
 
 ::: warning 部署前检查
-确认 `src/config/siteConfig.ts` 中 `site` 已设置为正式域名（影响 RSS、Sitemap、OG 图），`base` 为 `/`。
+确认站点配置中的 `site` 已设置为正式域名（影响 RSS、Sitemap、OG 图），`base` 为 `/`。单仓模式改 `src/config/siteConfig.ts`；双仓模式优先改内容仓的 `config/site.yaml`，它会在构建时覆盖 `src/user/user-config.ts`。
 :::
 
 ## 第二步：上传产物
@@ -97,7 +97,7 @@ server {
 nginx -t && systemctl reload nginx
 ```
 
-::: info 为什么不用 try_files 兜底到 index.html？
+::: info 为什么不用 try_files 回退到 index.html？
 Shirone 是纯静态 SSG，每个页面都有对应的物理 HTML 文件，不存在客户端路由回退需求。`try_files $uri $uri/ =404` 让错误链接正确返回 404，对 SEO 更友好。
 :::
 
@@ -111,7 +111,7 @@ certbot --nginx -d your-domain.com
 
 Certbot 会自动改写 Nginx 配置并设置证书自动续期定时任务。
 
-## 自动化：一键部署脚本
+## 自动化：部署脚本
 
 将构建与上传封装为脚本，避免重复敲命令：
 
@@ -150,8 +150,11 @@ chmod +x deploy.sh
 | `SERVER_TARGET` | 服务器站点根目录绝对路径 | `/var/www/shirone` |
 
 > [!TIP] 双仓内容分离架构额外配置
-> 若文章存放在私有内容仓库中，还需在内容仓额外添加一个密钥：
-> - `CONTENT_ACCESS_TOKEN`：具备私有内容仓读取权限的访问令牌。
+> 双仓模式下需要两个不同仓库的密钥，不要混淆：
+> - 内容仓：`DISPATCH_TOKEN`，对==主题代码仓==授予 `Contents: Read and write`，用于发送 `repository_dispatch`。
+> - 主题代码仓：`CONTENT_REPO_TOKEN`，对==私有内容仓==授予 `Contents: Read`，用于 checkout / 拉取内容。
+>
+> 若使用 `config/site.yaml` 覆盖站点配置，记得它位于内容仓，`pnpm build` 会自动同步；单仓才直接改 `src/config/siteConfig.ts`。
 
 ---
 
@@ -208,18 +211,38 @@ name: Trigger Theme Build
 on:
   push:
     branches: [main]
+    paths:
+      - "content/**"
+      - "config/**"
+      - "data/**"
+      - "assets/**"
+      - "public/**"
+      - "shirone.content.json"
   workflow_dispatch:
 
+concurrency:
+  group: trigger-build
+  cancel-in-progress: true
+
 jobs:
+  validate:
+    uses: LyraVoid/Shirone/.github/workflows/content-validate.yml@main
+    with:
+      theme_repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
+      theme_ref: main
+
   dispatch:
+    needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Dispatch build event to theme repository
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.DISPATCH_TOKEN }}
           repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 替换为你的主题代码仓路径
-          event-type: content-update
+          event-type: content-updated
+          client-payload: '{"sha": "${{ github.sha }}"}'
 ```
 
 @tab 主题代码仓部署流
@@ -230,8 +253,15 @@ on:
   push:
     branches: [main]
   repository_dispatch:
-    types: [content-update]
+    types: [content-updated]
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -244,13 +274,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 26.13.0
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -258,9 +286,11 @@ jobs:
 
       - name: Sync Private Content & Build
         env:
-          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+          CONTENT_REPO_REF: ${{ github.event.client_payload.sha || 'main' }}
+          BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
         run: |
-          pnpm content:sync
+          pnpm anime:sync --if-stale
           pnpm build
 
       - name: Deploy to Server via rsync
@@ -300,13 +330,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 26.13.0
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -340,5 +368,5 @@ jobs:
 
 - 要不要用面板（宝塔 / 1Panel）
 
-  可以。创建静态站点后把 `dist/` 内容放到站点根目录即可，面板的 SSL 与缓存配置同样适用。核心注意事项不变：根目录指向 `dist` 内容、HTML 不缓存、指纹化资源长缓存。
+  可以。创建静态站点后把 `dist/` 内容放到站点根目录即可，面板的 SSL 与缓存配置同样适用。需要保持的规则不变：根目录指向 `dist` 内容、HTML 不缓存、指纹化资源长缓存。
 :::

@@ -4,15 +4,21 @@ createTime: 2026/08/31 21:50:00
 permalink: /guide/deploy/vercel/
 ---
 
-Vercel 是部署 Shirone 最省心的平台：Git 推送即自动构建，全球边缘网络分发，预览部署开箱即用，免费额度对个人博客绰绰有余。
+Vercel 的配置项较少：推送 Git 后自动构建，提供全球边缘网络和预览部署，个人博客的免费额度通常够用。
 
 ## 前置条件
 
 - 代码已托管在 GitHub / GitLab / Bitbucket
-- 已在 `src/config/siteConfig.ts` 中将 `site` 设置为你的正式域名（如 `https://your-domain.com`），`base` 保持 `/`
+- 已将 `site` 设置为你的正式域名（如 `https://your-domain.com`），`base` 保持 `/`。单仓改 `src/config/siteConfig.ts`；双仓改内容仓的 `config/site.yaml`
 
 ::: tip 单仓 vs 双仓
-单仓模式（内容直接写在主题仓 `src/content/`）按本文操作即可。双仓模式（Shirone-Content）需额外在 Vercel 环境变量中配置 `CONTENT_REPO_URL`，供 `content:sync` 拉取内容，详见主题仓库《内容分离指南》。
+单仓模式（内容直接写在主题仓 `src/content/`）按本文操作即可。双仓模式（Shirone-Content）需额外在 Vercel 环境变量中配置：
+
+- `CONTENT_REPO_URL`：私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式
+- `CONTENT_REPO_REF`：需要固定分支/标签时设置，默认 `main`
+- `GIT_TERMINAL_PROMPT`：`0`，避免构建机卡在账号密码提示
+
+`pnpm build` 已包含 `content:sync`，构建命令保持 `pnpm build` 即可，不需要再写 `pnpm content:sync &&`。
 :::
 
 ## 方式一：Git 集成部署（推荐）
@@ -30,7 +36,7 @@ Vercel 是部署 Shirone 最省心的平台：Git 推送即自动构建，全球
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. 在 **Environment Variables** 中添加 `NODE_VERSION = 26`，确保构建环境满足 Node.js ≥ 26.13.0（Node.js 26 LTS）的要求。
+3. 在 **Settings** -> **General** -> **Node.js Version** 选择 `26.x`。Vercel **不读取** `NODE_VERSION` 环境变量；它根据项目设置或 `package.json` 的 `engines.node` 选择 Node 版本。本仓库的 `engines.node` 已要求 `>=26.13.0`，正常情况下会自动使用 Node 26。
 
 4. 点击 **Deploy**。首次构建约 2-5 分钟，完成后你会得到一个 `*.vercel.app` 域名。
 
@@ -83,7 +89,7 @@ CLI 直接上传的是源码仓，Vercel 仍会在云端执行构建。如果你
 ::: collapse
 - 构建失败：Node 版本过低
 
-  日志中出现 `Unsupported engine` 或语法错误时，确认环境变量 `NODE_VERSION` 已设为 `26`。
+  日志中出现 `Unsupported engine` 或语法错误时，到 **Settings** -> **General** -> **Node.js Version** 确认已选 `26.x`，并检查 `package.json` 的 `engines.node` 是否被改过。设置 `NODE_VERSION` 环境变量对 Vercel 无效。
 
 - 构建超时
 
