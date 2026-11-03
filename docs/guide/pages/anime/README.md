@@ -4,21 +4,29 @@ createTime: 2026/09/01 00:24:00
 permalink: /guide/pages/anime/
 ---
 
-番剧页（`/anime/`）展示追番记录，支持三种数据源：本地手写数据（默认）、Bangumi 快照、Bilibili 快照。核心设计是**双平面模型**——外部同步只发生在显式的 `pnpm anime:sync` 阶段，页面运行时与默认构建绝不直接请求外部 API。
+番剧页（`/anime/`）用于展示个人追番与追剧记录，支持三种方式：本地手写数据（默认）、同步 Bangumi 追番、同步 Bilibili 追番。**数据同步与页面展示完全分离**：外部追番数据仅在执行 `pnpm anime:sync` 命令时才会下载到本地；访客浏览页面或日常打包网站时，绝不会向第三方平台发起网络请求。
 
-## 数据源模型
+::: tip 内容分离模式（双仓架构）必读
+若你使用的是双仓架构（主题代码仓 + 独立内容仓），追番配置存放在**内容仓库**的 `config/anime.yaml`（手写数据对应 `data/anime.ts`）。
 
+修改配置后，**必须先执行 `pnpm anime:sync --if-stale && pnpm build` 把追番数据拉到本地并重新打包**，博客上才会显示你自己的追番记录。详细操作见下文[内容分离与番剧同步流程](#内容分离与番剧同步流程)。
+:::
+
+## 数据源模式
+
+::: tabs
+@tab 单仓模式 (TS)
 ```ts title="src/config/animeConfig.ts"
 export const animeConfig = withUserConfig("anime", {
-  enable: true,          // 仅控制页面渲染，不发起外部连接
+  enable: true,          // 控制页面是否开启，不发起外部网络连接
   source: {
-    kind: "local",       // "local" | "snapshot"
+    kind: "local",       // "local" 手写数据 | "snapshot" 平台同步
     // provider: "bangumi",
     // file: "bangumi.json",
     // fetchOnDev: true,
   },
   fallback: {
-    kind: "local",       // 快照丢失/解析失败时回退本地数据
+    kind: "local",       // 同步数据缺失或解析失败时，回退到本地手写数据
   },
   providers: {
     bangumi: { enable: false, userId: "" },
@@ -26,23 +34,72 @@ export const animeConfig = withUserConfig("anime", {
   },
 })
 ```
+@tab 内容分离双仓模式 (YAML)
+```yaml title="config/anime.yaml"
+# 页面总开关
+enable: true
 
-| 模式 | 数据来源 | 特点 |
+# 数据源方式：local (读取 data/anime.ts) 或 snapshot (读取平台同步数据)
+source:
+  kind: "local"
+  # provider: "bangumi"
+  # file: "bangumi.json"
+  # fetchOnDev: true
+
+# 降级策略（本地缓存不存在或抓取失败时）
+fallback:
+  kind: "local"
+
+# 外部账号配置
+providers:
+  bangumi:
+    enable: false
+    userId: ""
+  bilibili:
+    enable: false
+    vmid: ""
+    sessdataEnv: "BILI_SESSDATA"
+```
+:::
+
+| 模式 | 数据来源 | 说明 |
 | --- | --- | --- |
-| `local` | `src/data/anime.ts` | 默认。完全离线，零网络、零构建脚本负担 |
-| `snapshot` | `src/data/anime-snapshots/` 下的脱敏 JSON | 构建期抓取清洗后的本地快照；同步只发生在显式命令阶段 |
+| `local` | `src/data/anime.ts`（双仓为 `data/anime.ts`） | 默认方式。完全离线手写，零网络依赖，最稳定 |
+| `snapshot` | `src/data/anime-snapshots/` 下的本地 JSON | 通过命令提前下载到本地的追番数据，构建时直接读取 |
 
-## 场景 A：本地数据（默认）
+---
 
-直接编辑 `src/data/anime.ts`，最稳定安全，零外部依赖。适合不想接入外部账号的用户。
+## 方式 A：本地手写数据（默认）
 
-## 场景 B：Bangumi 追番快照
+直接编辑 `src/data/anime.ts`（双仓架构下编辑内容仓的 `data/anime.ts`），适合不想绑定第三方平台账号的用户。
+
+---
+
+## 方式 B：同步 Bangumi 追番
 
 ::: steps
 
-1. 在 `providers.bangumi` 中填入你的 Bangumi 数字 UID 或公开用户名，并将 `enable` 置为 `true`：
+1. 在配置文件中填入你的 Bangumi 数字 UID 或用户名，并将 `enable` 设为 `true`：
 
+   ::: tabs
+   @tab 内容分离模式 (config/anime.yaml)
+   ```yaml title="config/anime.yaml"
+   source:
+     kind: "snapshot"
+     provider: "bangumi"
+
+   providers:
+     bangumi:
+       enable: true
+       userId: "sai"   # 你的 Bangumi 数字 UID 或公开用户名
+       request:
+         pageSize: 50
+         maxItems: 300
+         minDelayMs: 200
+   ```
+   @tab 单仓模式 (animeConfig.ts)
    ```ts title="src/config/animeConfig.ts"
+   source: { kind: "snapshot", provider: "bangumi" },
    providers: {
      bangumi: {
        enable: true,
@@ -51,30 +108,50 @@ export const animeConfig = withUserConfig("anime", {
      },
    }
    ```
+   :::
 
-2. 将 `source` 切换为快照模式：
-
-   ```ts
-   source: { kind: "snapshot", provider: "bangumi" },
-   ```
-
-3. 执行同步命令生成快照：
+2. 执行同步与打包命令：
 
    ```bash
    pnpm anime:sync --provider bangumi
+   pnpm build
    ```
 
-4. 重新构建，番剧页展示 Bangumi 数据。
+3. 构建完成后，番剧页将自动展示 Bangumi 的追番列表。
 
 :::
 
-## 场景 C：Bilibili 追番快照
+---
+
+## 方式 C：同步 Bilibili 追番
 
 ::: steps
 
 1. 填入 B 站公开 UID 并启用：
 
+   ::: tabs
+   @tab 内容分离模式 (config/anime.yaml)
+   ```yaml title="config/anime.yaml"
+   source:
+     kind: "snapshot"
+     provider: "bilibili"
+
+   providers:
+     bilibili:
+       enable: true
+       vmid: "12345678"     # 你的 B 站数字 UID
+       sessdataEnv: "BILI_SESSDATA"
+       cover:
+         mode: "local"
+         useWebp: true
+       request:
+         pageSize: 30
+         maxItems: 300
+         minDelayMs: 300
+   ```
+   @tab 单仓模式 (animeConfig.ts)
    ```ts title="src/config/animeConfig.ts"
+   source: { kind: "snapshot", provider: "bilibili" },
    providers: {
      bilibili: {
        enable: true,
@@ -85,63 +162,111 @@ export const animeConfig = withUserConfig("anime", {
      },
    }
    ```
+   :::
 
-2. **追番列表设为私密时**，在 `.env` 中配置凭据（凭据只进同步进程，绝不进入客户端代码与 Git）：
+2. **追番列表若设置为私密**，需在 `.env`（本地）或部署平台环境变量（云端）中填入登录凭据：
 
    ```text title=".env"
    BILI_SESSDATA="your_sessdata"
    ```
 
-3. 切换数据源并同步：
+   > [!IMPORTANT] 凭据安全说明
+   > 登录凭证仅在运行同步脚本时用于请求个人追番接口，绝不会被打包进网页前端代码，也严禁提交到公开 Git 仓库。
+
+3. 执行同步与打包：
 
    ```bash
-   # source: { kind: "snapshot", provider: "bilibili" }
    pnpm anime:sync --provider bilibili
+   pnpm build
    ```
 
 :::
 
-## 封面缓存
+---
 
-```ts
-cover: {
-  mode: "local",   // "local" 站内下载缓存（推荐）| "remote" 远程链接 | "none"
-  useWebp: true,
-},
+## 内容分离与番剧同步流程
+
+在双仓（内容分离）架构下，许多博主容易遇到一个问题：**“为什么在内容仓修改了 `config/anime.yaml`，博客重新打包后依然是默认的演示番剧？”**
+
+这是因为把追番记录放到博客上分成了两步：
+1. **同步配置**：把内容仓里的 `config/anime.yaml` 同步到主题代码仓；
+2. **下载数据**：运行抓取命令，从 B 站或 Bangumi 把你的追番记录和封面图片下载到本地。
+
+单纯修改 YAML 文件并不会自动联网抓取数据。必须执行同步命令把数据拉到本地，再打包网站，页面才会更新为你自己的追番列表。
+
+### 推荐命令：一键拉取并打包
+
+```bash
+# 检查数据是否过期，按需下载番剧数据并完整打包网站
+pnpm anime:sync --if-stale && pnpm build
 ```
 
-`local` 模式把封面下载到站内（构建产物自带），避免外链失效与热链问题，`useWebp` 转换为更小的 WebP 格式。
+这一行命令的完整执行流程如下：
+1. `pnpm anime:sync --if-stale`：
+   - 检查本地是否已有追番缓存文件；
+   - **`--if-stale` 缓存判断**：如果本地缓存还在有效期内（默认 30 天，可在配置中通过 `snapshot.staleAfterDays` 调整），就会**直接跳过网络请求**正常退出，避免频繁打包被 B 站或 Bangumi 限制访问；如果本地没有缓存或数据已过期，才会联网下载最新的追番列表与封面图片；
+   - 如果没有配置任何账号，命令会自动跳过，不影响打包流程。
+2. `&& pnpm build`：
+   - 自动把内容仓的最新文章和配置文件同步到代码仓；
+   - 编译静态网页，生成搜索索引，完成全站打包。
 
-## 降级策略
+### 常用 CLI 同步命令速查
 
-```ts
-fallback: { kind: "local" },
+| 指令 | 作用说明 | 适用场景 |
+| :--- | :--- | :--- |
+| `pnpm anime:sync --if-stale && pnpm build` | **推荐**。缓存过期时自动拉取，随后打包网站 | GitHub Actions 等云端部署、本地一键发布 |
+| `pnpm anime:sync` | 强制联网拉取所有已启用平台的追番数据 | 第一次配置追番、手动强制刷新数据 |
+| `pnpm anime:sync --if-stale` | 仅在缓存过期（超过 30 天）或缺失时拉取 | 本地预览前检查数据 |
+| `pnpm anime:sync --provider bangumi` | 仅强制同步 Bangumi 数据 | 单独调试 Bangumi |
+| `pnpm anime:sync --provider bilibili` | 仅强制同步 Bilibili 数据（含封面下载） | 单独调试 B 站与封面下载 |
+| `pnpm anime:sync --provider all` | 强制同步所有支持的平台 | 多平台合并检查 |
+
+---
+
+## 封面下载与防盗链处理
+
+```yaml title="config/anime.yaml"
+providers:
+  bilibili:
+    cover:
+      mode: "local"   # "local" 下载到本地静态目录（推荐）| "remote" 直接使用外链 | "none" 不显示
+      useWebp: true
 ```
 
-快照文件丢失或解析失败时自动回退到 `src/data/anime.ts` 的本地数据——追番页永不空白。
+使用 `local` 模式时，脚本会把封面图片下载到本地 `public/assets/anime/covers/`，随网站静态产物一起发布。这样可以彻底解决 B 站图片防盗链导致的裂图问题，并自动压缩为更省流量的 WebP 格式。
 
-## 零额外负担边界
+---
 
-- `enable: false` 仅控制页面渲染，主题本身不发起任何外部连接
-- 没有 `pnpm anime:sync` 显式触发，默认构建不会请求外部 API
-- 私密凭据（SESSDATA）只通过环境变量注入同步进程，不进客户端代码与 Git 提交
+## 降级回退策略
 
-## 常见问题
+```yaml title="config/anime.yaml"
+fallback:
+  kind: "local"       # "local" 自动回退到本地手写数据 | "empty" 显示空状态
+```
+
+当同步数据不存在或网络下载失败时，页面会自动回退到 `data/anime.ts` 中的本地手写数据，保证页面正常打开，不会报错白屏。
+
+---
+
+## 常见问题排查
 
 ::: collapse
-- 快照同步失败
+- 在内容仓配置了 `anime.yaml`，为什么页面没变化？
 
-  检查网络可达性、账号 ID 正确性、私密列表的 SESSDATA 是否配置且未过期。同步命令有限速参数（`minDelayMs`），被平台限流时适当调大。
+  修改 YAML 只是保存了账号配置，并不会自动触发网络请求。必须在代码仓运行一次 `pnpm anime:sync --if-stale && pnpm build`（本地预览可先运行 `pnpm anime:sync` 再运行 `pnpm dev`），把追番数据下载到本地。
 
-- 换数据源后页面没变
+- 为什么要加 `--if-stale` 参数？
 
-  确认 `source.kind` 已切换且快照文件存在（`src/data/anime-snapshots/`），同步命令是否成功执行。
+  B 站等平台对频繁抓取接口有访问频率限制。`--if-stale` 会根据配置的过期天数（默认 30 天）判断是否需要重新下载。数据未过期时直接跳过，既保护账号安全，又能加快打包速度。
 
-- 同步后的数据可以手改吗
+- 追番数据同步失败怎么排查？
 
-  可以。快照是普通 JSON，小修小改可行；但下次 `anime:sync` 会重新生成覆盖——长期修改请回到本地模式或在同步后作为发布流程的一部分。
+  1. 检查网络连接（部分海外服务器可能访问国内接口较慢）；
+  2. 确认账号 ID 是否正确（B 站是纯数字 UID，Bangumi 可以是数字 UID 或用户名）；
+  3. B 站私密追番列表必须配置 `BILI_SESSDATA` 环境变量；
+  4. 如果被平台临时限制访问，可在配置中调大 `request.minDelayMs`（如改为 500 或 1000 毫秒）。
 
-- 凭据会被打包进产物吗
+- 同步下来的数据可以手动修改吗？
 
-  不会。`BILI_SESSDATA` 只在同步命令运行时读取，快照生成后凭据不参与构建产物。
+  可以。下载好的数据保存在 `src/data/anime-snapshots/<provider>.json`，是格式化好的纯 JSON 文件，可以临时手动修改。但下次如果不带 `--if-stale` 重新同步，手改的内容会被覆盖。如果想长期手动维护，建议将 `source.kind` 设为 `local` 并直接编辑 `data/anime.ts`。
 :::
