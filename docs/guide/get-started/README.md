@@ -12,15 +12,15 @@ Shirone 也以 `shirones` npm 包的形式发布，在空文件夹中执行 `npx
 
 ## 环境要求
 
-- [Node.js](https://nodejs.org/) ==**22.12** 或更高版本==
-- [pnpm](https://pnpm.io/) **9.x**（仓库锁定为 `pnpm@9.14.4`）
+- [Node.js](https://nodejs.org/) ==**26.13.0** 或更高版本==（Node.js 26 LTS）
+- [pnpm](https://pnpm.io/) **11.x**（仓库锁定为 `pnpm@11.28.2`）
 - [Git](https://git-scm.com/)
 
 安装完成后，可在终端验证版本：
 
 ```bash
-node -v   # 应 >= v22.12
-pnpm -v   # 应为 9.x
+node -v   # 应 >= v26.13.0
+pnpm -v   # 应为 11.x
 ```
 
 ::: tip 没有安装 pnpm？

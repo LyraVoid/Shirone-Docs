@@ -38,7 +38,7 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-5. Under **Environment Variables**, add `NODE_VERSION = 22`.
+5. Under **Environment Variables**, add `NODE_VERSION = 26` (to satisfy Node.js ≥ 26.13.0).
 
 6. Click **Confirm and Deploy**.
 
@@ -54,11 +54,11 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
 ::: collapse
 - Build failure: `npm ERR!` or `only-allow pnpm`
 
-  Ensure the build command uses pnpm (`pnpm build`). If the platform image has an outdated pnpm version causing lockfile mismatch, set environment variable `PNPM_VERSION=9` or execute `corepack enable && pnpm build`.
+  Ensure the build command uses pnpm (`pnpm build`). If the platform image has an outdated pnpm version causing lockfile mismatch, set environment variable `PNPM_VERSION=11` or execute `corepack enable && pnpm build`.
 
 - Build failure: Node.js version incompatibility
 
-  Confirm Node.js is configured to `22`. Syntax errors in logs indicate an older Node.js runtime.
+  Confirm Node.js is configured to `26`. Syntax errors in logs indicate an older Node.js runtime.
 
 - Dual-Repo Mode (Shirone-Content)
 

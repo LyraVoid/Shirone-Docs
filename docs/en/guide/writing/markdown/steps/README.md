@@ -15,7 +15,7 @@ Wrap standard Markdown ordered lists inside `::: steps`:
 
 1. **Install Dependencies**
 
-   Ensure Node.js `>= 22.12` and pnpm are installed.
+   Ensure Node.js `>= 26.13.0` (Node.js 26 LTS) and pnpm are installed.
 
 2. **Clone and Initialize**
 

@@ -12,10 +12,10 @@ Shirone 是纯静态站点，容器化采用经典的**多阶段构建**：
 
 ```mermaid
 flowchart LR
-    A["node:22-alpine<br/>构建阶段"] -->|仅拷贝 dist/| B["nginx:alpine<br/>运行阶段"]
+    A["node:26-alpine<br/>构建阶段"] -->|仅拷贝 dist/| B["nginx:alpine<br/>运行阶段"]
 ```
 
-- **构建阶段**：Node 22 + pnpm 环境执行完整 `pnpm build`（含 Pagefind 索引）
+- **构建阶段**：Node 26 + pnpm 环境执行完整 `pnpm build`（含 Pagefind 索引）
 - **运行阶段**：只保留 Nginx 与静态产物，最终镜像不到 50 MB，无 Node 运行时
 
 ## 准备文件
@@ -43,7 +43,7 @@ public/assets/moments/thumbnails
 
 ```dockerfile title="Dockerfile"
 # ---------- 构建阶段 ----------
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 

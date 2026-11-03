@@ -14,7 +14,7 @@ Cloudflare Pages provides global CDN acceleration, free SSL certificates, and un
 
 > [!IMPORTANT]
 > **Mandatory Node.js Version Variable**
-> Cloudflare Pages build runners default to an older Node.js runtime. You must specify `NODE_VERSION = 22` in project Environment variables to meet engine requirements.
+> Cloudflare Pages build runners default to an older Node.js runtime. You must specify `NODE_VERSION = 26` in project Environment variables to meet engine requirements (Node.js ≥ 26.13.0, Node.js 26 LTS).
 
 ## Method 1: Git Integration
 
@@ -33,9 +33,9 @@ Cloudflare Pages provides global CDN acceleration, free SSL certificates, and un
    | Build command | `pnpm build` |
    | Build output directory | `dist` |
 
-4. Under **Environment variables**, add `NODE_VERSION = 22` to satisfy Node.js ≥ 22.12 requirements.
+4. Under **Environment variables**, add `NODE_VERSION = 26` to satisfy Node.js ≥ 26.13.0 requirements.
 
-   **Important:** The default Node.js version in Cloudflare build images is older than 22. Adding this variable is required.
+   **Important:** The default Node.js version in Cloudflare build images is older than 26. Adding this variable is required.
 
 5. Click **Save and Deploy**.
 
@@ -69,5 +69,5 @@ wrangler pages deploy dist --project-name=<your-project-name>
 ::: collapse
 - Build Error: Node Version Unsupported
 
-  Ensure `NODE_VERSION` is set to `22` in project Environment variables (under **Settings → Environment variables**).
+  Ensure `NODE_VERSION` is set to `26` in project Environment variables (under **Settings → Environment variables**).
 :::

@@ -15,7 +15,7 @@ permalink: /guide/writing/markdown/steps/
 
 1. **安装环境依赖**
 
-   确保本地 Node.js 版本满足 `>= 22.12`，并安装 pnpm 包管理器。
+   确保本地 Node.js 版本满足 `>= 26.13.0`（Node.js 26 LTS），并安装 pnpm 包管理器。
 
 2. **克隆并初始化仓库**
 

@@ -11,7 +11,7 @@ Symptom-categorized troubleshooting manual. General principle: **Check build log
 ::: collapse
 - `Unsupported engine` / `only-allow pnpm` error
 
-  Node or package manager version does not meet requirements. Confirm Node.js >= 22.12 and use pnpm 9.x (`pnpm@9.14.4` pinned in repo); run `corepack enable` to align versions. See [Get Started](/en/guide/get-started/).
+  Node or package manager version does not meet requirements. Confirm Node.js >= 26.13.0 (Node.js 26 LTS) and use pnpm 11.x (`pnpm@11.28.2` pinned in repo); run `corepack enable` to align versions. See [Get Started](/en/guide/get-started/).
 
 - `spawn EPERM` / esbuild launch failure
 

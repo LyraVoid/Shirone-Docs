@@ -10,7 +10,7 @@ Containerized deployment with Docker isolates build environments, provides versi
 
 Shirone is a static site. Containerization uses a multi-stage Docker build:
 
-- **Build Stage**: Node 22 + pnpm environment executes `pnpm build` (including Pagefind search index generation).
+- **Build Stage**: Node 26 + pnpm environment executes `pnpm build` (including Pagefind search index generation).
 - **Runtime Stage**: Lightweight Nginx Alpine image serves static files from `dist/`, resulting in an image under 50 MB with no Node runtime overhead.
 
 ## Setup Files
@@ -30,11 +30,11 @@ dist
 
 ```dockerfile title="Dockerfile"
 # Build Stage
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@9.14.4 --activate
+RUN corepack enable && corepack prepare pnpm@11.28.2 --activate
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile

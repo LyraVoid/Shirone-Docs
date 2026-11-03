@@ -194,12 +194,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -250,12 +250,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -285,7 +285,7 @@ jobs:
 
 - Can I build directly on the server
 
-  Yes (with Node 22 and pnpm installed), but full builds consume significant CPU and memory. Small VPS instances may hit OOM. Building locally or via CI and copying static files to the server is recommended.
+  Yes (with Node 26 and pnpm installed), but full builds consume significant CPU and memory. Small VPS instances may hit OOM. Building locally or via CI and copying static files to the server is recommended.
 
 - Can I use management panels (1Panel / aaPanel)
 

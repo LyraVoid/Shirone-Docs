@@ -12,15 +12,15 @@ Shirone is also published as the `shirones` npm package — run `npx shirones in
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) ==**22.12** or higher==
-- [pnpm](https://pnpm.io/) **9.x** (the repo is pinned to `pnpm@9.14.4`)
+- [Node.js](https://nodejs.org/) ==**26.13.0** or higher== (Node.js 26 LTS)
+- [pnpm](https://pnpm.io/) **11.x** (the repo is pinned to `pnpm@11.28.2`)
 - [Git](https://git-scm.com/)
 
 Once installed, verify the versions in your terminal:
 
 ```bash
-node -v   # should be >= v22.12
-pnpm -v   # should be 9.x
+node -v   # should be >= v26.13.0
+pnpm -v   # should be 11.x
 ```
 
 ::: tip Don't have pnpm?

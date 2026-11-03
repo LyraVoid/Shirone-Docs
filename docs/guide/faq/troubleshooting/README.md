@@ -11,7 +11,7 @@ permalink: /guide/faq/troubleshooting/
 ::: collapse
 - `Unsupported engine` / `only-allow pnpm` 报错
 
-  Node 或包管理器版本不满足要求。确认 Node.js ≥ 22.12、使用 pnpm 9.x（仓库锁定 `pnpm@9.14.4`）；`corepack enable` 可对齐版本。见[快速开始](/guide/get-started/)。
+  Node 或包管理器版本不满足要求。确认 Node.js ≥ 26.13.0（Node.js 26 LTS）、使用 pnpm 11.x（仓库锁定 `pnpm@11.28.2`）；`corepack enable` 可对齐版本。见[快速开始](/guide/get-started/)。
 
 - `spawn EPERM` / esbuild 启动失败
 

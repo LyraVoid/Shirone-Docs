@@ -76,12 +76,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9.14.4
+          version: 11.28.2
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: pnpm
 
       - name: Install dependencies
@@ -108,7 +108,7 @@ jobs:
 ```
 
 ::: warning 关键参数
-`node-version: 22` 和 `pnpm/action-setup` 不可省略——GitHub runner 默认的 Node 与 npm 环境无法满足 Shirone 的构建要求。
+`node-version: 26`（Node.js 26 LTS）和 `pnpm/action-setup` 不可省略——GitHub runner 默认的 Node 与 npm 环境无法满足 Shirone 的构建要求。
 :::
 
 ## 第三步：启用 Pages

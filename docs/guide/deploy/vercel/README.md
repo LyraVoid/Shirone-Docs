@@ -30,7 +30,7 @@ Vercel 是部署 Shirone 最省心的平台：Git 推送即自动构建，全球
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. 在 **Environment Variables** 中添加 `NODE_VERSION = 22`，确保构建环境满足 Node.js ≥ 22.12 的要求。
+3. 在 **Environment Variables** 中添加 `NODE_VERSION = 26`，确保构建环境满足 Node.js ≥ 26.13.0（Node.js 26 LTS）的要求。
 
 4. 点击 **Deploy**。首次构建约 2-5 分钟，完成后你会得到一个 `*.vercel.app` 域名。
 
@@ -83,7 +83,7 @@ CLI 直接上传的是源码仓，Vercel 仍会在云端执行构建。如果你
 ::: collapse
 - 构建失败：Node 版本过低
 
-  日志中出现 `Unsupported engine` 或语法错误时，确认环境变量 `NODE_VERSION` 已设为 `22`。
+  日志中出现 `Unsupported engine` 或语法错误时，确认环境变量 `NODE_VERSION` 已设为 `26`。
 
 - 构建超时
 

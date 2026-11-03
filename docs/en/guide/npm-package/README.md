@@ -22,7 +22,7 @@ npm package mode suits users who want to stay fully decoupled from the theme cod
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) ==**22.12** or higher==
+- [Node.js](https://nodejs.org/) ==**26.13.0** or higher== (Node.js 26 LTS)
 - [pnpm](https://pnpm.io/) (recommended; npm and yarn also work)
 
 ## Quick Start

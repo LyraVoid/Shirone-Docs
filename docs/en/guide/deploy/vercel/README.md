@@ -30,7 +30,7 @@ For single repository setups where content is located directly in `src/content/`
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. Under **Environment Variables**, add `NODE_VERSION = 22` to ensure the build environment meets Node.js ≥ 22.12 requirements.
+3. Under **Environment Variables**, add `NODE_VERSION = 26` to ensure the build environment meets Node.js ≥ 26.13.0 (Node.js 26 LTS) requirements.
 
 4. Click **Deploy**. The initial build takes approximately 2-5 minutes, producing a `*.vercel.app` domain.
 
@@ -83,7 +83,7 @@ The repository root includes `vercel.json` to customize platform behavior, such 
 ::: collapse
 - Build Failure: Unsupported Node Version
 
-  If the log reports `Unsupported engine` or syntax errors, verify that `NODE_VERSION` is set to `22` in environment variables.
+  If the log reports `Unsupported engine` or syntax errors, verify that `NODE_VERSION` is set to `26` in environment variables.
 
 - Build Timeout
 

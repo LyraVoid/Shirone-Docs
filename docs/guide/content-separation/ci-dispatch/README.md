@@ -106,14 +106,14 @@ sequenceDiagram
            uses: actions/checkout@v4
 
          - name: Setup Node.js & pnpm
-           uses: pnpm/action-setup@v3
+           uses: pnpm/action-setup@v4
            with:
-             version: 9
+             version: 11
 
          - name: Setup Node
            uses: actions/setup-node@v4
            with:
-             node-version: 20
+             node-version: 26
              cache: "pnpm"
 
          - name: Install Dependencies
@@ -122,8 +122,10 @@ sequenceDiagram
          - name: Pull Private Content & Build
            env:
              CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
+             BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
            run: |
              pnpm content:sync
+             pnpm anime:sync --if-stale
              pnpm build
 
          - name: Deploy to GitHub Pages

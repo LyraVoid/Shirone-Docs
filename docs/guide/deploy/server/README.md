@@ -245,12 +245,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -301,12 +301,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: "pnpm"
 
       - name: Install Dependencies
@@ -336,7 +336,7 @@ jobs:
 
 - 服务器上直接构建可以吗
 
-  可以（服务器装 Node 22 + pnpm 后 `pnpm build`），但会占用大量 CPU 与内存，小规格 VPS 容易 OOM。推荐本地或 CI 构建，服务器只负责托管静态文件。
+  可以（服务器装 Node 26 + pnpm 后 `pnpm build`），但会占用大量 CPU 与内存，小规格 VPS 容易 OOM。推荐本地或 CI 构建，服务器只负责托管静态文件。
 
 - 要不要用面板（宝塔 / 1Panel）
 

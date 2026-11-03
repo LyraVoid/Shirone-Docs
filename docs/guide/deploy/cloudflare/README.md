@@ -14,7 +14,7 @@ Cloudflare Pages 提供全球 CDN、免费 SSL 与不限请求数的静态资源
 
 > [!IMPORTANT]
 > **Node.js 环境变量设置**
-> Cloudflare Pages 默认构建镜像的 Node 版本较旧。必须在环境变量中添加 `NODE_VERSION = 22`，以满足 Node.js ≥ 22.12 的运行要求。
+> Cloudflare Pages 默认构建镜像的 Node 版本较旧。必须在环境变量中添加 `NODE_VERSION = 26`，以满足 Node.js ≥ 26.13.0（Node.js 26 LTS）的运行要求。
 
 ## 方式一：Git 集成部署
 
@@ -33,9 +33,9 @@ Cloudflare Pages 提供全球 CDN、免费 SSL 与不限请求数的静态资源
    | Build command | `pnpm build` |
    | Build output directory | `dist` |
 
-4. 展开 **Environment variables**，添加 `NODE_VERSION = 22`（满足 Node.js ≥ 22.12 的要求）。
+4. 展开 **Environment variables**，添加 `NODE_VERSION = 26`（满足 Node.js ≥ 26.13.0 的要求）。
 
-   **务必添加此变量：** Cloudflare 构建镜像默认的 Node 版本低于 22，缺少此变量时构建必然失败。
+   **务必添加此变量：** Cloudflare 构建镜像默认的 Node 版本低于 26，缺少此变量时构建必然失败。
 
 5. 点击 **Save and Deploy**，首次构建约 3-6 分钟。
 
@@ -86,7 +86,7 @@ Cloudflare 默认策略对静态站点已足够合理：HTML 短缓存、指纹�
 ::: collapse
 - 构建失败：`Unsupported engine` 或语法错误
 
-  未设置 `NODE_VERSION=22` 环境变量，或使用了 `npm install` 而非 pnpm。确认构建命令为 `pnpm build`，并启用 corepack（`corepack enable && pnpm build`）以对齐仓库锁定的 pnpm 版本。
+  未设置 `NODE_VERSION=26` 环境变量，或使用了 `npm install` 而非 pnpm。确认构建命令为 `pnpm build`，并启用 corepack（`corepack enable && pnpm build`）以对齐仓库锁定的 pnpm 版本。
 
 - 国内访问速度
 

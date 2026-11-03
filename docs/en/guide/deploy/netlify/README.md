@@ -26,7 +26,7 @@ Netlify is an established static hosting platform offering Git-based continuous 
    | Build command | `pnpm build` |
    | Publish directory | `dist` |
 
-4. Under **Environment variables**, add `NODE_VERSION = 22`.
+4. Under **Environment variables**, add `NODE_VERSION = 26` (to satisfy Node.js ≥ 26.13.0).
 
 5. Click **Deploy** to start the initial build.
 
@@ -42,7 +42,7 @@ Create a `netlify.toml` file in your repository root to version-control build co
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "26"
 ```
 
 Commit and push this file; Netlify will automatically detect and apply the configuration.
@@ -76,7 +76,7 @@ Every push to non-production branches and every pull request generates an isolat
 ::: collapse
 - Build Failure: Package Manager Mismatch
 
-  Ensure `NODE_VERSION = 22` is defined in environment variables. If necessary, update the build command to explicitly enable corepack: `corepack enable && pnpm build`.
+  Ensure `NODE_VERSION = 26` is defined in environment variables. If necessary, update the build command to explicitly enable corepack: `corepack enable && pnpm build`.
 
 - Artifact Size Limits
 

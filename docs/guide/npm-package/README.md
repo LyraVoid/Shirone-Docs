@@ -22,7 +22,7 @@ npm 包模式适合希望与主题代码完全解耦、把博客当作「普通�
 
 ## 环境要求
 
-- [Node.js](https://nodejs.org/) ==**22.12** 或更高版本==
+- [Node.js](https://nodejs.org/) ==**26.13.0** 或更高版本==（Node.js 26 LTS）
 - [pnpm](https://pnpm.io/)（推荐，也支持 npm 与 yarn）
 
 ## 快速开始

@@ -26,7 +26,7 @@ Netlify 是老牌静态托管平台，与 Vercel 定位相近：Git 推送自动
    | Build command | `pnpm build` |
    | Publish directory | `dist` |
 
-4. 在 **Environment variables** 中添加 `NODE_VERSION = 22`。
+4. 在 **Environment variables** 中添加 `NODE_VERSION = 26`（满足 Node.js ≥ 26.13.0）。
 
 5. 点击 **Deploy** 完成首次部署。
 
@@ -42,7 +42,7 @@ Netlify 是老牌静态托管平台，与 Vercel 定位相近：Git 推送自动
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "26"
 ```
 
 提交后重新推送，Netlify 会自动读取该文件并应用配置。
@@ -78,11 +78,11 @@ netlify deploy --build --prod   # 构建并部署到生产
 ::: collapse
 - 构建失败：pnpm 版本不符
 
-  Netlify 内置的 pnpm 版本可能与仓库锁定的 `pnpm@9.14.4` 不一致。通过环境变量固定版本：
+  Netlify 内置的 pnpm 版本可能与仓库锁定的 `pnpm@11.28.2` 不一致。通过环境变量固定版本：
 
   ```toml
   [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "26"
   ```
 
   若仍报 pnpm 相关错误，可在构建命令中显式启用 corepack：`corepack enable && pnpm build`。

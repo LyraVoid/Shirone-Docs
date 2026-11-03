@@ -36,7 +36,7 @@ EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、
    | 框架预设 | `Astro` 或「静态网站」 |
    | 构建命令 | `pnpm build` |
    | 输出目录 | `dist` |
-   | Node.js 版本 | `22` |
+   | Node.js 版本 | `26`（满足 Node.js ≥ 26.13.0） |
 
    **注意：构建命令必须显式指定为 `pnpm build`。** 不要使用默认的 `npm run build`——Shirone 通过 `preinstall` 钩子强制使用 pnpm（`only-allow pnpm`），npm 构建会在安装依赖阶段直接失败。
 
@@ -66,11 +66,11 @@ EdgeOne Pages 是腾讯云推出的静态托管服务，对国内访问友好、
 ::: collapse
 - 构建失败：`npm ERR!` 或 `only-allow pnpm`
 
-  构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，在环境变量中固定 `PNPM_VERSION=9` 或使用 `corepack enable && pnpm build`。
+  构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，在环境变量中固定 `PNPM_VERSION=11` 或使用 `corepack enable && pnpm build`。
 
 - 构建失败：Node 版本不匹配
 
-  确认 Node.js 版本设置为 `22`。日志中出现 `SyntaxError`（如 `??` 运算符解析失败）通常就是 Node 版本过低。
+  确认 Node.js 版本设置为 `26`。日志中出现 `SyntaxError`（如 `??` 运算符解析失败）通常就是 Node 版本过低。
 
 - 双仓模式（Shirone-Content）
 
