@@ -11,7 +11,7 @@ Symptom-categorized troubleshooting manual. General principle: **Check build log
 ::: collapse
 - `Unsupported engine` / `only-allow pnpm` error
 
-  Node or package manager version does not meet requirements. Confirm Node.js >= 26.13.0 (Node.js 26 LTS) and use pnpm 11.x (`pnpm@11.28.2` pinned in repo); run `corepack enable` to align versions. See [Get Started](/en/guide/get-started/).
+  Node or package manager version does not meet requirements. Confirm Node.js >= 26.13.0 (Node.js 26 LTS) and use pnpm 11.x (`pnpm@11.28.2` pinned in repo). Node.js 26 no longer bundles corepack; run `npm install -g pnpm@11.28.2` instead. If you insist on corepack, install it first with `npm install -g corepack`. See [Get Started](/en/guide/get-started/).
 
 - `spawn EPERM` / esbuild launch failure
 
@@ -35,7 +35,7 @@ Symptom-categorized troubleshooting manual. General principle: **Check build log
 
 - Custom items (Projects/Skills/Devices) added but hidden
 
-  Triple check: Page `enable: true` → Item category key exists in `categories` list → Not blacklisted in disabled arrays (`disabledKeys`, `disabledNames`, `disabledTitles`, `disabledIds`).
+  Check three things: Page `enable: true` → Item category key exists in the `categories` list → Item is not listed in the disabled arrays (`disabledKeys`, `disabledNames`, `disabledTitles`, `disabledIds`).
 
 - Icons display as empty boxes
 
@@ -65,7 +65,7 @@ Symptom-categorized troubleshooting manual. General principle: **Check build log
 
 - Comments, Music, or Stats widgets missing
 
-  All three have silent deactivation mechanisms when incomplete. Check `enable` and required config keys: [Comments](/en/guide/article/comments/), [Music Player](/en/guide/widgets/music/), [Umami](/en/guide/features/umami/).
+  All three stay hidden without an error when their configuration is incomplete. Check `enable` and the required config keys: [Comments](/en/guide/article/comments/), [Music Player](/en/guide/widgets/music/), [Umami](/en/guide/features/umami/).
 
 - Sidebar icons empty
 
@@ -97,7 +97,7 @@ Symptom-categorized troubleshooting manual. General principle: **Check build log
 | Diagnostic | Command | Purpose |
 | --- | --- | --- |
 | Type Diagnostics | `npx astro check` | Syntax and template checks (must be 0 errors) |
-| Type Checking | `pnpm type-check` | TypeScript deep compiler audit |
+| Type Checking | `pnpm type-check` | TypeScript type checking |
 | Full Rebuild | `pnpm build` | Content, font subset, and schema validation |
 | Cache Reset | Delete `.astro/data-store.json` then `pnpm dev` | Stale markdown compilation recovery |
 | Local Preview | `pnpm preview` | Differentiate build issues from deployment issues |

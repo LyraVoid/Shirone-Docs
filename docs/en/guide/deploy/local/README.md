@@ -6,6 +6,10 @@ permalink: /en/guide/deploy/local/
 
 Local building is the foundation of all deployment methods. Understanding how the local build pipeline works helps diagnose and troubleshoot issues on remote CI/CD platforms.
 
+::: tip Dual-repo mode
+If content lives in a separate repo, set `CONTENT_DIR` (local content checkout) or `CONTENT_REPO_URL` (remote) in `.env`; `pnpm build` runs `content:sync` automatically. Site config belongs in the content repo's `config/site.yaml`; only single-repo setups edit `src/config/siteConfig.ts`.
+:::
+
 ## Build Steps
 
 ```bash

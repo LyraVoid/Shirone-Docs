@@ -24,13 +24,13 @@ pnpm -v   # 应为 11.x
 ```
 
 ::: tip 没有安装 pnpm？
-推荐使用 corepack 启用（Node.js 自带）：
+直接全局安装仓库锁定的版本：
 
 ```bash
-corepack enable
+npm install -g pnpm@11.28.2
 ```
 
-也可以通过 npm 全局安装：`npm install -g pnpm`。
+Node.js 25 起已不再内置 corepack，Node.js 26 上执行 `corepack enable` 会报「command not found」。如果仍想用 corepack，需要先 `npm install -g corepack` 再 `corepack enable`。
 :::
 
 ## 本地运行
@@ -38,7 +38,7 @@ corepack enable
 ```bash
 git clone https://github.com/LyraVoid/Shirone.git
 cd Shirone
-corepack enable
+npm install -g pnpm@11.28.2
 pnpm install
 pnpm dev
 ```
@@ -56,7 +56,7 @@ pnpm dev
 3. 检查 `src/config/` 中各功能对应的配置文件；文件内注释说明了默认值和可用选项。
 4. 替换 `src/content/`、`src/data/` 与 `public/` 中的示例文章、个人数据和媒体资源。
 
-### 核心配置一览
+### 主要配置
 
 | 文件 | 用途 |
 | --- | --- |
@@ -117,7 +117,7 @@ draft: false
 
 Shirone 会生成静态的 `dist/` 目录，可部署到 Vercel、Netlify、GitHub Pages 或任意静态托管服务。
 
-部署前，请先更新 `src/config/siteConfig.ts` 中的 `site` 和 `base`，然后运行：
+部署前，请先更新站点配置中的 `site` 和 `base`（单仓改 `src/config/siteConfig.ts`，双仓改内容仓的 `config/site.yaml`），然后运行：
 
 ```bash
 pnpm install --frozen-lockfile
@@ -138,5 +138,5 @@ pnpm build
 
 ## 下一步
 
-- 回顾 [主题介绍](/guide/intro/)：了解 Shirone 的设计理念与核心特性
+- 回顾 [主题介绍](/guide/intro/)：了解 Shirone 的设计思路与主要功能
 - 查阅 [内容分离架构概览](/guide/content-separation/concepts/)：了解双仓解耦与平滑升级机制

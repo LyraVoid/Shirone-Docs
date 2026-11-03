@@ -13,6 +13,10 @@ permalink: /guide/deploy/local/
 - **产物复用**：一次构建，可同时分发到任意多个平台
 - **排查利器**：平台构建失败时，本地复现是最快的定位手段
 
+::: tip 双仓模式
+如果内容在独立仓库，先在 `.env` 中设置 `CONTENT_DIR`（本地内容仓路径）或 `CONTENT_REPO_URL`（远程仓），`pnpm build` 会自动执行 `content:sync`。站点配置优先改内容仓的 `config/site.yaml`，单仓才改 `src/config/siteConfig.ts`。
+:::
+
 ## 构建流程
 
 ::: steps
@@ -112,7 +116,7 @@ coscmd upload -rs dist/ /
 - [ ] `pnpm preview` 中首页、文章页、归档、搜索均正常
 - [ ] `dist/pagefind/` 目录存在且非空
 - [ ] 控制台无构建警告（尤其是 frontmatter 校验错误）
-- [ ] `siteConfig.ts` 中 `site` 指向正式域名
+- [ ] 站点配置中 `site` 指向正式域名（单仓 `siteConfig.ts`，双仓 `config/site.yaml`）
 - [ ] RSS（`dist/rss.xml`）中的链接可正确跳转
 
 ## 常见问题

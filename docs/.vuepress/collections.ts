@@ -30,6 +30,7 @@ const zhGuideDoc = defineCollection({
           prefix: '/guide/deploy/',
           collapsed: true,
           items: [
+            { text: '部署总览', link: 'overview/', icon: 'ri:book-open-line', badge: { type: 'info', text: '先看' } },
             { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'tip', text: '推荐' } },
             { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
             { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: '不推荐' } },
@@ -328,6 +329,7 @@ const enGuideDoc = defineCollection({
           prefix: '/en/guide/deploy/',
           collapsed: true,
           items: [
+            { text: 'Deployment Overview', link: 'overview/', icon: 'ri:book-open-line', badge: { type: 'info', text: 'Start' } },
             { text: 'Vercel', link: 'vercel/', icon: 'ri:vercel-line', badge: { type: 'tip', text: 'Recommended' } },
             { text: 'Netlify', link: 'netlify/', icon: 'ri:cloud-line' },
             { text: 'GitHub Pages', link: 'github/', icon: 'ri:github-line', badge: { type: 'danger', text: 'Not Recommended' } },

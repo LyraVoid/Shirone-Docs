@@ -4,14 +4,14 @@ createTime: 2026/08/31 21:52:00
 permalink: /guide/deploy/github/
 ---
 
-GitHub Pages 可以免费托管站点并与代码仓库天然集成，但对 Shirone 来说**不是推荐选择**：
+GitHub Pages 可以免费托管静态站点，也能直接从仓库发布，但对 Shirone 来说**不是首选**：
 
 - 托管在 `*.github.io` 时必须配置 `base` 路径，所有内部链接都要以此为前缀，容易出错；
 - 构建走 GitHub Actions，公共 runner 资源有限，Shirone 的多步构建（内容同步、字体子集、Pagefind 索引）耗时明显长于 Vercel / EdgeOne；
 - 构建产物总量上限 1 GB，站点内容增长后容易触顶；
 - 国内访问质量不佳。
 
-如果仍选择 GitHub Pages（例如项目本身就在 GitHub 生态内），按以下步骤操作。
+如果仍选择 GitHub Pages（例如项目本身已经在 GitHub 上），按以下步骤操作。
 
 > [!IMPORTANT]
 > **路径严格一致性准则**
@@ -140,7 +140,7 @@ jobs:
 ::: collapse
 - 页面空白或资源 404
 
-  九成是 `base` 配置与实际访问路径不匹配。确认 `siteConfig.ts` 中的 `base` 与仓库名（含大小写）完全一致，并清理构建缓存后重新部署。
+  通常是 `base` 配置与实际访问路径不匹配。确认 `siteConfig.ts` 中的 `base` 与仓库名（含大小写）完全一致，并清理构建缓存后重新部署。
 
 - Actions 构建超时
 
@@ -148,5 +148,5 @@ jobs:
 
 - 双仓模式怎么部署
 
-  参考主题仓库的 `.github/workflows/deploy.yml.example`：内容仓推送后通过 `repository_dispatch` 通知主题仓重新构建，其变体 B 即 GitHub Pages 部署写法。
+  参考主题仓库的 `.github/workflows/deploy.yml.example`：内容仓推送后通过 `repository_dispatch`（事件名 `content-updated`）通知主题仓重新构建，其变体 B 即 GitHub Pages 部署写法。主题仓需配置 `CONTENT_REPO_TOKEN`，内容仓需配置 `DISPATCH_TOKEN`；站点配置优先放在内容仓的 `config/site.yaml`，而不是 `src/config/siteConfig.ts`。
 :::

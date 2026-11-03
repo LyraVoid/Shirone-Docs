@@ -134,5 +134,5 @@ jobs:
 
 - How to deploy in Dual-Repo mode
 
-  Refer to `.github/workflows/deploy.yml.example` variant B: content repo triggers theme repo builds via `repository_dispatch`.
+  Refer to `.github/workflows/deploy.yml.example` variant B: the content repo triggers theme repo builds via `repository_dispatch` with event `content-updated`. Put `CONTENT_REPO_TOKEN` in the theme repo and `DISPATCH_TOKEN` in the content repo; site config belongs in the content repo's `config/site.yaml`.
 :::

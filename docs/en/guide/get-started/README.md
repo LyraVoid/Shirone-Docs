@@ -24,13 +24,13 @@ pnpm -v   # should be 11.x
 ```
 
 ::: tip Don't have pnpm?
-Enable it via corepack (bundled with Node.js):
+Install the pinned version globally:
 
 ```bash
-corepack enable
+npm install -g pnpm@11.28.2
 ```
 
-Alternatively, install it globally with npm: `npm install -g pnpm`.
+Node.js 25+ no longer bundles corepack, so Node.js 26 reports `corepack: command not found`. If you still want corepack, run `npm install -g corepack` first.
 :::
 
 ## Local Development
@@ -38,7 +38,7 @@ Alternatively, install it globally with npm: `npm install -g pnpm`.
 ```bash
 git clone https://github.com/LyraVoid/Shirone.git
 cd Shirone
-corepack enable
+npm install -g pnpm@11.28.2
 pnpm install
 pnpm dev
 ```
@@ -117,7 +117,7 @@ Images can be remote URLs, absolute paths starting from `public/`, or paths rela
 
 Shirone generates a static `dist/` directory that can be deployed to Vercel, Netlify, GitHub Pages or any static hosting service.
 
-Before deploying, update `site` and `base` in `src/config/siteConfig.ts`, then run:
+Before deploying, update `site` and `base` (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo), then run:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -132,7 +132,7 @@ On your hosting platform, set the build command to `pnpm build` and the output d
 
 If you prefer to manage theme code and personal content in separate repositories (e.g. keep the content repo private), use the official companion repository [Shirone-Content](https://github.com/LyraVoid/Shirone-Content): put posts, moments, data, media and the `config/*.yaml` content overrides into an independent repository, then point the theme repo to it.
 
-Most users can simply write inside `src/content/` of the theme repo. See the [Content Separation Overview](/en/guide/content-separation/concepts/) for details.
+Most users can write inside `src/content/` of the theme repo. See the [Content Separation Overview](/en/guide/content-separation/concepts/) for details.
 
 ---
 

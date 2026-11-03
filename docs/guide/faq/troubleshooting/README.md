@@ -11,7 +11,7 @@ permalink: /guide/faq/troubleshooting/
 ::: collapse
 - `Unsupported engine` / `only-allow pnpm` 报错
 
-  Node 或包管理器版本不满足要求。确认 Node.js ≥ 26.13.0（Node.js 26 LTS）、使用 pnpm 11.x（仓库锁定 `pnpm@11.28.2`）；`corepack enable` 可对齐版本。见[快速开始](/guide/get-started/)。
+  Node 或包管理器版本不满足要求。确认 Node.js ≥ 26.13.0（Node.js 26 LTS）、使用 pnpm 11.x（仓库锁定 `pnpm@11.28.2`）。Node.js 26 已不再内置 corepack，直接用 `npm install -g pnpm@11.28.2` 对齐版本；若坚持用 corepack，先 `npm install -g corepack`。见[快速开始](/guide/get-started/)。
 
 - `spawn EPERM` / esbuild 启动失败
 
@@ -19,7 +19,7 @@ permalink: /guide/faq/troubleshooting/
 
 - 内容 frontmatter 校验失败
 
-  Shirone 构建第一步 `content:sync` 会校验所有 frontmatter 与 `config/*.yaml` 类型。按报错指出的文件与行号修正；独立成步意味着内容问题与构建问题在日志里天然分开。
+  Shirone 构建第一步 `content:sync` 会校验所有 frontmatter 与 `config/*.yaml` 类型。按报错指出的文件与行号修正；这一步独立执行，内容问题和构建问题会分别出现在日志里。
 
 - YAML 语法错误
 
@@ -98,7 +98,7 @@ permalink: /guide/faq/troubleshooting/
 | 手段 | 命令 | 用途 |
 | --- | --- | --- |
 | 类型诊断 | `npx astro check` | 配置与页面语法，必须 0 错误 |
-| 类型检查 | `pnpm type-check` | TypeScript 深度检查 |
+| 类型检查 | `pnpm type-check` | TypeScript 类型检查 |
 | 完整重建 | `pnpm build` | 内容/字体/schema 相关验证 |
 | 清缓存重启 | 删除 `.astro/data-store.json` 后 `pnpm dev` | Markdown 编译缓存陈旧 |
 | 本地预览产物 | `pnpm preview` | 区分「构建问题」与「部署问题」 |
