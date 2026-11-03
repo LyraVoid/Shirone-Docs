@@ -27,7 +27,15 @@ sequenceDiagram
 
 `CONTENT_REPO_URL`、`CONTENT_REPO_REF` 和私有仓令牌的写法见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
 
-Deploy Hook 和 [跨仓 GitHub Actions 派发](/guide/content-separation/ci-dispatch/) 是两套互斥的触发方式。内容仓只配 `DISPATCH_TOKEN` 时由主题仓 Actions 构建；只配某个 `*_DEPLOY_HOOK` 时由平台构建。两种都配会让一次提交触发两次部署。
+::: warning Deploy Hook 与 Actions 派发只能二选一
+Deploy Hook 和 [跨仓 GitHub Actions 派发](/guide/content-separation/ci-dispatch/) 是两套互斥的触发方案：
+
+- **走 Actions 派发**：内容仓只配置 `DISPATCH_TOKEN`，由主题仓 Actions 负责打包并直传产物。此时**托管平台必须关闭云端构建**（Framework Preset 改为 `Other`、清空 Build Command、断开 Git 自动构建）。
+
+- **走 Deploy Hook**：内容仓只配置对应的 `*_DEPLOY_HOOK`，由平台构建机拉取代码并打包。此时平台**需要保留** `pnpm build`，并配置好 `CONTENT_REPO_URL` 等环境变量。
+
+如果两边都配置了，一次提交就会同时触发两次部署，导致线上产物相互覆盖；而如果平台留着构建命令，Actions 又往上推静态 `dist/`，云端就会直接构建报错。
+:::
 
 ::: tip 先启用官方触发模板
 不需要为每个平台各写一份触发工作流。内容仓的 `.github/workflows/trigger-build.yml.example` 已经包含 Cloudflare、Vercel、EdgeOne、Netlify 四个 Hook 步骤，未配置对应 Secret 时会自动跳过。

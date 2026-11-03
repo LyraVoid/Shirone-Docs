@@ -27,7 +27,15 @@ sequenceDiagram
 
 See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and private repo token formats.
 
-Deploy Hooks and [cross-repo GitHub Actions dispatch](/en/guide/content-separation/ci-dispatch/) are mutually exclusive. With only `DISPATCH_TOKEN`, the theme repo Actions builds. With only a `*_DEPLOY_HOOK` secret, the platform builds. Configuring both causes two deployments for one push.
+::: warning Deploy Hooks and Actions dispatch are mutually exclusive
+Deploy Hooks and [cross-repo GitHub Actions dispatch](/en/guide/content-separation/ci-dispatch/) are mutually exclusive solutions:
+
+- **Using Actions dispatch**: Only configure `DISPATCH_TOKEN` in the content repo. Theme repo Actions handles building and direct artifact upload. At this time, **cloud builds must be disabled on the hosting platform** (Framework Preset set to `Other`, Build Command cleared, and Git auto-build disconnected).
+
+- **Using Deploy Hooks**: Only configure the corresponding `*_DEPLOY_HOOK` in the content repo. The platform's build runner pulls code and builds. At this time, the platform **must retain** `pnpm build` and have environment variables like `CONTENT_REPO_URL` configured.
+
+If both are configured, a single commit will trigger two builds simultaneously, causing live artifacts to overwrite each other; furthermore, if the platform retains a build command while Actions pushes static `dist/` artifacts, the cloud build will fail with an error.
+:::
 
 ::: tip Start from the official trigger template
 You do not need a separate workflow per platform. The content repo's `.github/workflows/trigger-build.yml.example` already contains Cloudflare, Vercel, EdgeOne, and Netlify hook steps; each is skipped when its secret is absent.

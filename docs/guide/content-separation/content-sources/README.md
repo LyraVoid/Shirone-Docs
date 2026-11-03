@@ -154,6 +154,7 @@ GIT_TERMINAL_PROMPT=0
 ## 私有仓与令牌
 
 - 令牌只需要内容仓的 `Contents: Read` 权限，不需要主题仓权限。
+- 细粒度个人访问令牌（Fine-grained PAT）的完整申请图文指引见[申请 GitHub 个人访问令牌（PAT）](/guide/content-separation/ci-dispatch/#第一步-申请-github-个人访问令牌-pat)。
 - 带令牌的 URL 使用 HTTPS。SSH 地址需要构建机预置私钥，大多数托管平台不提供这项配置。
 - 令牌过期、被撤销或没有内容仓权限时，日志会出现 `Authentication failed`。
 - 不要把 `.env`、带令牌的 URL 或令牌本身提交到仓库。

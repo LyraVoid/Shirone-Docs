@@ -154,6 +154,7 @@ The platform runs `pnpm build`, which includes `content:sync`. Do not prepend `p
 ## Private repos and tokens
 
 - The token only needs `Contents: Read` on the content repo; it does not need access to the theme repo.
+- For a step-by-step pictorial guide on generating a Fine-grained PAT, see [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat).
 - Use HTTPS when embedding a token. SSH URLs require a private key on the builder, which most hosting platforms do not provide.
 - If the token is expired, revoked, or lacks content repo access, the log shows `Authentication failed`.
 - Do not commit `.env`, a token-bearing URL, or the token itself.

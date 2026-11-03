@@ -35,6 +35,8 @@ The `DISPATCH_TOKEN` configured in your content repository lacks write permissio
    Save the new token into the content repository's `DISPATCH_TOKEN` Secret.
 :::
 
+For the complete step-by-step pictorial guide on PAT generation and permissions, see [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat).
+
 ---
 
 ## 2. Cloud Platform Authentication Failed <Badge text="Auth Error" type="danger" />
@@ -56,7 +58,7 @@ The `CONTENT_REPO_URL` environment variable on your hosting platform is missing 
    ```
 3. Trigger a fresh deployment.
 
-See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for all variables and token permissions.
+See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for all variables, and [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat) for the step-by-step pictorial guide.
 
 ---
 
@@ -127,3 +129,41 @@ pnpm content:sync
 Keep these two path rules in mind:
 - **Standard Media**: Use relative paths `./image.png` or root paths `/images/...`; the sync engine preserves mount mappings;
 - **Direct Filesystem Directives**: `@[code-tree]` and `<!-- @include: ... -->` read the physical filesystem directly and require paths relative to the theme repository root. All other 15 Markdown syntax extensions are completely unaffected.
+
+---
+
+## 7. Actions Build Succeeds, but Vercel Fails with `Command "pnpm build" exited with 1` <Badge text="Build Config" type="danger" />
+
+### Symptom
+In the theme repo Actions workflow, `pnpm build` succeeds completely, and the final step `vercel deploy dist --prod` uploads successfully. However, in the Vercel dashboard deployment logs, the build errors out and terminates:
+
+```text title="Vercel Build Log"
+Skipping build cache since Package Manager changed from "pnpm" to "npm"
+Running "vercel build"
+Error: Command "pnpm build" exited with 1
+```
+
+### Cause
+You are using the "Actions builds and uploads `dist/` static artifacts" mode, but the Vercel project still retains the build settings from when it was originally linked to Git (Framework Preset set to `Astro`, Build Command set to `pnpm build`).
+
+The `dist/` uploaded by Actions contains pure static files without a `package.json`. When Vercel cloud tries to invoke `pnpm build` again, it inevitably fails because no build scripts exist. Note: **Simply disconnecting the Git integration is not enough**, because the Build Command is stored independently in project settings.
+
+### Solution
+::: steps
+1. **Switch Project to Pure Static Hosting**
+
+   Log in to Vercel, open your project, and navigate to **Settings** -> **Build & Output Settings**:
+   - Change **Framework Preset** to `Other`;
+   - Toggle OFF the Override switch for **Build Command** (clearing the command);
+   - Toggle OFF the Override switch for **Output Directory** (clearing the directory).
+
+2. **Disconnect Git Auto-Builds**
+
+   Go to **Settings** -> **Git** and disconnect the repository (or disable automatic deployments) to prevent Actions direct uploads and Git auto-builds from conflicting and overwriting each other.
+
+3. **Re-trigger Deployment Verification**
+
+   Return to the theme repo Actions and run `deploy.yml` again. Verify in the Vercel deployment log that `Running "vercel build"` no longer appears, confirming that configuration is active.
+:::
+
+For differences between both deployment methods, refer to [Deployment Overview](/en/guide/deploy/overview/) and [Deploy to Vercel](/en/guide/deploy/vercel/).
