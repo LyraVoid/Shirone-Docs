@@ -107,6 +107,8 @@ Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian,
 > ```ini title=".env"
 > CONTENT_DIR="<your-content-repo-path>" # e.g. "D:/Code/my-blog-content"
 > ```
+>
+> See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for the difference between `CONTENT_DIR`, `CONTENT_REPO_URL`, and `CONTENT_REPO_REF`.
 
 ---
 

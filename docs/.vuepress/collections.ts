@@ -54,6 +54,7 @@ const zhGuideDoc = defineCollection({
       items: [
         { text: '架构概览', link: 'concepts/', icon: 'ri:information-line', badge: { type: 'tip', text: '核心' } },
         { text: '初始化私有仓库', link: 'init-repo/', icon: 'ri:folder-add-line' },
+        { text: '内容源配置', link: 'content-sources/', icon: 'ri:database-2-line' },
         { text: '本地预览与调试', link: 'local-preview/', icon: 'ri:computer-line' },
         { text: 'CLI 工具链', link: 'cli-workflows/', icon: 'ri:terminal-box-line', badge: { type: 'info', text: 'CLI' } },
         { text: '配置覆盖原理', link: 'config-overlay/', icon: 'ri:settings-3-line', badge: { type: 'warning', text: '原理' } },
@@ -353,6 +354,7 @@ const enGuideDoc = defineCollection({
       items: [
         { text: 'Architecture Overview', link: 'concepts/', icon: 'ri:information-line', badge: { type: 'tip', text: 'Core' } },
         { text: 'Initialize Private Repo', link: 'init-repo/', icon: 'ri:folder-add-line' },
+        { text: 'Content Sources', link: 'content-sources/', icon: 'ri:database-2-line' },
         { text: 'Local Preview & Debugging', link: 'local-preview/', icon: 'ri:computer-line' },
         { text: 'CLI Toolchain', link: 'cli-workflows/', icon: 'ri:terminal-box-line', badge: { type: 'info', text: 'CLI' } },
         { text: 'Configuration Overlay', link: 'config-overlay/', icon: 'ri:settings-3-line', badge: { type: 'warning', text: 'Overlay' } },

@@ -56,6 +56,8 @@ The `CONTENT_REPO_URL` environment variable on your hosting platform is missing 
    ```
 3. Trigger a fresh deployment.
 
+See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for all variables and token permissions.
+
 ---
 
 ## 3. Modified YAML Configurations Not Taking Effect <Badge text="Config Check" type="warning" />

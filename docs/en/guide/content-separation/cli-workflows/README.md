@@ -188,15 +188,9 @@ Therefore, after editing `config/anime.yaml`, you must run `anime:sync` to fetch
 
 ### Environment Precedence
 
-Precedence order: ==Process Env > .env.local > .env > shirone.content.json==.
+Content sources resolve in this order: `SHIRONE_CONTENT_SYNC=0` > `CONTENT_DIR` > `CONTENT_REPO_URL` > `source` in `shirone.content.json`. Between env files, the order is ==process environment > .env.local > .env==.
 
-| Variable | Description |
-| :--- | :--- |
-| `CONTENT_DIR` | Local content repository path |
-| `CONTENT_REPO_URL` | Remote Git repository URL |
-| `CONTENT_REPO_REF` | Target branch, tag, or commit SHA (default: `main`) |
-| `SHIRONE_CONTENT_SYNC` | Set to `0` or `false` to disable sync and return to monolithic mode |
-| `CONTENT_SYNC_PULL` | Set to `false` to reuse local cache without network pull |
+For each variable, private repo URLs, and the three deployment setups, see [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/).
 
 ::: details Expand to View Advanced CLI Flags
 - `--dry-run`: Supported by mutating commands; prints execution plan without modifying disk;

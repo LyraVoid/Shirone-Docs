@@ -107,6 +107,8 @@ permalink: /guide/content-separation/local-preview/
 > ```ini title=".env"
 > CONTENT_DIR="<你的内容仓库绝对路径>" # 例如 "D:/Code/my-blog-content"
 > ```
+>
+> `CONTENT_DIR`、`CONTENT_REPO_URL` 与 `CONTENT_REPO_REF` 的区别见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
 
 ---
 

@@ -56,6 +56,8 @@ fatal: Authentication failed for 'https://github.com/...'
    ```
 3. 重新触发一次部署构建。
 
+完整的变量说明和令牌权限见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
+
 ---
 
 ## 3. 修改了 YAML 配置但页面没有生效 <Badge text="配置诊断" type="warning" />

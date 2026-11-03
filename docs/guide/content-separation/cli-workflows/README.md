@@ -224,15 +224,9 @@ pnpm anime:sync --provider all
 
 ### 环境变量优先级
 
-系统配置优先级为：==进程环境变量 > .env.local > .env > shirone.content.json==。
+内容源解析顺序为：`SHIRONE_CONTENT_SYNC=0` > `CONTENT_DIR` > `CONTENT_REPO_URL` > `shirone.content.json` 的 `source`。环境变量文件之间则是：==进程环境变量 > .env.local > .env==。
 
-| 环境变量 | 作用与说明 |
-| :--- | :--- |
-| `CONTENT_DIR` | 本地内容仓库路径 |
-| `CONTENT_REPO_URL` | 远端 Git 内容仓库地址 |
-| `CONTENT_REPO_REF` | 指定内容仓分支、标签或 Commit SHA（默认为 `main`） |
-| `SHIRONE_CONTENT_SYNC` | 设为 `0` 或 `false` 时可强制关闭同步，临时回到单仓模式 |
-| `CONTENT_SYNC_PULL` | 设为 `false` 时离线复用已存在的本地临时缓存副本，不主动联网拉取 |
+各变量的用途、私有仓地址写法和三种部署场景，见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
 
 ::: details 展开查看高级参数与调试选项 (CLI Flags)
 - `--dry-run`：所有具有修改行为的命令均支持此选项，仅打印执行计划而不写入磁盘；
