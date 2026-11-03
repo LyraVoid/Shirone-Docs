@@ -25,6 +25,8 @@ sequenceDiagram
     Builder->>CDN: 6. 自动分发 dist/
 ```
 
+`CONTENT_REPO_URL`、`CONTENT_REPO_REF` 和私有仓令牌的写法见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
+
 ::: tip 先启用官方触发模板
 不需要为每个平台各写一份触发工作流。内容仓的 `.github/workflows/trigger-build.yml.example` 已经包含 Cloudflare、Vercel、EdgeOne、Netlify 四个 Hook 步骤，未配置对应 Secret 时会自动跳过。复制为 `trigger-build.yml` 后，只需在内容仓按需添加下表中的 Secret。
 
@@ -110,7 +112,7 @@ sequenceDiagram
 
    在 **Settings** -> **General** -> **Node.js Version** 选择 `26.x`。Vercel 不读取 `NODE_VERSION` 环境变量。
 
-   在 **Settings** -> **Environment Variables** 添加：
+   环境变量可以在导入项目时展开 **Environment Variables** 直接填写，也可以之后在 **Settings** -> **Environment Variables** 添加：
 
    | 变量 | 值 |
    | --- | --- |

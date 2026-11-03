@@ -36,13 +36,31 @@ Vercel 的配置项较少：推送 Git 后自动构建，提供全球边缘网�
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. 在 **Settings** -> **General** -> **Node.js Version** 选择 `26.x`。Vercel **不读取** `NODE_VERSION` 环境变量；它根据项目设置或 `package.json` 的 `engines.node` 选择 Node 版本。本仓库的 `engines.node` 已要求 `>=26.13.0`，正常情况下会自动使用 Node 26。
+3. 展开 **Environment Variables**，可以直接在导入页面添加变量。双仓模式至少填写 `CONTENT_REPO_URL`；需要固定分支时再填 `CONTENT_REPO_REF`，并设置 `GIT_TERMINAL_PROMPT=0`。也可以点 **Import .env** 导入本地 `.env` 文件，或在部署完成后到 **Settings** -> **Environment Variables** 补填。
 
-4. 点击 **Deploy**。首次构建约 2-5 分钟，完成后你会得到一个 `*.vercel.app` 域名。
+   | Key | Value |
+   | --- | --- |
+   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
+   | `CONTENT_REPO_REF` | `main`（可选） |
+   | `GIT_TERMINAL_PROMPT` | `0` |
+
+   ![在 Vercel 导入页面填写环境变量](/images/deploy/vercel/01-import-environment.png)
+
+4. Node.js 版本不在导入表单里。项目创建后进入 **Settings** -> **General** -> **Node.js Version** 选择 `26.x`。Vercel **不读取** `NODE_VERSION` 环境变量；它根据项目设置或 `package.json` 的 `engines.node` 选择 Node 版本。本仓库的 `engines.node` 已要求 `>=26.13.0`，正常情况下会自动使用 Node 26。
+
+5. 点击 **Deploy**。首次构建约 2-5 分钟，完成后你会得到一个 `*.vercel.app` 域名。
+
+   ![Vercel 部署完成后的项目概览](/images/deploy/vercel/02-project-overview.png)
 
 :::
 
 此后每次推送到生产分支（`main`）都会触发生产部署，推送到其他分支则生成预览部署（Preview Deployment），可在合并前检查文章渲染效果。
+
+## 部署后修改环境变量
+
+如果导入时漏了变量，或者部署后需要更换 Token，在项目左侧进入 **Deployments** -> **Environments**，选择要修改的环境（Production、Preview 或 Development），补充或修改变量。保存后重新部署一次，让新变量进入构建环境。
+
+![Vercel Deployments 下的 Environments](/images/deploy/vercel/03-environments.png)
 
 ## 方式二：CLI 部署
 

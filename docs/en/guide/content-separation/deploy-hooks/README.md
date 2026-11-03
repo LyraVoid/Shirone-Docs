@@ -25,6 +25,8 @@ sequenceDiagram
     Builder->>CDN: 6. Distribute dist/
 ```
 
+See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and private repo token formats.
+
 ::: tip Start from the official trigger template
 You do not need a separate workflow per platform. The content repo's `.github/workflows/trigger-build.yml.example` already contains Cloudflare, Vercel, EdgeOne, and Netlify hook steps; each is skipped when its secret is absent. Copy it to `trigger-build.yml` and add only the secrets you need.
 
@@ -106,7 +108,7 @@ If you want validation first, its `validate` job calls the theme repo's `content
 
    Under **Settings** -> **General** -> **Node.js Version**, select `26.x`. Vercel does not read a `NODE_VERSION` environment variable.
 
-   Under **Settings** -> **Environment Variables**, add:
+   You can add environment variables on the import screen under **Environment Variables**, or later under **Settings** -> **Environment Variables**:
 
    | Variable | Value |
    | --- | --- |

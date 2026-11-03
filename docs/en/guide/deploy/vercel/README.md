@@ -36,13 +36,31 @@ For single repository setups where content is located directly in `src/content/`
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. Under **Settings → General → Node.js Version**, select `26.x`. Vercel does **not** read a `NODE_VERSION` environment variable; it selects Node from project settings or `package.json` `engines.node`. This repo requires `>=26.13.0`, so Node 26 is selected automatically in most cases.
+3. Expand **Environment Variables** and add variables directly on the import screen. For dual-repo mode, set at least `CONTENT_REPO_URL`; add `CONTENT_REPO_REF` if you need to pin a branch, and set `GIT_TERMINAL_PROMPT=0`. You can also use **Import .env** or add them later under **Settings → Environment Variables**.
 
-4. Click **Deploy**. The initial build takes approximately 2-5 minutes, producing a `*.vercel.app` domain.
+   | Key | Value |
+   | --- | --- |
+   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
+   | `CONTENT_REPO_REF` | `main` (optional) |
+   | `GIT_TERMINAL_PROMPT` | `0` |
+
+   ![Adding environment variables on the Vercel import screen](/images/deploy/vercel/01-import-environment.png)
+
+4. The Node.js version is not part of the import form. After the project is created, go to **Settings → General → Node.js Version** and select `26.x`. Vercel does **not** read a `NODE_VERSION` environment variable; it selects Node from project settings or `package.json` `engines.node`. This repo requires `>=26.13.0`, so Node 26 is selected automatically in most cases.
+
+5. Click **Deploy**. The initial build takes approximately 2-5 minutes, producing a `*.vercel.app` domain.
+
+   ![Vercel project overview after deployment](/images/deploy/vercel/02-project-overview.png)
 
 :::
 
 Every subsequent push to the production branch (`main`) will trigger a production deployment. Pushes to other branches generate preview deployments for reviewing rendered articles before merging.
+
+## Change environment variables after deployment
+
+If a variable was missed during import, or the token needs to change, open **Deployments** -> **Environments** in the project sidebar, choose the environment to edit (Production, Preview, or Development), and add or update the variables. Redeploy after saving so the new values are available to the build.
+
+![Environments under Vercel Deployments](/images/deploy/vercel/03-environments.png)
 
 ## Method 2: Vercel CLI
 
