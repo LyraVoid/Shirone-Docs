@@ -135,6 +135,12 @@ Shirone 内置了严格的类型检查机制。在运行 `pnpm content:validate`
 | `config/llms.yaml` | 大模型 AI 检索增强 | 对象递归合并 |
 | `config/series.yaml` | 系列连载展示与索引配置 | 对象递归合并 |
 
+> [!IMPORTANT] 特别提示：`config/anime.yaml` 与追番数据拉取
+> `config/anime.yaml` 用于设置追番账号和数据源。与普通的静态配置不同，配置好 Bangumi 用户名或 B 站 UID 后，**必须在代码仓运行一次 `pnpm anime:sync --if-stale && pnpm build`**。该命令会联网下载追番列表和防盗链封面到本地，再完成网站打包。如果只改了 YAML 配置文件而没有运行命令拉取数据，页面就无法展示你的个人追番记录。具体说明请参考[番剧页指南](/guide/pages/anime/)。
+
+> [!IMPORTANT] 特别提示：`config/anime.yaml` 与追番数据拉取
+> `config/anime.yaml` 用于设置追番账号和数据源。与普通的静态配置不同，配置好 Bangumi 用户名或 B 站 UID 后，**必须在代码仓运行一次 `pnpm anime:sync --if-stale && pnpm build`**。该命令会联网下载追番列表和防盗链封面到本地，再完成网站打包。如果只改了 YAML 配置文件而没有运行命令拉取数据，页面就无法展示你的个人追番记录。具体说明请参考[番剧页指南](/guide/pages/anime/)。
+
 ---
 
 ## 常用配置覆盖示例

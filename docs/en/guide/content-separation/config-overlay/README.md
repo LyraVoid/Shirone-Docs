@@ -129,6 +129,12 @@ All config files reside under `config/` in your content repository, partitioned 
 | `config/llms.yaml` | LLM AI search enhancement | Recursive Object Merge |
 | `config/series.yaml` | Serial post series layout and index settings | Recursive Object Merge |
 
+> [!IMPORTANT] Note: `config/anime.yaml` & Downloading Watchlist Data
+> `config/anime.yaml` sets your anime tracking accounts and data sources. Unlike standard visual options, after adding a Bangumi username or Bilibili UID, **you must run `pnpm anime:sync --if-stale && pnpm build` in your theme repository**. This command downloads your watchlist and cover images locally before building the site. If you only edit the YAML file without running the sync command, your personal anime list will not appear. See [Anime Page Guide](/en/guide/pages/anime/).
+
+> [!IMPORTANT] Note: `config/anime.yaml` & Downloading Watchlist Data
+> `config/anime.yaml` sets your anime tracking accounts and data sources. Unlike standard visual options, after adding a Bangumi username or Bilibili UID, **you must run `pnpm anime:sync --if-stale && pnpm build` in your theme repository**. This command downloads your watchlist and cover images locally before building the site. If you only edit the YAML file without running the sync command, your personal anime list will not appear. See [Anime Page Guide](/en/guide/pages/anime/).
+
 ---
 
 ## Common Configuration Examples

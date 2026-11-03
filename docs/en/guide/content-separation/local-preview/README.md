@@ -124,6 +124,10 @@ Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian,
 - External images not updating in browser
 
   Ensure images reside in `assets/` or `public/` in your content repository. For newly added files in deep subdirectories, run `pnpm content:sync` once to refresh indices.
+
+- Modified `config/anime.yaml` but watchlist didn't update in local preview
+
+  Anime tracking data is fetched from external APIs into sanitized local snapshots, which does not happen purely by saving a YAML file. In your theme code repository, run `pnpm anime:sync --if-stale` (or `pnpm anime:sync` for a forced refresh) to pull snapshots and covers before running `pnpm dev`. For production releases, use `pnpm anime:sync --if-stale && pnpm build`. See [Anime Page Documentation](/en/guide/pages/anime/).
 :::
 
 ---

@@ -12,9 +12,10 @@ Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无�
 
 | 指令 | 核心功能定位 | 典型使用时机 | 磁盘写入行为 |
 | :--- | :--- | :--- | :--- |
-| `pnpm content:sync` <Badge text="高频" type="tip" /> | 单次全量或增量同步 | 本地预览前拉取内容，或持续集成构建中物化 | 增量写入代码仓临时副本 |
+| `pnpm content:sync` <Badge text="高频" type="tip" /> | 单次全量或增量同步 | 本地预览或云端构建前，把内容仓的文件同步到代码仓 | 增量写入代码仓临时副本 |
 | `pnpm content:watch` <Badge text="高频" type="tip" /> | 实时增量监听 | 在外部编辑器边写边看实时预览 | 保存时自动增量写入 |
 | `pnpm content:validate` <Badge text="安全预检" type="info" /> | 内存安全预检 | 改完 YAML 快速排查语法与字段拼写 | ==纯内存类型校验，零磁盘写入=={.tip} |
+| `pnpm anime:sync` <Badge text="数据同步" type="tip" /> | 外部番剧数据同步 | 内容仓配置 `config/anime.yaml` 后下载追番列表与封面 | 写入本地 JSON 与封面图片 |
 | `pnpm content:status` <Badge text="状态检查" type="info" /> | 状态与差异检查 | 检查内容源连接、分支、Commit SHA 与修改项 | 纯只读检查 |
 | `pnpm content:export` <Badge text="反向导出" type="warning" /> | 差异反向导出 | 将代码仓调试好的 YAML 配置抽离回外部内容仓 | 写入外部内容仓库 |
 | `pnpm content:clean` <Badge text="带备份重置" type="warning" /> | 安全重置与清理 | 还原代码仓至干净演示状态（自动创建快照备份） | 清理代码仓临时副本 |
@@ -25,7 +26,7 @@ Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无�
 ## 1. 单次内容同步：`content:sync` <Badge text="核心" type="tip" />
 
 ```bash title="content:sync"
-# 1. 增量同步（物化外部内容并自动编译 TS 配置覆盖层）
+# 1. 增量同步（同步外部内容并自动合并配置文件）
 pnpm content:sync
 
 # 2. 预演模式（仅比对和统计变更，不写入磁盘）
@@ -34,12 +35,12 @@ pnpm content:sync --dry-run
 
 ### 适用场景
 - 本地启动开发服务器前，拉取外部内容仓的数据；
-- GitHub Actions、Cloudflare Pages 等云端构建脚本中物化内容。
+- GitHub Actions、Cloudflare Pages 等云端部署流程中同步内容。
 
 ### 核心机制
 - **自动检测内容源**：优先检测本地环境变量 `CONTENT_DIR`，若未设置则拉取 `CONTENT_REPO_URL` 指向的远程 Git 仓库；
-- **智能增量比对**：根据文件 mtime 或 Git commit 仅同步增量文件，避免无效的磁盘 I/O；
-- **配置自动编译**：自动将 YAML 文件解析并转换为带类型约束的 `src/user/user-config.ts` 桥接文件。
+- **智能增量比对**：根据文件修改时间或 Git commit 仅同步发生变更的文件，避免不必要的磁盘读写；
+- **配置自动合并**：自动将 YAML 配置文件转换为供主题运行的配置模块。
 
 ---
 
@@ -151,6 +152,39 @@ pnpm content:eject          # 预演：打印迁移计划与生成清单
 pnpm content:eject --yes    # 实际执行迁移（默认导出到 ../shirone-content）
 pnpm content:eject --yes --out ..\my-content  # 指定自定义导出路径
 ```
+
+---
+
+## 8. 番剧与外部数据同步：`anime:sync` <Badge text="数据同步" type="tip" />
+
+```bash title="anime:sync"
+# 1. 智能增量拉取（快照有效时不重复请求，推荐 CI 与日常构建）
+pnpm anime:sync --if-stale
+
+# 2. 强制同步当前配置的所有提供方
+pnpm anime:sync
+
+# 3. 指定数据源单独同步
+pnpm anime:sync --provider bangumi
+pnpm anime:sync --provider bilibili
+pnpm anime:sync --provider all
+```
+
+### 适用场景与内容分离核心关联
+在内容分离模式下，博主在内容仓的 `config/anime.yaml` 中配置了 Bangumi 用户名或 B 站 UID。不同于普通静态文本，**追番数据需要从外部 API 抓取清洗并下载本地化封面**，才能被页面渲染使用。
+
+因此，修改完 `config/anime.yaml` 后，必须通过 `anime:sync` 拉取外部数据，再执行站点构建。
+
+### 核心机制与参数
+- **智能缓存过期比对 (`--if-stale`)**：根据配置中的 `snapshot.staleAfterDays`（默认 30 天）自动比对现有快照生成时间。未过期则直接跳过网络请求退出（exit 0），既防止高频调用被 B站/Bangumi 限流，又极大缩短构建耗时；
+- **封面防盗链离线化**：开启 `cover.mode: "local"` 时，抓取进程会自动将封面转存为 WebP 格式并存入 `public/assets/anime/covers/`；
+- **零中断退出**：若未启用或未配置 provider，命令会自动提示并以状态码 0 正常退出，不会中断构建流水线。
+
+> [!TIP] 双仓完整构建推荐命令
+> 在云端构建（如 GitHub Actions）或本地发布时，可以用一条命令搞定“按需同步番剧 + 同步内容 + 打包网站”：
+> ```bash
+> pnpm anime:sync --if-stale && pnpm build
+> ```
 
 ---
 

@@ -124,6 +124,10 @@ permalink: /guide/content-separation/local-preview/
 - 修改了外部图片但浏览器未更新
 
   确保图片放置在内容仓的 `assets/` 或 `public/` 目录下。若属于深层嵌套目录中的新增文件，重新运行一次 `pnpm content:sync` 即可完成全量索引刷新。
+
+- 修改了 `config/anime.yaml` 番剧配置，但在本地预览中未生效
+
+  修改 YAML 配置文件本身不会自动联网抓取数据。请在代码仓终端运行 `pnpm anime:sync --if-stale`（首次或想强制刷新时运行 `pnpm anime:sync`），把追番列表和封面图片下载到本地，然后再运行 `pnpm dev` 预览。正式构建发布时执行 `pnpm anime:sync --if-stale && pnpm build` 即可。详见 [番剧页指南](/guide/pages/anime/)。
 :::
 
 ---

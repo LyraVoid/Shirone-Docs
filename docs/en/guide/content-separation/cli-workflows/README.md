@@ -12,9 +12,10 @@ Shirone provides a dedicated suite of CLI commands engineered for content separa
 
 | Command | Purpose | Typical Use Case | Disk Mutation |
 | :--- | :--- | :--- | :--- |
-| `pnpm content:sync` <Badge text="Frequent" type="tip" /> | Single full or incremental sync | Pre-preview sync or CI build content materialization | Writes to theme workspace |
+| `pnpm content:sync` <Badge text="Frequent" type="tip" /> | Single full or incremental sync | Sync content repository files into theme workspace before preview or build | Writes to theme workspace |
 | `pnpm content:watch` <Badge text="Frequent" type="tip" /> | Live incremental file watcher | External editor drafting with live browser preview | Auto writes on file save |
 | `pnpm content:validate` <Badge text="Safety Check" type="info" /> | In-memory schema & type validation | Fast syntax and typo diagnosis after editing YAML | ==In-memory check, zero disk writes=={.tip} |
+| `pnpm anime:sync` <Badge text="Data Sync" type="tip" /> | Anime watchlist & cover sync | Download watchlist data and covers locally after configuring `config/anime.yaml` | Writes JSON cache & covers |
 | `pnpm content:status` <Badge text="Inspection" type="info" /> | Repository and diff inspection | Check content source, branch, commit SHA, and uncommitted diffs | Read-only inspection |
 | `pnpm content:export` <Badge text="Export" type="warning" /> | Reverse config export | Export modified YAML settings back into content repository | Writes to content repo |
 | `pnpm content:clean` <Badge text="Snapshot Reset" type="warning" /> | Clean reset with auto backup | Restore clean theme workspace with automatic snapshot backup | Cleans local cache |
@@ -25,7 +26,7 @@ Shirone provides a dedicated suite of CLI commands engineered for content separa
 ## 1. Single Sync: `content:sync` <Badge text="Core" type="tip" />
 
 ```bash title="content:sync"
-# 1. Incremental sync (materializes external content and compiles TS config overlay)
+# 1. Incremental sync (syncs external content and merges configuration)
 pnpm content:sync
 
 # 2. Dry-run mode (previews changes without writing to disk)
@@ -117,6 +118,49 @@ pnpm content:clean --yes    # Execute clean
 > cp -a .content-backup/clean-<timestamp>/. .
 > ```
 > :::
+
+---
+
+## 7. One-Click Decoupling Eject: `content:eject`
+
+```bash title="content:eject"
+pnpm content:eject          # Dry run: preview migration plan
+pnpm content:eject --yes    # Perform eject (default: ../shirone-content)
+pnpm content:eject --yes --out ../my-content  # Custom destination
+```
+
+---
+
+## 8. Anime & External Data Sync: `anime:sync` <Badge text="Data Sync" type="tip" />
+
+```bash title="anime:sync"
+# 1. Smart incremental sync (skips network requests if snapshots are fresh, recommended for CI)
+pnpm anime:sync --if-stale
+
+# 2. Force sync all enabled providers
+pnpm anime:sync
+
+# 3. Target specific providers individually
+pnpm anime:sync --provider bangumi
+pnpm anime:sync --provider bilibili
+pnpm anime:sync --provider all
+```
+
+### Purpose & Relationship with Content Separation
+In content separation mode, you configure your Bangumi username or Bilibili UID in `config/anime.yaml` within your content repo. Unlike standard markdown text, **anime tracking data requires fetching from external APIs, sanitizing, and downloading local anti-hotlinking covers**.
+
+Therefore, after editing `config/anime.yaml`, you must run `anime:sync` to fetch external data before running the build.
+
+### Core Mechanism & Flags
+- **Smart Stale Cache Check (`--if-stale`)**: Compares existing snapshot modification dates against `snapshot.staleAfterDays` (default 30 days). If snapshots are still valid, network requests are skipped and the command exits cleanly (exit 0), avoiding platform rate limits and significantly speeding up CI builds;
+- **Local Cover Downloading**: When `cover.mode: "local"`, covers are converted to WebP and stored under `public/assets/anime/covers/`;
+- **Non-blocking Exit**: If no provider is enabled or configured, the command prints an informational notice and exits with code 0 without failing your pipeline.
+
+> [!TIP] Recommended Full Build Pipeline
+> In CI/CD or local release workflows, use this unified command chain:
+> ```bash
+> pnpm anime:sync --if-stale && pnpm build
+> ```
 
 ---
 
