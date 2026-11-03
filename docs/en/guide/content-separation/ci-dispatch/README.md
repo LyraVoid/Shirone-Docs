@@ -4,9 +4,12 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/ci-dispatch/
 ---
 
-This is the officially recommended automated deployment architecture.
+This is the recommended automation flow. A push to the content repo validates the content first, then sends `repository_dispatch` to the theme repo, which checks out that revision, builds, and deploys.
 
-Whenever changes are pushed to your content repository, it sends a repository dispatch notification to the theme code repository. GitHub Actions in the theme repo automatically validates configs, slices Chinese fonts, builds static pages, and deploys to production.
+Do not hand-write a simplified workflow. Both repos already ship complete templates:
+
+- Content repo: `.github/workflows/trigger-build.yml.example`
+- Theme repo: `.github/workflows/deploy.yml.example`
 
 ```mermaid
 sequenceDiagram
@@ -14,13 +17,14 @@ sequenceDiagram
     actor Author as Author (Content Repo)
     participant ContentRepo as Private Content Repo
     participant ThemeRepo as Theme Code Repo
-    participant DeployTarget as CDN / GitHub Pages
+    participant DeployTarget as CDN / Static Host
 
     Author->>ContentRepo: 1. git push new posts or config changes
-    ContentRepo->>ThemeRepo: 2. repository_dispatch signal (with secure token)
-    ThemeRepo->>ContentRepo: 3. Pull private content repository & YAML overlays
-    ThemeRepo->>ThemeRepo: 4. Static build + Font subsetting + Asset optimization
-    ThemeRepo->>DeployTarget: 5. Deploy static artifacts to production
+    ContentRepo->>ContentRepo: 2. content-validate.yml validates content
+    ContentRepo->>ThemeRepo: 3. repository_dispatch: content-updated (with commit SHA)
+    ThemeRepo->>ContentRepo: 4. Check out the content repo at that SHA
+    ThemeRepo->>ThemeRepo: 5. Static build + font subsetting + image optimization
+    ThemeRepo->>DeployTarget: 6. Deploy dist/
 ```
 
 ---
@@ -28,127 +32,139 @@ sequenceDiagram
 ## Core Configuration Steps
 
 ::: steps
-1. **Generate GitHub Personal Access Token (PAT)**
+1. **Create a dispatch PAT (stored in the content repo)**
 
-   To allow the private content repository to trigger builds in the theme repository, create a token with repository dispatch permissions:
+   The content repo needs to send `repository_dispatch` to the theme repo:
 
-   - Go to GitHub -> Top-right Avatar -> **Settings** -> **Developer Settings**;
-   - Select **Personal access tokens** -> **Fine-grained tokens**;
-   - Click **Generate new token**;
-   - **Repository access**: Select **Only select repositories**, and check your ==Theme Code Repository==;
-   - **Permissions**: Under **Repository permissions**, find **Contents**, and set to ==Read and write=={.error};
-   - Click **Generate token** and **copy it immediately**.
+   - GitHub -> avatar -> **Settings** -> **Developer settings**;
+   - **Personal access tokens** -> **Fine-grained tokens**;
+   - **Repository access**: **Only select repositories**, choose the ==theme repository==;
+   - **Repository permissions** -> **Contents**: ==Read and write=={.error};
+   - Generate and save the token immediately.
 
-   ![GitHub Create PAT](/images/content-separation/04-deploy/01-dispatch/06-repository-access.png)
+   > [!CAUTION] Keep the token secure
+   > It is shown once. ==Never commit it=={.error}; store it only in GitHub encrypted secrets.
 
-   > [!CAUTION] Keep Personal Access Token Secure
-   > Tokens are shown only once. ==Never commit raw tokens to code files=={.error}; always store them in GitHub Encrypted Secrets.
+2. **Add `DISPATCH_TOKEN` to the content repo**
 
-2. **Configure Secret in Private Content Repository**
+   In the ==private content repo== -> **Settings** -> **Secrets and variables** -> **Actions** -> **New repository secret**:
 
-   - Navigate to your ==Private Content Repository==;
-   - Click **Settings** -> **Secrets and variables** -> **Actions**;
-   - Click **New repository secret**;
-   - **Name**: ==DISPATCH_TOKEN=={.tip} (exact case match);
-   - **Secret**: Paste the Personal Access Token;
-   - Click **Add secret**.
+   - **Name**: `DISPATCH_TOKEN`
+   - **Secret**: the PAT from step 1
 
-   ![Configure Repository Secret](/images/content-separation/04-deploy/02-hook/11-actions-repository-secrets.png)
+   If the theme repo is private too, the validation workflow also needs `THEME_REPO_TOKEN` (`Contents: Read` on the theme repo).
 
-3. **Add Trigger Workflow in Content Repository**
+3. **Add `CONTENT_REPO_TOKEN` to the theme repo (required for a private content repo)**
 
-   Create `.github/workflows/trigger-build.yml` in your content repository:
+   In the ==theme repo== -> **Settings** -> **Secrets and variables** -> **Actions**:
 
-   ```yaml title=".github/workflows/trigger-build.yml"
-   name: Trigger Theme Build
+   - **Name**: `CONTENT_REPO_TOKEN`
+   - **Secret**: a PAT with `Contents: Read` on the private content repo
 
+   `deploy.yml.example` uses it to check out the content repo. `DISPATCH_TOKEN` and `CONTENT_REPO_TOKEN` point in opposite directions and belong in different repositories.
+
+4. **Enable the content repo trigger**
+
+   ```bash
+   cp .github/workflows/trigger-build.yml.example .github/workflows/trigger-build.yml
+   ```
+
+   Replace `LyraVoid/Shirone` / `YOUR_THEME_REPO` with your theme repo:
+
+   ```yaml title=".github/workflows/trigger-build.yml (relevant sections)"
    on:
      push:
        branches: [main]
-     workflow_dispatch:
+       paths:
+         - "content/**"
+         - "config/**"
+         - "data/**"
+         - "assets/**"
+         - "public/**"
+         - "shirone.content.json"
+     workflow_dispatch: {}
+
+   concurrency:
+     group: trigger-build
+     cancel-in-progress: true
 
    jobs:
+     validate:
+       uses: YOUR_NAME/YOUR_THEME_REPO/.github/workflows/content-validate.yml@main
+       with:
+         theme_repository: YOUR_NAME/YOUR_THEME_REPO
+         theme_ref: main
+
      dispatch:
+       needs: validate
        runs-on: ubuntu-latest
        steps:
-         - name: Dispatch build event to theme repository
-           env:
-             DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
-           if: ${{ env.DISPATCH_TOKEN != '' }}
-           uses: peter-evans/repository-dispatch@v4
+         - uses: peter-evans/repository-dispatch@v4
            with:
-             token: ${{ env.DISPATCH_TOKEN }}
-             repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
+             token: ${{ secrets.DISPATCH_TOKEN }}
+             repository: YOUR_NAME/YOUR_THEME_REPO
              event-type: content-updated
-             client-payload: >-
-               {"sha": "${{ github.sha }}", "ref": "${{ github.ref }}", "repo": "${{ github.repository }}"}
+             client-payload: '{"sha": "${{ github.sha }}"}'
    ```
 
-4. **Configure Dispatch Receiver in Theme Repository**
+   Key points:
 
-   Create or update `.github/workflows/deploy.yml` in the theme repository:
+   - The event type must be `content-updated` (past tense), not `content-update`.
+   - Include `sha` in `client-payload`; otherwise rapid pushes can make the theme repo pull a stale content HEAD.
+   - `validate` calls `content-validate.yml`, so content errors fail before a full build is wasted.
+   - `concurrency` keeps only the newest dispatch.
 
-   ```yaml title=".github/workflows/deploy.yml"
-   name: Deploy Shirone Blog
+5. **Enable the theme repo deployment workflow**
 
+   Copy the theme repo's `deploy.yml.example` to `.github/workflows/deploy.yml`, then choose a deployment variant from the comments (Vercel, GitHub Pages, server rsync, or platform deploy hook). The shared part already includes:
+
+   ```yaml title=".github/workflows/deploy.yml (relevant sections)"
    on:
      push:
        branches: [main]
      repository_dispatch:
        types: [content-updated]
      workflow_dispatch:
+     schedule:
+       - cron: "17 4 * * *"
 
-   jobs:
-     build-and-deploy:
-       runs-on: ubuntu-latest
-       steps:
-         - name: Checkout Theme Repo
-           uses: actions/checkout@v4
+   concurrency:
+     group: deploy
+     cancel-in-progress: true
 
-         - name: Setup Node.js & pnpm
-           uses: pnpm/action-setup@v4
-           with:
-             version: 11
-
-         - name: Setup Node
-           uses: actions/setup-node@v4
-           with:
-             node-version: 26
-             cache: "pnpm"
-
-         - name: Install Dependencies
-           run: pnpm install --frozen-lockfile
-
-         - name: Pull Private Content & Build
-           env:
-             CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_ACCESS_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
-             BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
-           run: |
-             pnpm content:sync
-             pnpm anime:sync --if-stale
-             pnpm build
-
-         - name: Deploy to GitHub Pages
-           uses: peaceiris/actions-gh-pages@v4
-           with:
-             github_token: ${{ secrets.GITHUB_TOKEN }}
-             publish_dir: ./dist
+   env:
+     CONTENT_REPOSITORY: YOUR_NAME/YOUR_CONTENT_REPO
+     CONTENT_WORKING_COPY: .content-src
    ```
+
+   The build sequence is: checkout theme repo -> checkout content repo into `.content-src` with `CONTENT_REPO_TOKEN` -> `pnpm install --frozen-lockfile` -> `pnpm content:sync` -> `pnpm anime:sync --if-stale` -> `pnpm build`.
+
+   The template resolves the content ref from `github.event.client_payload.sha`, then the `content_ref` workflow input, then falls back to `main`. Do not hard-code `main` here, or the dispatch SHA is lost.
 :::
+
+---
+
+## Where dual-repo configuration lives
+
+- Site config: preferably `config/site.yaml` in the content repo; it overrides `src/user/user-config.ts` at build time. Only single-repo setups edit `src/config/siteConfig.ts`.
+- Content directories: `content/posts`, `content/moments`, `content/series`, `content/spec` map into the theme repo.
+- Data and media: `data/`, `assets/`, `public/` are synchronized by `content:sync`.
+- Docs: the content repo's `docs/` is not part of the build and does not match the trigger `paths` filter.
 
 ---
 
 ## Verification
 
 ::: steps
-1. Create or edit a Markdown post in your external content repository;
-2. Run `git add .`, `git commit -m "docs: test dispatch"`, and `git push` to GitHub;
-3. Open content repository **Actions** tab to confirm `Trigger Theme Build` ran successfully;
-4. Open theme repository **Actions** tab to confirm `Deploy Shirone Blog` was dispatched.
+1. Create or edit a Markdown post in the content repo;
+2. `git add .`, `git commit -m "docs: test dispatch"`, `git push`;
+3. Open the content repo **Actions** tab and confirm both `validate` and `dispatch` succeed;
+4. Open the theme repo **Actions** tab and confirm it received `content-updated` and deployed;
+5. Verify the live post matches the pushed commit.
 :::
 
 ---
 
 ## Next Steps
 
-- Head to [Deploy Hook Integrations](/en/guide/content-separation/deploy-hooks/): Learn Cloudflare Pages, Vercel, and EdgeOne integration patterns
+- Head to [Deploy Hook Integrations](/en/guide/content-separation/deploy-hooks/): Learn Cloudflare Pages, Vercel, EdgeOne, and Netlify integration patterns
