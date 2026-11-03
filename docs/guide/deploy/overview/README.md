@@ -26,7 +26,19 @@ Shirone 构建后是纯静态站点，产物统一在 `dist/`。部署方式的�
 | 本地构建 | 自己的机器 | 产物完全可控，可离线 | 需要手动上传 |
 | Docker | 本地或 CI | 环境隔离，可回滚 | 镜像需安装正确 pnpm，且不能漏掉 `scripts/` |
 
+::: warning 构建位置与平台设置必须配套
+选择哪种构建方式，直接决定了托管平台该怎么配置。如果配置不配套，部署就会报错：
+
+- **选平台 Git 集成 / Deploy Hook**：构建由平台执行，平台需要保留构建命令 `pnpm build`，并配置好 `CONTENT_REPO_URL` 等环境变量。
+
+- **选 GitHub Actions 或本地构建直接交付产物**：平台只充当纯静态托管，项目里**必须清空 Build Command**，Framework Preset 改为 `Other`，并断开 Git 自动构建。因为上传上来的 `dist/` 里没有 `package.json`，平台一旦残留了构建命令就会报错退出（典型报错 `Error: Command "pnpm build" exited with 1`）。
+
+两种部署方式选一种即可，切换设置后需要重新触发一次部署。
+:::
+
 ## 平台选择
+
+下表为使用「平台自带构建」时的配置参考；如果通过 Actions 或本地打包后直接交付 `dist/`，平台侧请按上方提示关闭构建命令。
 
 | 平台 | Node 版本 | 构建命令 | 输出 | 备注 |
 | --- | --- | --- | --- | --- |
@@ -49,7 +61,7 @@ Shirone 构建后是纯静态站点，产物统一在 `dist/`。部署方式的�
 2. 内容仓的 `trigger-build.yml` 调用 `content-validate.yml` 校验；
 3. 校验通过后发 `repository_dispatch`，事件名 `content-updated`，payload 带 `sha`；
 4. 主题仓的 `deploy.yml` 按该 SHA 拉取内容仓，执行 `pnpm build`；
-5. 按所选变体发布到 Vercel、GitHub Pages、服务器或平台 Deploy Hook。
+5. 按所选方案发布到 Vercel、GitHub Pages、服务器或平台 Deploy Hook。
 
 完整文件直接使用主题仓的 `.github/workflows/deploy.yml.example` 和内容仓的 `.github/workflows/trigger-build.yml.example`，不要手写简化版。详见 [跨仓自动化构建与发布](/guide/content-separation/ci-dispatch/)。
 
@@ -59,6 +71,7 @@ Shirone 构建后是纯静态站点，产物统一在 `dist/`。部署方式的�
 
 - [ ] `site` 是正式域名，`base` 与实际访问路径一致
 - [ ] 构建命令是 `pnpm build`，不是 `astro build`
+- [ ] 若由 Actions / 本地交付 `dist/`：平台已关闭构建（Framework Preset = `Other`、Build Command 清空、关闭 Git 自动构建）
 - [ ] 输出目录是 `dist`，且包含 `dist/pagefind/`
 - [ ] 平台 Node 版本满足要求；EdgeOne 选 24，其余选 26
 - [ ] pnpm 版本与 `pnpm@11.28.2` 一致

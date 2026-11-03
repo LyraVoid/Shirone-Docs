@@ -65,7 +65,7 @@ EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optim
 
 - Dual-Repo Mode (Shirone-Content)
 
-  Set `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; do not prepend `pnpm content:sync &&`. Site config belongs in the content repo's `config/site.yaml`.
+  Set `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; do not prepend `pnpm content:sync &&`. Site config belongs in the content repo's `config/site.yaml`. You can also refer to Option D in the theme repo's `deploy.yml.example`: triggering EdgeOne's Deploy Hook via GitHub Actions.
 
 - Search feature is unavailable
 

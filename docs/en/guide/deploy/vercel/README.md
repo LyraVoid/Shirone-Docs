@@ -32,6 +32,24 @@ Vercel supports two setups. Pick one:
 
 Keeping both causes duplicate deployments. With Deploy Hook, Vercel builds the content branch HEAD. Use GitHub Actions when you need to build an exact commit.
 
+::: warning When choosing GitHub Actions mode, you must clear Vercel's build command
+Actions or CLI mode uploads pre-built pure static artifacts from `dist/` (without source code or `package.json`). If your Vercel project was previously connected to Git, the project settings might still retain the Framework Preset (`Astro`) and Build Command (`pnpm build`). Vercel will attempt to run the build again on the uploaded static files, resulting in an error:
+
+```text
+Error: Command "pnpm build" exited with 1
+```
+
+**Simply disconnecting the Git integration is not enough**: The Build Command is stored independently in project settings and will still trigger even without Git connected. You must go to **Settings -> Build & Output Settings** and update:
+
+| Setting | Value | Description |
+| --- | --- | --- |
+| Framework Preset | `Other` | Removes Astro project detection |
+| Build Command | Cleared and Override toggled OFF | Do not run any cloud build |
+| Output Directory | Cleared and Override toggled OFF | Serve uploaded directory directly as site root |
+
+After making these changes, re-run the Actions deployment. As long as `Running "vercel build"` no longer appears in the Vercel deployment log, the configuration is working correctly.
+:::
+
 ## Method 1: Git Integration (Recommended)
 
 ::: steps
@@ -88,6 +106,10 @@ The CLI automatically detects the Astro configuration. When prompted `Want to ov
 
 ::: warning Note
 The CLI uploads the source code and runs the build on Vercel servers. If you only want to deploy pre-built local artifacts from `dist/`, refer to the Local Build guide.
+:::
+
+::: warning Ensure Vercel build is disabled before deploying dist
+Before deploying artifacts using `vercel deploy dist --prod`, verify that the project is configured as described above: Framework Preset set to `Other`, Build Command cleared, and Git auto-build disconnected. Many deployment failures occur because `pnpm build` remains in the project settings, causing the cloud environment to attempt building pure static artifacts again.
 :::
 
 ## Custom Domains

@@ -60,6 +60,14 @@ pnpm build
 wrangler pages deploy dist --project-name=<your-project-name>
 ```
 
+::: tip
+CLI deployment skips the platform build step. Running `pnpm build` locally already includes the Pagefind index and font subsetting in the output artifacts, so uploading delivers full functionality.
+:::
+
+::: warning Git-integrated projects do not support direct CLI upload
+A Cloudflare Pages project **must either connect to Git for automatic builds, or use Direct Upload for artifacts**; the two cannot be mixed. Running `wrangler pages deploy` against a project already connected to Git in Method 1 will fail with an error. For CLI deployment, go to **Workers & Pages -> Create -> Pages -> Upload assets** to create a separate Direct Upload project (no build command needed), and point the `--project-name` argument to it.
+:::
+
 ## Custom Domains
 
 ::: steps

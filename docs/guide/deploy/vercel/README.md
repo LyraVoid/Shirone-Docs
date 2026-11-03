@@ -32,6 +32,24 @@ Vercel 有两种接法，选一种即可：
 
 两种都保留会重复部署。用 Deploy Hook 时，Vercel 构建的是内容仓分支的最新 HEAD；需要精确按某次提交构建时，用 GitHub Actions 模式。
 
+::: warning 选 GitHub Actions 模式时，必须清空 Vercel 的构建命令
+Actions 或 CLI 模式上传的是本地已经打好的 `dist/` 纯静态产物（里面没有源码和 `package.json`）。如果你的 Vercel 项目之前连过 Git，项目设置里还残留着 Framework Preset（`Astro`）和 Build Command（`pnpm build`），Vercel 就会对上传上来的静态文件再跑一次构建，直接报错：
+
+```text
+Error: Command "pnpm build" exited with 1
+```
+
+**光断开 Git 连接是不够的**：Build Command 默认保存在项目设置里，即使断开 Git 也依然会触发。请务必前往 **Settings -> Build & Output Settings** 修改：
+
+| 配置项 | 值 | 说明 |
+| --- | --- | --- |
+| Framework Preset | `Other` | 取消识别为 Astro 项目 |
+| Build Command | 清空并关闭 Override 开关 | 不执行任何云端构建 |
+| Output Directory | 清空并关闭 Override 开关 | 直接把上传的目录作为站点根目录 |
+
+改完后重新跑一次 Actions 部署。只要 Vercel 部署日志里不再出现 `Running "vercel build"`，就说明配置成功了。
+:::
+
 ## 方式一：Git 集成部署（推荐）
 
 ::: steps
@@ -88,6 +106,10 @@ CLI 会自动检测 Astro 配置。当被询问 `Want to override the settings? 
 
 ::: warning 注意
 CLI 直接上传的是源码仓，Vercel 仍会在云端执行构建。如果你只想交付本地构建好的 `dist/`，参考 [本地构建](/guide/deploy/local/) 页面的做法。
+:::
+
+::: warning 交付 dist 前先确认 Vercel 已关闭构建
+使用 `vercel deploy dist --prod` 上传产物前，确认该项目已经按上文提示改好：Framework Preset 改为 `Other`、清空 Build Command，并关闭 Git 自动构建。很多部署失败都是因为项目设置里还留着 `pnpm build`，导致云端对纯静态产物再次执行构建。
 :::
 
 ## 自定义域名

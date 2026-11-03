@@ -65,6 +65,10 @@ wrangler pages deploy dist --project-name=shirone-blog
 CLI 部署跳过了平台构建环节，本地执行 `pnpm build` 时 Pagefind 索引与字体子集化都已包含在产物中，上传即可获得完整功能。
 :::
 
+::: warning Git 集成项目不支持 CLI 直传
+Cloudflare Pages 的同一个项目**要么连接 Git 自动构建，要么通过 Direct Upload 上传产物**，两者不能混用。如果对方式一已经关联 Git 的项目运行 `wrangler pages deploy` 会直接报错。CLI 部署需要前往 **Workers & Pages -> Create -> Pages -> Upload assets** 单独新建一个 Direct Upload 项目（无需填写构建命令），并将 `--project-name` 参数指向它。
+:::
+
 ## 自定义域名
 
 ::: steps

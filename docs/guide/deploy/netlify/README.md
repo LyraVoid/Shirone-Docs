@@ -63,6 +63,10 @@ netlify deploy --build --prod   # 构建并部署到生产
 
 `netlify init` 会向仓库添加部署密钥，此后 `git push` 即可触发自动构建。
 
+::: tip 已经构建好 dist 时的快速上传
+加上 `--build` 参数会让 Netlify CLI 在本地按配置再跑一次完整构建。如果你刚才已经运行过 `pnpm build`，直接上传现成产物更快：`netlify deploy --prod --dir=dist`（注意产物目录里必须包含 `dist/pagefind/` 搜索索引）。
+:::
+
 ## 预览部署
 
 导入项目后，所有对非生产分支的推送、以及每个 Pull Request，都会自动生成独立的预览站点（`<branch>--<site-name>.netlify.app`）。写作时可以先把草稿推到分支，在预览链接中检查排版，再合并到 `main` 发布。

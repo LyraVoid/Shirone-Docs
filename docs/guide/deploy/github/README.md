@@ -148,5 +148,5 @@ jobs:
 
 - 双仓模式怎么部署
 
-  参考主题仓库的 `.github/workflows/deploy.yml.example`：内容仓推送后通过 `repository_dispatch`（事件名 `content-updated`）通知主题仓重新构建，其变体 B 即 GitHub Pages 部署写法。主题仓需配置 `CONTENT_REPO_TOKEN`，内容仓需配置 `DISPATCH_TOKEN`；站点配置优先放在内容仓的 `config/site.yaml`，而不是 `src/config/siteConfig.ts`。
+  参考主题仓库的 `.github/workflows/deploy.yml.example`：内容仓推送后通过 `repository_dispatch`（事件名 `content-updated`）通知主题仓重新构建，其方案 B 即 GitHub Pages 部署写法。主题仓需配置 `CONTENT_REPO_TOKEN`，内容仓需配置 `DISPATCH_TOKEN`；站点配置优先放在内容仓的 `config/site.yaml`，而不是 `src/config/siteConfig.ts`。
 :::

@@ -98,6 +98,16 @@ wrangler pages deploy dist --project-name=shirone-blog
 
 Vercel 亦支持类似做法：`vercel deploy dist --prod`。
 
+::: warning 交付产物前先确认平台已关闭构建
+使用 `vercel deploy dist` 或 `wrangler pages deploy` 上传的是现成产物，目标平台不能再重复执行构建：
+
+- **Vercel**：在项目后台（Settings -> Build & Output Settings）将 Framework Preset 改为 `Other`、清空 Build Command，并断开 Git 自动构建。否则云端残留的 `pnpm build` 会尝试对 `dist/` 再次构建，直接报错 `Command "pnpm build" exited with 1`。
+
+- **Cloudflare Pages**：Cloudflare 项目不支持既连 Git 又用 Wrangler 直传。CLI 交付必须单独新建一个 **Direct Upload** 项目（创建时不连 Git、不填任何构建命令），对已连 Git 的项目执行 `wrangler pages deploy` 会报错拒绝。
+
+- **Netlify**：手动交付直接运行 `netlify deploy --prod --dir=dist` 即可，不要加 `--build` 参数（否则会根据 `netlify.toml` 在本地再重新跑一次构建）。
+:::
+
 ### 对象存储 + CDN
 
 阿里云 OSS、腾讯云 COS 均支持静态网站托管。以 COS 为例：

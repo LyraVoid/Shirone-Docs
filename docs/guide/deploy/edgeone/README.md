@@ -74,7 +74,7 @@ EdgeOne Pages 是腾讯云提供的静态托管服务，国内访问延迟较低
 
 - 双仓模式（Shirone-Content）
 
-  在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），需要固定分支时再设置 `CONTENT_REPO_REF=main`。`pnpm build` 已经包含 `content:sync`，构建命令不要再重复写 `pnpm content:sync &&`。站点配置优先放在内容仓的 `config/site.yaml`。也可以参考主题仓库 `deploy.yml.example` 的变体 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
+  在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），需要固定分支时再设置 `CONTENT_REPO_REF=main`。`pnpm build` 已经包含 `content:sync`，构建命令不要再重复写 `pnpm content:sync &&`。站点配置优先放在内容仓的 `config/site.yaml`。也可以参考主题仓库 `deploy.yml.example` 的方案 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
 
 - 搜索不可用
 

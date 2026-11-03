@@ -61,6 +61,10 @@ netlify init    # Link Git repo and generate configuration
 netlify deploy --build --prod   # Build and deploy to production
 ```
 
+::: tip Fast upload when dist is already built
+Adding the `--build` flag makes the Netlify CLI run a full build locally according to configuration. If you have already executed `pnpm build`, directly uploading the existing artifacts is faster: `netlify deploy --prod --dir=dist` (ensure the output directory contains the `dist/pagefind/` search index).
+:::
+
 ## Preview Deployments
 
 Every push to non-production branches and every pull request generates an isolated deploy preview URL (`<branch>--<site-name>.netlify.app`), allowing you to review article rendering before merging to `main`.

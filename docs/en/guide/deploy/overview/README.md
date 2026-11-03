@@ -26,7 +26,19 @@ In dual-repo mode, `content:sync` resolves the content source from `CONTENT_DIR`
 | Local build | Your machine | Full control, works offline | Manual upload |
 | Docker | Local or CI | Isolated, rollback-friendly | Correct pnpm install; do not exclude `scripts/` |
 
+::: warning Build location and platform settings must match
+The choice of where to build directly dictates how the hosting platform should be configured. Mismatched settings will cause build or deployment errors:
+
+- **Using Platform Git integration / Deploy Hook**: The build runs on the platform. The platform must keep the build command `pnpm build` and configure environment variables like `CONTENT_REPO_URL`.
+
+- **Delivering artifacts via GitHub Actions or local build**: The platform serves purely as static hosting. You **must clear the Build Command**, change Framework Preset to `Other`, and disconnect automatic Git builds. Because the uploaded `dist/` directory does not contain `package.json`, any residual build command on the platform will fail and exit (typically `Error: Command "pnpm build" exited with 1`).
+
+Choose one deployment method; trigger a new deployment after updating the settings.
+:::
+
 ## Platform comparison
+
+The table below serves as a reference when using "platform-managed builds"; if delivering `dist/` directly via Actions or local build, please disable the build command on the platform side as instructed above.
 
 | Platform | Node version | Build command | Output | Notes |
 | --- | --- | --- | --- | --- |
@@ -49,7 +61,7 @@ The recommended flow is "content repo validates → dispatch → theme repo buil
 2. Its `trigger-build.yml` calls `content-validate.yml`;
 3. On success it sends `repository_dispatch` with event `content-updated` and a `sha` payload;
 4. The theme repo checks out that content revision and runs `pnpm build`;
-5. The selected variant deploys to Vercel, GitHub Pages, a server, or a platform deploy hook.
+5. The selected option deploys to Vercel, GitHub Pages, a server, or a platform deploy hook.
 
 Use the official `.github/workflows/deploy.yml.example` in the theme repo and `.github/workflows/trigger-build.yml.example` in the content repo instead of hand-written simplified workflows. See [Cross-repo CI dispatch](/en/guide/content-separation/ci-dispatch/).
 
@@ -59,6 +71,7 @@ If the platform builds directly, use a [Deploy Hook](/en/guide/content-separatio
 
 - [ ] `site` is the production domain and `base` matches the real path
 - [ ] Build command is `pnpm build`, not `astro build`
+- [ ] If delivering `dist/` via Actions or locally: Platform builds are disabled (Framework Preset = `Other`, Build Command cleared, Git auto-build disconnected)
 - [ ] Output is `dist` and includes `dist/pagefind/`
 - [ ] Platform Node version is supported: 24 on EdgeOne, 26 elsewhere
 - [ ] pnpm matches `pnpm@11.28.2`
