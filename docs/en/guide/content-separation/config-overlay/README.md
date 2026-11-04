@@ -1,169 +1,40 @@
 ---
-title: Config Overlay Principles
+title: Configuration Overlay
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/config-overlay/
 ---
 
-In Shirone, all site configurations use a ==declarative overlay architecture==. You do not need to touch the theme engine core code. Simply create YAML files in your content repository's `config/` directory to customize any site behavior.
+In the dual-repo setup, site configuration lives in the content repo's `config/` directory. During sync, the theme reads these YAML files, merges them with defaults, and generates `src/user/user-config.ts`. You do not need to modify theme source files.
 
----
+## Declare only what changes
 
-## Core Design Principles
-
-### 1. Minimal Overlay Principle <Badge text="Clean" type="tip" />
-In YAML files, you ==only need to declare fields you wish to customize=={.tip}. All unmentioned properties automatically inherit theme defaults.
-
-Key benefits:
-- **Clean Configuration**: No need to maintain thousands of lines of default boilerplate;
-- **Seamless Upgrades**: When upstream introduces new features or refines defaults, your site inherits them automatically.
-
-### 2. Object Merge vs Array Replacement
-
-When parsing YAML configurations, two distinct merging rules apply:
-
-```mermaid
-flowchart TD
-    A[Authoring YAML Config] --> B{Field Data Structure?}
-    B -->|Nested Dictionary Object| C[Recursive Deep Merge]
-    B -->|List Array| D[Atomic Full Replacement]
-    C --> E[Overwrites declared keys; unmentioned keys inherit defaults]
-    D --> F[Strictly applies the entire user array]
-```
-
-#### Nested Objects (Recursive Deep Merge)
-For instance, in `site.yaml`, if you only wish to adjust typewriter typing speed:
+Write only the keys you want to override. Everything else inherits theme defaults.
 
 ```yaml title="config/site.yaml"
+title: "My tech blog"
+
 banner:
   homeText:
     typewriter:
       speed: 150
 ```
 
-Deletion speed, pause delays, and wallpaper sliders automatically inherit upstream defaults.
+This configuration only modifies the site title and the typewriter speed. All other banner and typewriter properties keep their default values.
 
-#### List Arrays (Atomic Full Replacement)
-All array structures (such as `nav-bar.yaml`, `sidebar.yaml` components, `profile.links`, `site.favicon`) use ==atomic full replacement=={.error}.
+This structure ensures smooth upgrades: when a new theme release introduces new configuration options, your site adopts the new defaults automatically without conflicts caused by hardcoding every field.
 
-> [!WARNING] Array Full Replacement Rule
-> Array order and member composition represent a cohesive whole. Partial patching causes ordering ambiguities.
-> When configuring arrays, ==you must enumerate the complete list of items you wish to render=={.error}.
+## Object merge vs. array replace
 
----
+Configuration merge rules depend on data types:
 
-## Typo Safety & Auto Compilation
+| Type | Rule |
+| --- | --- |
+| Nested object | Merged recursively; only declared keys are overridden |
+| Array | Replaced entirely; your declared list wins |
 
-### 1. Intelligent Typo Suggestions
-
-Shirone incorporates compile-time schema validation. When running `pnpm content:validate` or syncing content, mistakes are flagged instantly:
-
-```text title="Terminal Typo Suggestion"
-  config/site.yaml's banner.homeText: Type '{ titel: string }' is not assignable to type 'DeepPartial<HomeTextConfig>'
-    Did you mean "title"?
-```
-
-### 2. Automated Bridge Module Compilation
-
-During sync (`pnpm content:sync`) or production build, all YAML files are compiled into `src/user/user-config.ts`:
-
-::: steps
-1. **Icon Offline Bundling**
-
-   Scans declared icons and bundles them into local assets, eliminating external CDN icon requests.
-
-2. **Font Subsetting Extraction**
-
-   Extracts site titles, author names, and descriptions to feed the Chinese font subsetting engine.
-
-3. **Zero Maintenance**
-
-   The bridge file is regenerated on every sync; never edit it manually.
-:::
-
----
-
-## Configuration Quick Reference
-
-All config files reside under `config/` in your content repository, partitioned by functional domain:
-
-### 1. Global Identity & Appearance
-
-| File Path | Functional Domain | Default Strategy |
-| :--- | :--- | :--- |
-| `config/site.yaml` | Site identity, timezone, banner wallpaper, typewriter | Recursive Object Merge |
-| `config/profile.yaml` | Avatar, bio, and social links | Object Merge (`links` Array Replacement) |
-| `config/nav-bar.yaml` | Top navigation items and dropdowns | ==Array Replacement== |
-| `config/sidebar.yaml` | Single/dual column layout and widgets | Object Merge (`components` Array Replacement) |
-| `config/font.yaml` | Web fonts and subsetting rules | Object Merge (`fontFamilies` Array Replacement) |
-| `config/image-bloom.yaml` | Adaptive image bloom filter and glow effects | Recursive Object Merge |
-| `config/context-menu.yaml` | Desktop right-click context menu actions | Object Merge (`actions` Array Replacement) |
-| `config/footer.yaml` | Footer copyright and ICP registration | Recursive Object Merge |
-| `config/footer.html` | Custom injected footer HTML snippet | Full Replacement |
-
-### 2. Content & Reading Experience
-
-| File Path | Functional Domain | Default Strategy |
-| :--- | :--- | :--- |
-| `config/post-list.yaml` | Post pagination and card grid layout | Recursive Object Merge |
-| `config/permalink.yaml` | Global permalink format and placeholder rules | Recursive Object Merge |
-| `config/article.yaml` | Reading time, outdated alerts, recommendations | Recursive Object Merge |
-| `config/license.yaml` | Creative Commons license and copyright terms | Recursive Object Merge |
-| `config/fab.yaml` | Floating Action Button (FAB) workflow & display | Recursive Object Merge |
-| `config/announcement.yaml` | Global floating announcement banner | Recursive Object Merge |
-| `config/expressive-code.yaml` | Syntax highlighting and code block numbers | Recursive Object Merge |
-
-### 3. Features & Special Pages
-
-| File Path | Functional Domain | Default Strategy |
-| :--- | :--- | :--- |
-| `config/anime.yaml` | Anime sync sources and Bangumi config | Recursive Object Merge |
-| `config/music.yaml` | Sidebar music player modes and playlist | Recursive Object Merge |
-| `config/comment.yaml` | Comment providers and Twikoo / Giscus / Waline settings | Recursive Object Merge |
-| `config/devices.yaml` | Hardware device showcase categories | Object Merge (`categories` Array Replacement) |
-| `config/games.yaml` | Games showcase categories | Object Merge (`categories` Array Replacement) |
-| `config/projects.yaml` | Open source project categories | Object Merge (`categories` Array Replacement) |
-| `config/skills.yaml` | Skill graph categories | Object Merge (`categories` Array Replacement) |
-| `config/timeline.yaml` | Milestones timeline categories | Object Merge (`categories` Array Replacement) |
-| `config/friends.yaml` | Friend links grouping and health check | Object Merge (`groups` Array Replacement) |
-| `config/umami.yaml` | Umami analytics tracking | Recursive Object Merge |
-| `config/llms.yaml` | LLM AI search enhancement | Recursive Object Merge |
-| `config/series.yaml` | Serial post series layout and index settings | Recursive Object Merge |
-
-> [!IMPORTANT] Note: `config/anime.yaml` & Downloading Watchlist Data
-> `config/anime.yaml` sets your anime tracking accounts and data sources. Unlike standard visual options, after adding a Bangumi username or Bilibili UID, **you must run `pnpm anime:sync --if-stale && pnpm build` in your theme repository**. This command downloads your watchlist and cover images locally before building the site. If you only edit the YAML file without running the sync command, your personal anime list will not appear. See [Anime Page Guide](/en/guide/pages/anime/).
-
-> [!IMPORTANT] Note: `config/anime.yaml` & Downloading Watchlist Data
-> `config/anime.yaml` sets your anime tracking accounts and data sources. Unlike standard visual options, after adding a Bangumi username or Bilibili UID, **you must run `pnpm anime:sync --if-stale && pnpm build` in your theme repository**. This command downloads your watchlist and cover images locally before building the site. If you only edit the YAML file without running the sync command, your personal anime list will not appear. See [Anime Page Guide](/en/guide/pages/anime/).
-
----
-
-## Common Configuration Examples
-
-### Example 1: Customize Site Title & Banner
-
-```yaml title="config/site.yaml"
-# Only declare fields you want to change
-title: "My Tech Notes"
-description: "Exploring programming and design"
-favicon: "/favicon.ico"
-
-banner:
-  enable: true
-  homeText:
-    title: "Hello World"
-    subtitle: "Beauty in Simplicity"
-    typewriter:
-      enable: true
-      speed: 120
-```
-
-### Example 2: Customize Sidebar Widgets
+Arrays are replaced as a whole because list items, ordering, and exclusions operate as a unified set. Partial appending would create ambiguous intent. When editing files with array definitions such as `nav-bar.yaml` or `sidebar.yaml`, specify the complete list.
 
 ```yaml title="config/sidebar.yaml"
-layout: "two-column"
-sticky: "toc"
-
-# Array full replacement: renders only these 4 widgets
 components:
   - "profile"
   - "toc"
@@ -171,8 +42,73 @@ components:
   - "tags"
 ```
 
----
+This configuration **replaces** the default widget list rather than appending four items to it.
 
-## Next Steps
+## Validation and activation
 
-- Head to [Cross-Repo CI Automation](/en/guide/content-separation/ci-dispatch/): Set up GitHub Actions for cross-repository automated builds
+After modifying configurations, run the validation command in the theme repo:
+
+```bash
+pnpm content:validate
+```
+
+It checks directory structure, mount conflicts, and YAML field types without writing to `src/`. Misspelled keys trigger helpful suggestions, such as using `titel` instead of `title`:
+
+```text
+config/site.yaml's banner.homeText: Type '{ titel: string }' is not assignable to type 'DeepPartial<HomeTextConfig>'
+  Did you mean "title"?
+```
+
+Configuration activates during two processes:
+
+- Running `pnpm content:sync` compiles the YAML files into `src/user/user-config.ts`.
+- Running `pnpm dev` or `pnpm build` triggers that sync step automatically beforehand.
+
+`src/user/user-config.ts` is an auto-generated file overwritten on every sync; do not edit it manually. The generation process also bundles referenced icons locally and feeds title and nickname text into font subsetting, avoiding redundant network requests or missing glyphs.
+
+## Configuration files
+
+Configuration files in `config/` are organized into four groups:
+
+**Basics and appearance**
+
+| File | Purpose |
+| --- | --- |
+| `site.yaml` | Site name, URL, theme color, banner, background texture |
+| `profile.yaml` | Avatar, nickname, bio, social links |
+| `nav-bar.yaml` | Top navigation menu |
+| `sidebar.yaml` | Sidebar layout and widget order |
+| `font.yaml` | Fonts and font subsetting |
+| `footer.yaml`, `footer.html` | Footer copy and custom HTML injection |
+| `image-bloom.yaml`, `context-menu.yaml` | Image bloom effect, context menu |
+
+**Posts and lists**
+
+| File | Purpose |
+| --- | --- |
+| `article.yaml` | Reading time, update notices, recommendations, share cards |
+| `post-list.yaml` | Pagination size and card display style |
+| `permalink.yaml` | Post permalink format |
+| `license.yaml` | Copyright license |
+| `expressive-code.yaml` | Code block theme and line numbering |
+
+**Pages and features**
+
+| File | Purpose |
+| --- | --- |
+| `anime.yaml` | Anime data source settings |
+| `music.yaml` | Music player |
+| `comment.yaml` | Comment system |
+| `announcement.yaml`, `fab.yaml` | Announcement bar, floating action buttons |
+| `umami.yaml`, `llms.yaml` | Traffic analytics, LLM retrieval output |
+| `devices.yaml`, `games.yaml`, `projects.yaml`, `skills.yaml`, `timeline.yaml`, `friends.yaml`, `series.yaml` | Categorization and filter rules for standalone pages |
+
+For field-level documentation, consult the corresponding feature guide, such as [Navbar Configuration](/en/guide/layout/navbar/) or [Comment System](/en/guide/article/comments/).
+
+::: warning Anime needs a separate sync
+`config/anime.yaml` only declares accounts and data providers. After editing it, run `pnpm anime:sync --if-stale` to download anime entries and covers; otherwise the page will have no data. In build environments, run `pnpm anime:sync --if-stale && pnpm build`. See [Anime Page](/en/guide/pages/anime/).
+:::
+
+## Next steps
+
+[CLI Toolchain](/en/guide/content-separation/cli-workflows/): sync, watch, validate, export, and clean commands.

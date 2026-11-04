@@ -1,139 +1,115 @@
 ---
-title: Local Preview & Debugging
+title: Local Preview and Debugging
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/local-preview/
 ---
 
-Before pushing posts or config changes to remote, you can run a local development server to preview Markdown rendering and styling in real time.
+In the dual-repo setup, the theme repo builds and renders the site, while the content repo manages posts and configuration. Local preview requires pointing the theme repo to your content repo path.
 
----
+## Before you start
 
-## Prerequisites
+Confirm two prerequisites:
 
-Ensure you have both repositories available on your computer:
-1. **Theme Code Repository** (e.g., `D:\Code\Shirone`);
-2. **Personal Content Repository** (e.g., `D:\Code\my-blog-content`).
+1. Dependencies are installed in the theme repo (`pnpm install`).
+2. The content repo exists locally on your machine.
 
-Install dependencies in the theme repository:
-- Windows: `pnpm.cmd install`
-- Linux / macOS: `pnpm install`
+If the content repo was created with `content:eject`, `shirone.content.json` in the theme repo already points to it. You can skip directly to [Start the preview](#start-the-preview).
 
----
+Otherwise, specify the path using one of two methods:
 
-## Method 1: Single Sync Preview <Badge text="Fast" type="info" />
+- Set an environment variable in your terminal session.
+- Create `.env` in the theme repo root for persistent local preview.
 
-:::: steps
-1. **Configure Path and Sync Content**
+```ini title=".env"
+CONTENT_DIR="../shirone-content"
+```
 
-   Navigate to the **theme code repository** root and run:
+Relative paths in `CONTENT_DIR` resolve from the theme repo root. Absolute paths are also supported.
 
-   ::: tabs
-   @tab Windows (PowerShell)
-   ```powershell title="PowerShell"
-   # 1. Set the absolute path of your content repository
-   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
+## Start the preview
 
-   # 2. Run a single sync to materialize content
-   pnpm.cmd content:sync
+### Option 1: sync once, then start
 
-   # 3. Start local development server
-   pnpm.cmd dev
-   ```
+Suitable when you only need to inspect pages without making frequent file modifications.
 
-   @tab Linux / macOS (Bash / Zsh)
-   ```bash title="Bash"
-   # 1. Set the path of your content repository
-   export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
-
-   # 2. Run a single sync
-   pnpm content:sync
-
-   # 3. Start development server
-   pnpm dev
-   ```
-   :::
-
-   Set content path and execute sync:
-
-   ![Set Content Path and Run Sync](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
-
-2. **Start Local Development Server**
-
-   Start development server in terminal:
-
-   ![Terminal Server Output](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
-
-3. **View in Browser**
-
-   Once the terminal outputs the local URL:
-
-   ```text title="Local Server"
-     Local    http://localhost:4321/
-   ```
-
-   Open `http://localhost:4321/` in your browser to see your blog rendered from your private content repository:
-
-   ![Browser Preview](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
-::::
-
----
-
-## Method 2: Live Incremental Watch Mode <Badge text="Recommended" type="tip" />
-
-When frequently drafting Markdown posts or tweaking YAML styles, running sync manually can be tedious.
-Use ==live incremental watch mode=={.tip}:
-
-::: steps
-1. **Launch Development Server (Terminal 1)**
-
-   ```powershell title="Terminal 1 (Dev Server)"
-   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
-   pnpm.cmd dev
-   ```
-
-2. **Launch Incremental Watcher (Terminal 2)**
-
-   ```powershell title="Terminal 2 (Content Watcher)"
-   $env:CONTENT_DIR = "<your-content-repo-path>" # e.g. "D:\Code\my-blog-content"
-   pnpm.cmd content:watch
-   ```
+::: tabs
+@tab Windows (PowerShell)
+```powershell
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd content:sync
+pnpm.cmd dev
+```
+@tab Linux / macOS
+```bash
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm content:sync
+pnpm dev
+```
 :::
 
-Whenever you save (`Ctrl + S`) a file in your external editor (such as Obsidian, VS Code, or Typora), changes will be synced incrementally in milliseconds and trigger browser ==hot module replacement=={.tip}.
+When the terminal prints `Local http://localhost:4321/`, open that address in your browser.
 
-> [!TIP] Simplify Environment Configuration
-> Create a `.env` file in the root of your theme repository so you do not need to set `$env:CONTENT_DIR` manually each time:
->
-> ```ini title=".env"
-> CONTENT_DIR="<your-content-repo-path>" # e.g. "D:/Code/my-blog-content"
-> ```
->
-> See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for the difference between `CONTENT_DIR`, `CONTENT_REPO_URL`, and `CONTENT_REPO_REF`.
+`content:sync` copies files from the content repo into `src/content/`, `src/data/`, `src/assets/`, and `public/`, then generates the configuration bridge at `src/user/user-config.ts`.
 
----
+### Option 2: write and preview at the same time
 
-## FAQ
+Suitable when continuously writing posts or adjusting YAML configurations. Open two terminal windows in the theme repo:
+
+::: tabs
+@tab Windows (PowerShell)
+```powershell
+# Terminal 1
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd dev
+
+# Terminal 2
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd content:watch
+```
+@tab Linux / macOS
+```bash
+# Terminal 1
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm dev
+
+# Terminal 2
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm content:watch
+```
+:::
+
+Saving a file in your Markdown editor prompts `content:watch` to sync changes, and the browser reloads automatically. When `.env` is configured, neither terminal requires `CONTENT_DIR`.
+
+## Check the content source
+
+When you are unsure which repository is currently active:
+
+```bash
+pnpm content:status
+```
+
+The output lists the active content source, the resolved commit SHA, and the overridden configuration files. Add `--remote` to verify the remote branch over the network.
+
+## Common problems
 
 ::: collapse
-- How to stop local development?
+- The content directory does not exist
 
-  Press `Ctrl + C` in the respective terminal window to stop the dev server or watcher.
+  Check that `CONTENT_DIR` points to an existing directory containing `content/` or `config/`. Quote paths containing spaces.
 
-- Error: Path not found
+- A configuration change has no effect
 
-  Verify that `CONTENT_DIR` points to a valid absolute path containing a standard `config/` or `content/` directory.
+  Run `pnpm content:validate` to detect misspelled YAML fields. Array fields are replaced entirely; adding only a new item will not merge. See [Configuration Overlay](/en/guide/content-separation/config-overlay/).
 
-- External images not updating in browser
+- A new image does not appear
 
-  Ensure images reside in `assets/` or `public/` in your content repository. For newly added files in deep subdirectories, run `pnpm content:sync` once to refresh indices.
+  Place images in `assets/` or `public/` in the content repo. If adding files deep within directory trees, run `pnpm content:sync` again.
 
-- Modified `config/anime.yaml` but watchlist didn't update in local preview
+- `config/anime.yaml` has no data
 
-  Anime tracking data is fetched from external APIs into sanitized local snapshots, which does not happen purely by saving a YAML file. In your theme code repository, run `pnpm anime:sync --if-stale` (or `pnpm anime:sync` for a forced refresh) to pull snapshots and covers before running `pnpm dev`. For production releases, use `pnpm anime:sync --if-stale && pnpm build`. See [Anime Page Documentation](/en/guide/pages/anime/).
+  Editing YAML does not fetch remote data automatically. Run `pnpm anime:sync --if-stale` in the theme repo, then preview again. Use `pnpm anime:sync` for first-time setup or forced refreshes. See [Anime Page](/en/guide/pages/anime/).
 :::
 
----
+## Next steps
 
-## Next Steps
-
-- Head to [CLI Workflows & Toolchain](/en/guide/content-separation/cli-workflows/): Learn validation, status inspection, export, and clean commands
+[Content Sources](/en/guide/content-separation/content-sources/): resolution priority for local paths, remote repositories, and manifest files.

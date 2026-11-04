@@ -1,242 +1,127 @@
 ---
-title: CLI 命令行工具链
+title: CLI 工具链
 createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/cli-workflows/
 ---
 
-Shirone 提供了一整套专为内容分离架构打造的 CLI 工具链。无论是外部编辑器中的日常写作、配置修改后的 ==零写盘预检=={.tip}，还是不同仓库之间的双向同步与安全重置，均可通过简单指令一键完成。
+内容分离相关的 CLI 命令均在主题仓根目录下执行。日常本地写作通常只需运行 `content:watch`，排查配置或结构异常时使用 `content:status` 与 `content:validate`。
 
----
+## 命令一览
 
-## 核心命令总览速查
+| 命令 | 作用 | 是否修改文件 |
+| --- | --- | --- |
+| `pnpm content:sync` | 将内容仓同步至主题仓 | 是，写入 `src/content/` 等目录 |
+| `pnpm content:watch` | 监听内容仓变动并自动增量同步 | 是 |
+| `pnpm content:validate` | 检查目录结构与 YAML 字段类型 | 不写入 `src/`，远程源仍会更新 `.content-src/` |
+| `pnpm content:status` | 输出当前内容源状态与 commit SHA | 否 |
+| `pnpm content:export` | 将主题仓调试好的改动反向导出至内容仓 | 是，写入内容仓 |
+| `pnpm content:clean` | 清理主题仓物化内容，恢复默认示例 | 是，默认会自动创建备份 |
+| `pnpm content:eject` | 将单仓模式迁出为双仓结构 | 是，生成独立内容仓 |
+| `pnpm anime:sync` | 下载追番列表与封面资源 | 是，写入本地数据快照 |
 
-| 指令 | 核心功能定位 | 典型使用时机 | 磁盘写入行为 |
-| :--- | :--- | :--- | :--- |
-| `pnpm content:sync` <Badge text="高频" type="tip" /> | 单次全量或增量同步 | 本地预览或云端构建前，把内容仓的文件同步到代码仓 | 增量写入代码仓临时副本 |
-| `pnpm content:watch` <Badge text="高频" type="tip" /> | 实时增量监听 | 在外部编辑器边写边看实时预览 | 保存时自动增量写入 |
-| `pnpm content:validate` <Badge text="安全预检" type="info" /> | 内存安全预检 | 改完 YAML 快速排查语法与字段拼写 | ==纯内存类型校验，零磁盘写入=={.tip} |
-| `pnpm anime:sync` <Badge text="数据同步" type="tip" /> | 外部番剧数据同步 | 内容仓配置 `config/anime.yaml` 后下载追番列表与封面 | 写入本地 JSON 与封面图片 |
-| `pnpm content:status` <Badge text="状态检查" type="info" /> | 状态与差异检查 | 检查内容源连接、分支、Commit SHA 与修改项 | 纯只读检查 |
-| `pnpm content:export` <Badge text="反向导出" type="warning" /> | 差异反向导出 | 将代码仓调试好的 YAML 配置抽离回外部内容仓 | 写入外部内容仓库 |
-| `pnpm content:clean` <Badge text="带备份重置" type="warning" /> | 安全重置与清理 | 还原代码仓至干净演示状态（自动创建快照备份） | 清理代码仓临时副本 |
-| `pnpm content:eject` <Badge text="一次性迁出" type="tip" /> | 一键解耦迁出 | 从默认单仓模式一键升级为独立内容仓库 | 生成独立内容仓库 |
+## 常用命令
 
----
+### content:sync
 
-## 1. 单次内容同步：`content:sync` <Badge text="核心" type="tip" />
-
-```bash title="content:sync"
-# 1. 增量同步（同步外部内容并自动合并配置文件）
+```bash
 pnpm content:sync
-
-# 2. 预演模式（仅比对和统计变更，不写入磁盘）
-pnpm content:sync --dry-run
+pnpm content:sync --dry-run   # 仅比对差异，不执行写入
 ```
 
-### 适用场景
-- 本地启动开发服务器前，拉取外部内容仓的数据；
-- GitHub Actions、Cloudflare Pages 等云端部署流程中同步内容。
+读取配置的内容源，将文件复制到主题仓的标准映射目录，并将 `config/*.yaml` 编译输出为 `src/user/user-config.ts`。`pnpm dev` 与 `pnpm build` 在启动前均会自动执行此步骤。
 
-### 核心机制
-- **自动检测内容源**：优先检测本地环境变量 `CONTENT_DIR`，若未设置则拉取 `CONTENT_REPO_URL` 指向的远程 Git 仓库；
-- **智能增量比对**：根据文件修改时间或 Git commit 仅同步发生变更的文件，避免不必要的磁盘读写；
-- **配置自动合并**：自动将 YAML 配置文件转换为供主题运行的配置模块。
+支持参数：`--dry-run`、`--no-prune`、`--quiet`。
 
----
+### content:watch
 
-## 2. 实时增量监听：`content:watch` <Badge text="推荐写作使用" type="tip" />
-
-```bash title="content:watch"
+```bash
 pnpm content:watch
 ```
 
-### 适用场景
-使用 Obsidian、VS Code 或 Typora 独立打开外部内容仓库进行写作，配合本地 `pnpm dev` 享受边写边看的热重载体验。
+监听本地内容仓目录变动，在保存文件时触发增量同步。通常需配合另一个终端中运行的 `pnpm dev` 协同使用。该命令仅对本地目录内容源有效。
 
-### 核心机制
-- 采用毫秒级防抖监听机制，只同步发生变化的文件；
-- 修改任何 `config/*.yaml` 时，自动重新生成 TypeScript 配置桥接文件并触发热重载；
-- 需配合另一个终端窗口中运行的 `pnpm dev` 共同使用。
+### content:validate
 
----
-
-## 3. 内存安全预检：`content:validate` <Badge text="零磁盘写入" type="info" />
-
-```bash title="content:validate"
+```bash
 pnpm content:validate
 ```
 
-### 适用场景
-刚修改完某个 `config/*.yaml` 配置文件或文章元数据，不想启动耗时的本地开发服务器，也不希望写入任何磁盘文件，只想快速确认字段拼写与格式是否正确。
+校验内容仓的目录层级、挂载冲突与 YAML 字段类型，功能等价于 `content:sync --dry-run`。
 
-### 核心机制
-- **纯内存校验**：在内存中完成 YAML 解析、模式比对与 TypeScript 诊断；
-- **零磁盘写入**：==绝不向磁盘写入任何临时文件=={.tip}；
-- **智能纠错提示**：若字段拼写错误，终端会高亮输出行号并给出正确的建议字段。
+此命令**不校验文章 frontmatter**，文章元数据由 `astro sync` 或完整构建阶段进行类型检查。
 
-> [!TIP] 推荐在提交 Git 前运行
-> 在向内容仓推送 Commit 前执行一次 `pnpm content:validate`，可以提前拦截所有 YAML 格式与字段拼写错误。
+若内容源为远程 Git 仓库，运行此命令依然会拉取并更新 `.content-src/` 工作副本，首次执行需要网络连接。它仅跳过对 `src/` 目录与配置桥接文件的写入。
 
----
+官方校验工作流会依次执行两步：先运行 `content:validate`，再运行 `content:sync && astro sync`。排查文章元数据异常时，后一种组合能提供更完整的诊断信息。
 
-## 4. 状态与差异检查：`content:status`
+### content:status
 
-```bash title="content:status"
+```bash
 pnpm content:status
-
-# 或检查远端 Git 仓库连接与最新版本：
-pnpm content:status --remote
+pnpm content:status --remote   # 额外向远端分支发起网络校验
 ```
 
-### 适用场景
-长时间未操作或切换了分支，想确认当前本地绑定的是哪个内容仓库、远程连接是否通畅、是否有未同步的文件或配置覆盖项。
+输出当前内容源的解析诊断结果：
 
-### 检查输出
-- 当前生效的 `CONTENT_DIR` 或 `CONTENT_REPO_URL`；
-- 当前已覆盖的配置文件清单与纯内容文章总数；
-- 远端仓库的最新 Commit SHA 与本地缓存副本的新旧状态。
+- 运行模式（`local` 或 `external`）；
+- 本地内容仓路径或远程仓库地址；
+- 解析并匹配到的 commit SHA；
+- 已生效覆盖的配置文件清单与识别到的文章总数。
 
----
+排查当前具体读取哪个仓库时优先运行该命令。默认处于离线检测状态，仅在传入 `--remote` 参数时才会访问远端。
 
-## 5. 差异反向导出：`content:export`
+## 其余命令
 
-```bash title="content:export"
-pnpm content:export          # 预演：仅输出将要导出的文件清单
-pnpm content:export --yes    # 实际执行导出
+::: details 展开查看不常用的四条命令
+
+### content:export
+
+在主题仓临时调试并修改了配置后，可使用此命令将改动安全回写到内容仓：
+
+```bash
+pnpm content:export         # 预演模式，列出待导出的文件列表
+pnpm content:export --yes   # 正式执行导出
 ```
 
-### 适用场景
-在主题代码仓的本地开发环境中临时调试了某些配置或样式，希望将这些修改反向沉淀回外部的内容仓库。
+导出时仅提取与主题默认值不同的差异字段，不会将全量默认值写死到 YAML 中，从而确保后续主题升级仍能继承新默认值。支持参数：`--config`、`--posts`、`--prune`、`--out`、`--force`。
 
-### 核心机制
-- **最小化覆盖导出**：仅导出相对于主题默认配置发生过修改的键值，==绝不将主题默认值硬编码写死在 YAML 中==；
-- **保护未来升级**：未修改的项不会被导出，未来主题新增特性时，内容仓能继续平滑继承最新默认值。
+### content:clean
 
----
+将主题仓还原为仅包含示例内容的纯净状态：
 
-## 6. 安全清理与重置：`content:clean`
-
-```bash title="content:clean"
-pnpm content:clean          # 预演：打印清理计划
-pnpm content:clean --yes    # 实际执行清理
+```bash
+pnpm content:clean          # 预演模式，打印清理计划
+pnpm content:clean --yes    # 正式执行，默认先备份至 .content-backup/clean-<时间戳>/
 ```
 
-### 适用场景
-想将主题代码仓恢复到干净的纯初始演示状态，或者排除因本地临时测试产生的残留脏数据。
+此命令仅清理主题仓中物化的副本文件，内容仓本身不受任何影响。若需还原，将备份目录中的文件复制回原路径即可。`--no-backup` 可跳过快照备份，通常不建议使用。
 
-### 安全保护与自动备份
-- **强制快照备份**：实际执行删除前，系统会自动将当前的本地内容打包归档到 `.content-backup/clean-<时间戳>/` 目录下；
-- **重置代码仓**：清除代码仓内同步的内容副本，并将内置演示文章与默认配置恢复就位；
-- **真实内容完好无损**：此命令仅清理代码仓本地的临时副本，外部内容仓数据不受影响。
+### content:eject
 
-> [!NOTE] 还原快照备份
-> 若需还原清理前的工作区状态，直接运行对应系统的复制命令：
->
-> ::: tabs
-> @tab Windows (PowerShell)
-> ```powershell
-> Copy-Item -Recurse -Force .\.content-backup\clean-<时间戳>\* .
-> ```
-> @tab Linux / macOS (Bash)
-> ```bash
-> cp -a .content-backup/clean-<时间戳>/. .
-> ```
-> :::
+从单仓模式平滑迁移为双仓架构，操作说明详见[初始化内容仓](/guide/content-separation/init-repo/)。
 
----
-
-## 7. 一键解耦迁移向导：`content:eject`
-
-```bash title="content:eject"
-pnpm content:eject          # 预演：打印迁移计划与生成清单
-pnpm content:eject --yes    # 实际执行迁移（默认导出到 ../shirone-content）
-pnpm content:eject --yes --out ..\my-content  # 指定自定义导出路径
+```bash
+pnpm content:eject                        # 预演模式
+pnpm content:eject --yes                  # 正式执行，默认导出到 ../shirone-content
+pnpm content:eject --yes --out ../my-content
 ```
 
----
+### anime:sync
 
-## 8. 番剧与外部数据同步：`anime:sync` <Badge text="数据同步" type="tip" />
-
-```bash title="anime:sync"
-# 1. 智能增量拉取（快照有效时不重复请求，推荐 CI 与日常构建）
-pnpm anime:sync --if-stale
-
-# 2. 强制同步当前配置的所有提供方
-pnpm anime:sync
-
-# 3. 指定数据源单独同步
-pnpm anime:sync --provider bangumi
-pnpm anime:sync --provider bilibili
-pnpm anime:sync --provider all
+```bash
+pnpm anime:sync --if-stale           # 快照未过期时跳过，构建流水线中使用
+pnpm anime:sync                      # 强制全量刷新数据
+pnpm anime:sync --provider bangumi   # 仅同步指定的数据源
 ```
 
-### 适用场景与内容分离核心关联
-在内容分离模式下，博主在内容仓的 `config/anime.yaml` 中配置了 Bangumi 用户名或 B 站 UID。不同于普通静态文本，**追番数据需要从外部 API 抓取清洗并下载本地化封面**，才能被页面渲染使用。
+快照缓存有效时长由 `config/anime.yaml` 中的 `snapshot.staleAfterDays` 字段控制，默认设定为 30 天。未配置任何有效数据源时，命令会正常退出，不会中断构建流程。详见[番剧页](/guide/pages/anime/)。
 
-因此，修改完 `config/anime.yaml` 后，必须通过 `anime:sync` 拉取外部数据，再执行站点构建。
-
-### 核心机制与参数
-- **智能缓存过期比对 (`--if-stale`)**：根据配置中的 `snapshot.staleAfterDays`（默认 30 天）自动比对现有快照生成时间。未过期则直接跳过网络请求退出（exit 0），既防止高频调用被 B站/Bangumi 限流，又极大缩短构建耗时；
-- **封面防盗链离线化**：开启 `cover.mode: "local"` 时，抓取进程会自动将封面转存为 WebP 格式并存入 `public/assets/anime/covers/`；
-- **零中断退出**：若未启用或未配置 provider，命令会自动提示并以状态码 0 正常退出，不会中断构建流水线。
-
-> [!TIP] 双仓完整构建推荐命令
-> 在云端构建（如 GitHub Actions）或本地发布时，可以用一条命令搞定“按需同步番剧 + 同步内容 + 打包网站”：
-> ```bash
-> pnpm anime:sync --if-stale && pnpm build
-> ```
-
----
-
-## 清单文件与环境变量配置
-
-### 清单文件：`shirone.content.json`
-
-位于代码仓根目录的可选配置文件：
-
-```json title="shirone.content.json"
-{
-  "schemaVersion": 1,
-  "source": {
-    "type": "path",
-    "path": "../shirone-content"
-  },
-  "mounts": {
-    "content": "src/content",
-    "data": "src/data",
-    "assets": "src/assets",
-    "public": "public"
-  },
-  "keep": ["src/data/my-special-data.ts"],
-  "prune": true
-}
-```
-
-| 字段 | 说明 |
-| :--- | :--- |
-| `schemaVersion` | 清单结构版本，默认为 `1` |
-| `source.type` | 内容源类型：`"path"`（本地目录）或 `"git"`（远端仓库） |
-| `source.path` | 本地内容目录路径（相对代码仓根目录解析） |
-| `source.url` / `source.ref` | 远端 Git 仓库地址与目标分支/Tag/Commit SHA（默认为 `main`） |
-| `mounts` | 自定义挂载映射表（可按需关闭或重定向某个挂载点） |
-| `keep` | 受保护的文件白名单列表（支持通配符 `*` 与 `**`） |
-| `prune` | 设为 `false` 时仅执行增量拷贝，不删除已不存在的文件 |
-
-### 环境变量优先级
-
-内容源解析顺序为：`SHIRONE_CONTENT_SYNC=0` > `CONTENT_DIR` > `CONTENT_REPO_URL` > `shirone.content.json` 的 `source`。环境变量文件之间则是：==进程环境变量 > .env.local > .env==。
-
-各变量的用途、私有仓地址写法和三种部署场景，见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
-
-::: details 展开查看高级参数与调试选项 (CLI Flags)
-- `--dry-run`：所有具有修改行为的命令均支持此选项，仅打印执行计划而不写入磁盘；
-- `--verbose`：在终端输出每个文件的比对耗时与 MD5 / mtime 详细校验过程；
-- `--force`：跳过冲突检查强制执行同步或覆盖；
-- `--json`：以 JSON 格式输出状态与校验结果，方便第三方 CI 工具解析。
 :::
 
----
+## 清单文件
+
+主题仓根目录下的 `shirone.content.json` 用于显式固化内容源与挂载映射。字段定义详见[内容源配置](/guide/content-separation/content-sources/#清单文件)，参考模板见代码仓中的 `shirone.content.example.json`。
 
 ## 下一步
 
-- 前往 [配置覆盖核心原理](/guide/content-separation/config-overlay/)：深入了解最小化覆盖原则、对象合并与数组替换规则
+[配置覆盖](/guide/content-separation/config-overlay/)：对象合并、数组替换规则与配置文件分类说明。

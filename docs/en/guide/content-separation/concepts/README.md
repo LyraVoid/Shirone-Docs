@@ -1,186 +1,63 @@
 ---
-title: Content Separation Overview
+title: Architecture Overview
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/concepts/
 ---
 
-Shirone provides native support for decoupled content separation, allowing you to isolate the ==theme frontend engine== and your ==personal content repository== into two independent Git repositories.
+Content separation splits a blog into two Git repositories:
 
----
+- **Theme repo**: Shirone source, styles, and build scripts. It can follow upstream updates and stay public.
+- **Content repo**: your posts, moments, albums, data, and site configuration. It can be private.
 
-## Core Concepts
+Before building, the theme repo copies files from the content repo into its standard directories, then runs the normal build. The theme code itself does not need special handling for content separation.
 
-Think of a personal blog as a residence:
+## What goes where
 
-- **Theme Code Repository**: The architectural framework, plumbing, electrical grid, and rendering pipeline: responsible for UI animations, dark mode, responsive layout, image optimization, and static building—maintained and ==continuously upgraded upstream==;
-- **Personal Content Repository**: The furniture, family photo albums, books, and diary entries: contains all your posts, moments, album photos, data entities, and configuration overlays—under your ==complete ownership and kept private=={.tip}.
+| Content | Location |
+| --- | --- |
+| Posts, moments, series, about page copy | Content repo `content/` |
+| Site title, navigation, sidebar, comments | Content repo `config/` |
+| Projects, devices, skills, friends | Content repo `data/` |
+| Images that should be optimized | Content repo `assets/` |
+| Images, albums, anime covers served as-is | Content repo `public/` |
+| Components, styles, build scripts | Theme repo `src/`, `scripts/` |
 
-In traditional monolithic repositories, posts, media assets, and theme source code are tightly coupled. Upstream updates frequently trigger painful Git merge conflicts, or inadvertently publish private drafts to public repositories.
+See [Creating a Content Repository](/en/guide/content-separation/init-repo/#content-repo-layout-and-mapping) for the full directory tree. Configuration syntax is covered in [Configuration Overlay](/en/guide/content-separation/config-overlay/).
 
-Shirone's content separation architecture eliminates these pain points: your content is securely housed in a ==private content repository==, while the theme code repository simply pulls content during builds.
+## When two repositories are worth it
 
-> [!TIP] Core Value of Dual-Repo Setup
-> By decoupling content from theme mechanics, you can author posts and configure your site like using a lightweight headless CMS while seamlessly syncing upstream theme enhancements.
+| Your situation | Recommendation |
+| --- | --- |
+| First blog, posts can be public | Single repo; least setup |
+| Drafts, albums, or contact details should stay private | Dual repo with a private content repo |
+| Long-term use and you plan to follow theme updates | Dual repo; updates will not conflict with your posts |
+| Already wrote posts in a single repo | You can migrate at any time, see [Creating a Content Repository](/en/guide/content-separation/init-repo/) |
 
----
+This is not a one-time decision. Running `pnpm content:eject` moves existing posts and configuration into a content repo and keeps local development working.
 
-## Content Repository Structure (Shirone-Content)
+## What happens on a content update
 
-Under the content separation architecture, all personal articles, media assets, structured data, and configuration overlays are organized in an independent repository based on the official template repository [LyraVoid/Shirone-Content](https://github.com/LyraVoid/Shirone-Content):
-
-```file-tree title="LyraVoid/Shirone-Content Standard Structure"
-shirone-content/
-├── .github/
-│   └── workflows/
-│       └── trigger-build.yml.example # Cross-repo GitHub Actions workflow template
-├── config/                  # Declarative configuration overlay YAML files
-│   ├── site.yaml            # Site identity, timezone, colors, and banner wallpaper
-│   ├── permalink.yaml       # Global article permalink template and placeholder rules
-│   ├── profile.yaml         # Author avatar, bio, and social links
-│   ├── nav-bar.yaml         # Top navigation items and dropdown menus
-│   ├── sidebar.yaml         # Sidebar layout and widget configuration
-│   ├── font.yaml            # Typography and font subsetting rules
-│   ├── anime.yaml           # Anime tracker and sync provider settings
-│   ├── music.yaml           # Music player modes and playlist settings
-│   ├── comment.yaml         # Comment system settings (Twikoo / Giscus / Waline)
-│   ├── article.yaml         # Reading time, typography, and outdated alerts
-│   ├── post-list.yaml       # Post list layout and pagination settings
-│   ├── devices.yaml         # Hardware devices category rules
-│   ├── games.yaml           # Games showcase category rules
-│   ├── projects.yaml        # Open source project category rules
-│   ├── skills.yaml          # Technical skill graph category rules
-│   ├── timeline.yaml        # Career timeline milestones rules
-│   ├── friends.yaml         # Friends and blogroll group rules
-│   ├── announcement.yaml    # Global floating announcement banner
-│   ├── expressive-code.yaml # Syntax highlighting and code block numbers
-│   ├── context-menu.yaml    # Desktop right-click context menu actions
-│   ├── fab.yaml             # Floating action button (FAB)
-│   ├── image-bloom.yaml     # Image bloom visual filter
-│   ├── license.yaml         # Creative Commons license settings
-│   ├── llms.yaml            # LLM AI search enhancement
-│   ├── umami.yaml           # Umami analytics tracking
-│   ├── series.yaml          # Serial post series layout and index settings
-│   ├── footer.yaml          # Footer copyright and ICP registration
-│   └── footer.html          # Custom injected footer HTML snippet
-├── content/                 # Blog articles, moments, and spec pages
-│   ├── posts/               # Markdown and MDX posts (e.g., guide.md)
-│   ├── moments/             # Microblog moments (e.g., first-moment.md)
-│   ├── series/              # Serial post series entities (e.g., guide-series.md)
-│   └── spec/                # Spec pages (about.md, friends.md)
-├── data/                    # Structured data entities (TypeScript modules)
-│   ├── anime.ts             # Local anime snapshot data
-│   ├── compass.ts           # Navigation bookmarks and links
-│   ├── devices.ts           # Hardware devices showcase data
-│   ├── games.ts            # Games showcase entries
-│   ├── friends.ts           # Friends and blogroll entities
-│   ├── music.ts             # Local music tracks metadata
-│   ├── projects.ts          # Open source project portfolio
-│   ├── skills.ts            # Skills proficiency ratings
-│   └── timeline.ts          # Major life and career milestones
-├── assets/                  # Your own high-resolution images (Synced to src/assets/, compressed at build time)
-│   ├── images/
-│   │   ├── banner/          # Top banner wallpapers, split into desktop/ and mobile/
-│   │   ├── music/           # Covers for local music tracks
-│   │   └── demo-avatar.webp # Your avatar
-│   └── games/               # Wide cover images for the games page
-├── public/                  # Static assets (Published as-is without re-encoding)
-│   ├── assets/              # Anime covers and media caches
-│   └── images/              # Blog images and photo albums
-│       └── albums/          # Gallery albums (e.g., SampleAlbum/01.webp + info.json)
-├── .gitignore
-├── README.md
-└── shirone.content.json     # Content repo metadata identifier & mount manifest
-```
-
-> [!NOTE] The `assets/` folder is optional
-> The template ships with a set of sample images (banners, avatar, and music covers) you can use as-is. You can also delete the whole folder — the site will simply fall back to the theme's built-in images, and nothing breaks.
->
-> To use your own images, put them in the same locations and make sure the filenames match the paths written in `config/site.yaml` and `config/profile.yaml` (replacing files with the same names is easiest, or update those config files to point to your new files).
->
-> One important thing: as soon as this folder contains any image, the theme's built-in images no longer act as a fallback. So either provide the **full set** your site is using (banners, avatar, and covers — do not leave any out) or delete the folder entirely. Leaving only an empty `.gitkeep` placeholder inside would leave broken images on your site.
-
-### Functional Area Breakdown
-
-- **`config/` (Declarative Config Overlays)**: Lightweight YAML files partitioned by domain, strictly adhering to the ==minimal overlay principle==;
-- **`content/` (Core Authoring Workspace)**: Houses all Markdown/MDX posts, microblog moments, and spec pages;
-- **`data/` (Structured Data Entities)**: TypeScript data files managing projects, hardware, skills, timeline events, and friend links;
-- **`assets/` (Auto-Compressed Images)**: Stores high-resolution originals such as avatars, banners, music covers, and game covers; they are synced to `src/assets/` in the code repository and compressed automatically at build time. Reference them in config files with simple relative paths (e.g., `assets/images/...`);
-- **`public/` (Static Media & Galleries)**: Stores raw photos, anime cover caches, and gallery albums published directly to the static root;
-- **`shirone.content.json` (Mount Manifest)**: Declares repository metadata, mount points, and protected file rules.
-
----
-
-## Dual-Repo Architecture & Automation Pipeline
-
-The synchronization, config merge, and release workflow is fully automated:
+With automated deployment enabled:
 
 ```mermaid
 flowchart LR
-    A[Authoring in Content Repo] -->|Git Push| B[GitHub Actions]
-    B -->|Dispatch Build Event| C[Theme Code Repo]
-    C -->|Pull Content & Merge Overlays| D[Type Checking & Font Subsetting]
-    D -->|Static Build| E[Global CDN & Hosting]
+    A["Push to content repo"] --> B["Validate content and config"]
+    B --> C["Notify theme repo"]
+    C --> D["Fetch content and merge config"]
+    D --> E["Build and deploy"]
 ```
 
-::: steps
-1. **Authoring in Content Repo**
+1. You change a post or YAML file in the content repo and push to `main`.
+2. The content repo runs the theme repo's validation workflow, which checks directory structure and configuration fields.
+3. If validation passes, it sends a `content-updated` event with the current commit SHA.
+4. The theme repo checks out that SHA, runs `pnpm build`, and publishes `dist/` to your host.
 
-   Draft posts or update YAML configs in your favorite Markdown editor, then push to your private repository.
+If you prefer the host to build, trigger it with a Deploy Hook instead. See [Deployment Hooks](/en/guide/content-separation/deploy-hooks/) for the difference.
 
-2. **Automated Pipeline Trigger**
+## Local writing
 
-   A lightweight GitHub Actions workflow sends a ==dispatch event== to the theme repository, or a cloud deploy hook captures the push.
+You do not need to push to see changes. Point `CONTENT_DIR` at the content repo, run `pnpm content:sync` to copy files into `src/content/` and the other targets, then run `pnpm dev`. `pnpm content:watch` repeats the sync whenever you save.
 
-3. **Content Materialization & Config Overlay**
+## Next steps
 
-   The theme repository pulls the content payload and executes ==recursive deep merge== between YAML overlays and theme defaults.
-
-4. **Build & Global Deployment**
-
-   The theme repository performs Chinese font subsetting, static page generation, asset compression, and deploys to global CDNs.
-:::
-
----
-
-## Key Advantages
-
-### 1. Conflict-Free Theme Upgrades
-
-Open-source themes evolve rapidly with new features and bug fixes. Under content separation, your posts, albums, and custom configs reside outside the theme repository. Syncing upstream releases yields ==zero Git merge conflicts=={.tip}.
-
-### 2. Safeguard Private Content & Drafts
-
-Many authors wish to keep their theme repository open-source while keeping:
-- Unfinished drafts and private journals;
-- Family albums and high-res photography;
-- Private analytics tokens or unpublished metadata.
-
-With dual repos, you can set your ==content repository to Private=={.tip} and your ==theme repository to Public==, enjoying the open-source ecosystem without exposing sensitive data.
-
-> [!IMPORTANT] Privacy Isolation
-> Storing posts in a private repository ensures that even if your theme repository is completely open-source, your drafts and media assets remain strictly confidential.
-
-### 3. Lightweight Authoring Experience
-
-Authors do not need to install complex Node.js dependencies, build tooling, or bundlers on their writing devices. Simply focus on:
-- Authoring Markdown posts and microblogs inside `content/`;
-- Tweaking lightweight YAML configs inside `config/`.
-
----
-
-## Monolithic vs Dual-Repo Comparison
-
-| Metric | Monolithic Setup <Badge text="Starter" type="info" /> | Content Separation <Badge text="Recommended" type="tip" /> |
-| :--- | :--- | :--- |
-| **Target Audience** | Beginners seeking single-repository simplicity | Long-term bloggers needing private drafts and seamless theme updates |
-| **Repo Count** | 1 (Code and content coupled) | 2 (Public theme repo + Private content repo) |
-| **Upgrade Friction** | Manual upstream merge with potential Git conflicts | Direct upstream pull with ==zero merge conflicts== |
-| **Privacy** | Drafts exposed if repository is open-sourced | ==Content repo completely private=={.tip}, theme repo safely public |
-| **Writing Tools** | Must run within the theme project | Independent editing with Obsidian, VS Code, Typora |
-| **Onboarding** | Zero setup, clone and run | One-time setup for access token or deploy hook |
-
----
-
-## Next Steps
-
-- Head to [Initializing Private Content Repo](/en/guide/content-separation/init-repo/): Learn one-click eject and template initialization
+[Creating a Content Repository](/en/guide/content-separation/init-repo/): migrate with one command, or start from the template.

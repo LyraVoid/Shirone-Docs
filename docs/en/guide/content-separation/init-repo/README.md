@@ -1,185 +1,139 @@
 ---
-title: Initializing Private Content Repo
+title: Creating a Content Repository
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/init-repo/
 ---
 
-There are two recommended methods to set up your standalone content repository:
+You can create the content repository yourself or start from the official template. Both produce identical structures; only the starting point differs.
 
-- [Method 1: One-click Eject with content:eject](#method-1-using-content-eject-recommended) <Badge text="Recommended" type="tip" />: Best if you already have the theme repository locally and wish to extract existing content;
-- [Method 2: Clone from Official Template](#method-2-clone-from-official-template) <Badge text="From Scratch" type="info" />: Best for users starting from scratch directly with a dual-repo setup.
+| Method | Best for | Retains existing posts |
+| --- | --- | --- |
+| `content:eject` | Already wrote posts in the theme repo | Yes, posts and configuration move together |
+| Clone template | Starting from scratch | No, contains sample content only |
 
----
+## Option 1: move content out of the theme repo
 
-## Method 1: Using content:eject (Recommended) <Badge text="Recommended" type="tip" />
+Run this command from the **theme repo root**. Preview the plan first, then apply:
 
-If you already have the theme repository locally, the built-in eject wizard is the fastest initialization pathway.
-
-### Key Features
-- **Automated Structure Assembly**: Automatically extracts posts, moments, albums, and data files, and generates a valid `shirone.content.json` manifest and GitHub Actions trigger workflow;
-- **Minimal Config Export**: Exports only essential identity settings in `site.yaml` and `profile.yaml`, ==avoiding hardcoded defaults== to ensure seamless future upgrades;
-- **Theme Repo Protection**: Adds gitignore rules and safely unstages content files from Git while keeping physical files intact for local preview;
-- **Automatic Local Binding**: Connects your theme development workspace to the newly created external directory.
-
-> [!TIP] Zero-Risk Dry Run
-> Running `pnpm.cmd content:eject` without the `--yes` flag executes in ==dry-run mode=={.secondary}, printing the export plan without making any disk modifications.
-
-### Step-by-Step Guide
-
-:::: steps
-1. **Run Eject Command in Theme Repository**
-
-   Open your terminal in the **theme code repository** root and run:
-
-   ::: tabs
-   @tab Windows (PowerShell)
-   ```powershell title="PowerShell"
-   # 1. Dry run: preview files to be ejected (zero disk changes)
-   pnpm.cmd content:eject
-
-   # 2. Confirm and execute eject (default destination: ../shirone-content)
-   pnpm.cmd content:eject --yes
-
-   # Or specify a custom output directory:
-   pnpm.cmd content:eject --yes --out "<target-path>" # e.g. "D:\Code\my-blog-content"
-   ```
-
-   @tab Linux / macOS (Bash)
-   ```bash title="Bash"
-   # 1. Dry run: preview files to be ejected
-   pnpm content:eject
-
-   # 2. Confirm and execute eject
-   pnpm content:eject --yes
-
-   # Custom output path:
-   pnpm content:eject --yes --out "<target-path>" # e.g. "/Users/yourname/Code/my-blog-content"
-   ```
-   :::
-
-2. **Create a Blank Private Repo on GitHub**
-
-   - Log in to GitHub, click the **+** icon in the top right corner and select **New repository**;
-   - **Repository name**: e.g., `my-blog-content` or `shirone-content`;
-   - **Visibility**: ==Must select Private=={.error};
-   - **Initialize with**: **Do not select** any initialization files (keep completely empty);
-   - Click **Create repository**.
-
-   ![GitHub Create Private Repo](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
-
-   > [!IMPORTANT] Repository Must Be Private
-   > To ensure your drafts, high-res photos, and private metadata remain secure, ==visibility must be set to Private=={.error}.
-
-3. **Push Content Repository to GitHub**
-
-   In your terminal, navigate to the ejected directory and push:
-
-   ```bash title="Git Push"
-   # 1. Enter the external content directory
-   cd ../shirone-content
-
-   # 2. Initialize Git repository and commit
-   git init -b main
-   git add .
-   git commit -m "feat: initialize private blog content repo"
-
-   # 3. Add remote origin and push
-   git remote add origin git@github.com:YOUR_USERNAME/my-blog-content.git
-   git push -u origin main
-   ```
-::::
-
-Your standalone private content repository is now fully initialized.
-
----
-
-## Method 2: Clone from Official Template <Badge text="From Scratch" type="info" />
-
-### Step-by-Step Guide
-
-::: steps
-1. **Create a Blank Private Repo on GitHub**
-
-   Create an empty ==Private repository== on GitHub without adding a README or gitignore.
-
-   ![GitHub Initial Page](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
-
-2. **Clone the Template Repository**
-
-   Run in your terminal:
-
-   ```bash title="Git Clone"
-   # 1. Clone the template
-   git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
-
-   # 2. Enter the directory
-   cd my-blog-content
-   ```
-
-   ![Git Clone Output](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
-
-3. **Reset Remote URL to Your Private Repo**
-
-   ```bash title="Git Remote"
-   # Point remote origin to your new private repository
-   git remote set-url origin git@github.com:YOUR_USERNAME/my-blog-content.git
-
-   # Verify remote URL
-   git remote -v
-   ```
-
-   ![Git Remote Output](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
-
-4. **Push to Your Private Repository**
-
-   ```bash title="Git Push"
-   git push -u origin main
-   ```
-
-   ![Git Push Output](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
-:::
-
-Refresh your GitHub page to see the repository ready for authoring:
-
-![GitHub Repo Final Page](/images/content-separation/01-quickstart/02-init/06-repo-final-page.png)
-
----
-
-## Content Repository Structure and Mapping
-
-```file-tree title="Content Repository Structure & Mount Mapping"
-shirone-content/
-├── .github/workflows/       # GitHub Actions workflows
-│   └── trigger-build.yml.example # Trigger workflow template
-├── config/                  # YAML configurations -> Compiled to src/user/user-config.ts
-│   ├── site.yaml            # Site identity, colors, and banner settings
-│   ├── profile.yaml         # Author profile and social links
-│   └── footer.html          # Custom footer HTML -> Mapped to src/config/FooterConfig.html
-├── content/                 # Posts and moments -> Mapped to src/content/
-│   ├── posts/               # Markdown and MDX articles
-│   ├── moments/             # Microblog moments
-│   ├── series/              # Serial post series entities -> Mapped to src/content/series/
-│   └── spec/                # About and spec pages
-├── data/                    # Structured data entities -> Mapped to src/data/
-│   ├── anime.ts             # Anime tracking data and snapshots
-│   ├── compass.ts           # Navigation recommendations and compass links
-│   ├── devices.ts           # Hardware devices
-│   ├── friends.ts           # Friends and blogroll
-│   ├── games.ts             # Games
-│   ├── music.ts             # Local music tracks and playlists
-│   ├── projects.ts          # Open source projects
-│   ├── skills.ts            # Technical skills
-│   └── timeline.ts          # Career milestones
-├── assets/                  # High-resolution media -> Mapped to src/assets/ (Built-in optimization)
-│   └── images/
-├── public/                  # Raw static assets -> Mapped to public/ (Published as-is)
-│   ├── images/
-│   └── assets/
-└── shirone.content.json     # Content repo metadata identifier
+```bash
+pnpm content:eject          # print the plan without modifying files
+pnpm content:eject --yes    # write to ../shirone-content by default
 ```
 
----
+::: warning Commit your work first
+`content:eject` modifies `.gitignore` and the Git index. It refuses to run when the working tree has uncommitted changes. Commit or stash your changes before running the command.
+:::
 
-## Next Steps
+Use `--out` to specify a different directory:
 
-- Head to [Local Preview & Debugging](/en/guide/content-separation/local-preview/): Start local development server with real-time watch mode
+```bash
+pnpm content:eject --yes --out ../my-blog-content
+```
+
+On Windows PowerShell, use `pnpm.cmd`.
+
+The command executes five actions:
+
+1. Copies `src/content/`, `src/data/`, `src/assets/`, and `public/` to the target directory.
+2. Generates `config/site.yaml`, `config/profile.yaml`, and `footer.html` from the current site configuration. Other domains remain default.
+3. Writes `shirone.content.json` in the theme repo root, pointing the content source to the target directory.
+4. Appends ignore rules to `.gitignore` and untracks these files from the Git index. Local files remain on disk.
+5. Writes `shirone.content.json`, a README, and `.github/workflows/trigger-build.yml` in the content repo.
+
+Commit this change in the theme repo:
+
+```bash
+git add -A
+git commit -m "chore: switch to a dual-repo setup"
+```
+
+> Local files are not deleted. `pnpm dev` still works as expected. The only difference is that the theme repo no longer tracks these files.
+
+### Push to GitHub
+
+1. Create an **empty private repository** on GitHub. Do not initialize it with a README, `.gitignore`, or license.
+2. Enter the exported directory and push:
+
+```bash
+cd ../shirone-content
+git init -b main
+git add .
+git commit -m "chore: initialize content repository"
+git remote add origin git@github.com:YOUR_NAME/my-blog-content.git
+git push -u origin main
+```
+
+![Creating a private repository on GitHub](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
+
+The repository must be private. A public repository exposes drafts, original photos, and site configuration.
+
+## Option 2: start from the official template
+
+1. Create an empty private repository on GitHub.
+2. Clone the official template and point its remote URL to your repository:
+
+```bash
+git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
+cd my-blog-content
+git remote set-url origin git@github.com:YOUR_NAME/my-blog-content.git
+git remote -v
+git push -u origin main
+```
+
+The template includes sample posts, sample images, and complete configuration files. Replace them as needed.
+
+## Content repo layout and mapping
+
+```file-tree title="Content repo and its targets in the theme repo"
+shirone-content/
+├── config/                  # site config, compiled into src/user/user-config.ts
+│   ├── site.yaml            # site name, URL, theme color, banner
+│   ├── profile.yaml         # avatar, name, social links
+│   ├── nav-bar.yaml         # top navigation
+│   ├── sidebar.yaml         # sidebar layout and widgets
+│   └── ...                  # other domains, see Configuration Overlay
+├── content/                 # posts and page copy, mapped to src/content/
+│   ├── posts/               # blog posts
+│   ├── moments/             # short posts
+│   ├── series/              # series
+│   └── spec/                # about and friends page copy
+├── data/                    # structured data, mapped to src/data/
+│   ├── projects.ts          # projects
+│   ├── friends.ts           # friend links
+│   ├── skills.ts            # skills
+│   └── ...
+├── assets/                  # images to optimize, mapped to src/assets/
+│   └── images/
+├── public/                  # files served as-is, mapped to public/
+│   ├── images/
+│   └── assets/
+└── shirone.content.json     # repo metadata (not read by the theme)
+```
+
+Important details:
+
+- The `assets/` directory can be deleted entirely; the site then falls back to the theme's default images. If you keep it, include every image the site references (banner, avatar, covers). A folder containing only a placeholder breaks image loading.
+- `shirone.content.json` in the content repo only describes the repository itself. It is **not used during the build**. The file that selects the content source lives in the theme repo root. See [Content Sources](/en/guide/content-separation/content-sources/#manifest).
+- `docs/`, `.github/`, `.vscode/`, and `scripts/` are not copied to the theme repo, so placing them in the content repo will not impact the build.
+
+## Verify
+
+In the theme repo:
+
+```bash
+pnpm content:status
+```
+
+The output shows the content source type, path or Git URL, and the resolved commit SHA. `external` means the content repo is connected; `local` means the theme's own content is still in use.
+
+Run a sync command:
+
+```bash
+pnpm content:sync
+```
+
+The command prints the number of files synced and the content commit SHA.
+
+## Next steps
+
+[Local Preview & Debugging](/en/guide/content-separation/local-preview/): verify posts render properly before writing regularly.

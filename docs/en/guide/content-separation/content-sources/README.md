@@ -1,131 +1,105 @@
 ---
-title: Content Sources and Environment Variables
+title: Content Sources
 createTime: 2026/11/03 16:00:00
 permalink: /en/guide/content-separation/content-sources/
 ---
 
-`pnpm content:sync` decides where content comes from before the build starts. Single-repo setups need no configuration. Dual-repo setups use environment variables or the content repo's `shirone.content.json` to point at a source.
+`pnpm content:sync` decides where content originates before each build. A single-repo setup needs no configuration. The dual-repo setup uses environment variables or a manifest file in the theme repo root.
 
-This page covers source precedence, variable meanings, and the common setups. Platform-specific build settings stay in [Cloud Deploy Hook Integrations](/en/guide/content-separation/deploy-hooks/).
+## Resolution order
 
-## Precedence
+The system checks configurations in the following order and stops at the first match:
 
-Content sources are resolved in this order. The first available source wins:
+1. `SHIRONE_CONTENT_SYNC=0`: disables syncing and stays in single-repo mode.
+2. `CONTENT_DIR`: path to a local content repository.
+3. `CONTENT_REPO_URL`: Git URL of a remote content repository.
+4. `source` declaration in `shirone.content.json` at the theme repo root.
+5. None of the above: uses the content bundled with the theme.
 
-1. `SHIRONE_CONTENT_SYNC=0`: disable sync and return to single-repo mode
-2. `CONTENT_DIR`: local content repo path
-3. `CONTENT_REPO_URL`: remote Git content repo URL
-4. `source` in `shirone.content.json`
-5. None of the above: use the content bundled with the theme repo
+`CONTENT_DIR` takes precedence over `CONTENT_REPO_URL`. If a local checkout path is set, it is used even when a remote URL is also configured.
 
-`CONTENT_DIR` takes precedence over `CONTENT_REPO_URL`. If a local content checkout is configured, it is used even when a remote URL is also present.
-
-Environment variable sources also have an order:
+Environment variable loading follows this priority order:
 
 ```text
 process environment > .env.local > .env
 ```
 
-`.env` and `.env.local` only affect local commands and scripts that read them. Platform builders do not read these files from the repo; configure variables in the platform dashboard instead.
+`.env` and `.env.local` only affect local commands. Platform build machines do not read repository `.env` files; configure environment variables in the platform dashboard instead.
 
 ## Variables
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `CONTENT_DIR` | Local content repo path, useful for local preview and debugging | None |
-| `CONTENT_REPO_URL` | Git URL of the remote content repo | None |
-| `CONTENT_REPO_REF` | Branch, tag, or commit SHA in the content repo | `main` |
+| `CONTENT_DIR` | Local content repo path | none |
+| `CONTENT_REPO_URL` | Remote content repo URL | none |
+| `CONTENT_REPO_REF` | Branch, tag, or commit SHA | `main` |
 | `CONTENT_SYNC_PULL` | Set to `false` to reuse `.content-src/` without fetching | `true` |
-| `SHIRONE_CONTENT_SYNC` | Set to `0`, `false`, `off`, or `no` to disable sync | Unset |
-| `GIT_TERMINAL_PROMPT` | Set to `0` to stop Git from waiting for terminal input | Unset |
+| `SHIRONE_CONTENT_SYNC` | Set to `0`, `false`, `no`, or `off` to disable syncing | unset |
+| `GIT_TERMINAL_PROMPT` | Set to `0` to prevent Git from prompting interactively | unset |
 
 ### CONTENT_DIR
-
-Points to a content repo already cloned locally:
 
 ```ini title=".env"
 CONTENT_DIR="../shirone-content"
 ```
 
-Relative paths are resolved from the theme repo root. This works well with `pnpm content:watch`, so you do not need to fetch the remote repo while writing.
+Relative paths resolve from the theme repo root. This is standard for local preview, especially when paired with `pnpm content:watch`.
 
 ### CONTENT_REPO_URL
-
-Points to the remote content repo, usually for a platform builder:
 
 ```ini title=".env"
 CONTENT_REPO_URL="https://github.com/OWNER/shirone-content.git"
 ```
 
-Private repos need a token in the URL:
+Private repositories require an access token in the URL:
 
 ```text
 https://x-access-token:<TOKEN>@github.com/OWNER/shirone-content.git
 ```
 
-The sync script hides credentials in log output. Even so, do not put a token-bearing URL in repository files, build scripts, or example configs.
+The sync script automatically redacts credentials from logs. Even so, never commit URLs containing access tokens to public repositories.
 
 ### CONTENT_REPO_REF
 
-Selects a branch, tag, or commit SHA in the content repo:
-
-```ini title=".env"
-CONTENT_REPO_REF="main"
-```
-
-When unset, it defaults to `main`; if the content repo's `shirone.content.json` declares `source.ref`, that value is used. `CONTENT_REPO_REF` applies to both `CONTENT_REPO_URL` and a Git source declared in the manifest.
-
-For an exact build, use the full commit SHA, not a short SHA or a branch name.
+When unset, the value defaults to `source.ref` in the manifest; if the manifest does not declare one, `main` is used. For reproducible builds, specify the full commit SHA rather than a short SHA or mutable branch name.
 
 ### CONTENT_SYNC_PULL
-
-Remote content is fetched by default. Set this to `false` to reuse the existing `.content-src/`:
 
 ```ini title=".env"
 CONTENT_SYNC_PULL="false"
 ```
 
-The working copy must match the current URL, ref, and commit, and must have no uncommitted changes. If it does not match, the command fails instead of fetching silently.
+Only reuses an existing `.content-src/`. The working copy must match the current URL, ref, and commit SHA exactly, with no uncommitted changes, or the command exits with an error.
 
 ### SHIRONE_CONTENT_SYNC
 
-Temporarily disables dual-repo sync:
+Used to temporarily revert to single-repo mode to verify whether content source configuration causes build issues. When disabled, `CONTENT_DIR` and `CONTENT_REPO_URL` are ignored.
 
-```ini title=".env"
-SHIRONE_CONTENT_SYNC="0"
-```
-
-Use it when checking whether the content source is configured correctly, or when you need to verify behavior in single-repo mode. Once disabled, `CONTENT_DIR` and `CONTENT_REPO_URL` are ignored.
-
-## Common setups
+## Common scenarios
 
 ### Local preview
-
-Create `.env` in the theme repo root:
 
 ```ini title=".env"
 CONTENT_DIR="../shirone-content"
 ```
-
-Then run:
 
 ```bash
 pnpm content:sync
 pnpm dev
 ```
 
-To preview while writing, run `pnpm content:watch` in a second terminal. See [Local Preview and Debugging](/en/guide/content-separation/local-preview/) for the full steps.
+Detailed instructions are available in [Local Preview & Debugging](/en/guide/content-separation/local-preview/).
 
 ### GitHub Actions
 
-The theme repo's official `deploy.yml.example` checks the content repo out to `.content-src/`, then points `CONTENT_DIR` at it:
+The theme repo's `deploy.yml.example` checks the content repo out to `.content-src/`, then points `CONTENT_DIR` to it:
 
 ```yaml
 env:
   CONTENT_DIR: .content-src
 ```
 
-The checkout step uses `CONTENT_REPO_TOKEN`:
+The checkout step uses `CONTENT_REPO_TOKEN`. That token is used exclusively for checkout; `content:sync` does not read it:
 
 ```yaml
 - uses: actions/checkout@v4
@@ -137,11 +111,9 @@ The checkout step uses `CONTENT_REPO_TOKEN`:
     persist-credentials: false
 ```
 
-This setup does not need `CONTENT_REPO_URL`. `CONTENT_REPO_TOKEN` is only for checkout; `content:sync` does not read it.
-
 ### Cloudflare Pages / Vercel / EdgeOne / Netlify
 
-Platform builders clone the theme repo themselves and cannot check out a second repository, so they use `CONTENT_REPO_URL`:
+Platform build machines clone only the theme repo and cannot check out a second repository directly, so use `CONTENT_REPO_URL`:
 
 ```text
 CONTENT_REPO_URL=https://x-access-token:<TOKEN>@github.com/OWNER/shirone-content.git
@@ -149,44 +121,78 @@ CONTENT_REPO_REF=main
 GIT_TERMINAL_PROMPT=0
 ```
 
-The platform runs `pnpm build`, which includes `content:sync`. Do not prepend `pnpm content:sync &&` to the build command.
+The platform runs `pnpm build`, which already includes the content sync. Do not prepend `pnpm content:sync &&`.
 
-## Private repos and tokens
+## Manifest
 
-- The token only needs `Contents: Read` on the content repo; it does not need access to the theme repo.
-- For a step-by-step pictorial guide on generating a Fine-grained PAT, see [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat).
-- Use HTTPS when embedding a token. SSH URLs require a private key on the builder, which most hosting platforms do not provide.
-- If the token is expired, revoked, or lacks content repo access, the log shows `Authentication failed`.
-- Do not commit `.env`, a token-bearing URL, or the token itself.
-- Use the platform's environment variables or secrets for platform builds; do not rely on a `.env` file in the repo.
+`shirone.content.json` in the theme repo root is an optional configuration file that fixes content source settings. A template is provided at `shirone.content.example.json`; copy and rename it:
 
-## Troubleshooting
+```json title="shirone.content.json"
+{
+  "schemaVersion": 1,
+  "source": {
+    "type": "git",
+    "url": "https://github.com/OWNER/shirone-content.git",
+    "ref": "main"
+  },
+  "mounts": {
+    "content": "src/content",
+    "data": "src/data",
+    "assets": "src/assets",
+    "public": "public"
+  },
+  "keep": [],
+  "prune": true
+}
+```
+
+| Field | Purpose |
+| --- | --- |
+| `schemaVersion` | Manifest schema version, currently `1` |
+| `source.type` | `path` for a local directory or `git` for a remote repository |
+| `source.path` | Local directory, relative to the theme repo root |
+| `source.url` / `source.ref` | Remote repository URL and corresponding branch, tag, or commit SHA |
+| `mounts` | Mount mappings. Set a value to `null` to disable that mount point |
+| `keep` | Whitelisted files excluded from pruning; supports `*` and `**` |
+| `prune` | Set to `false` to copy incrementally without deleting removed files |
+
+Running `pnpm content:eject` generates this file automatically.
+
+The content repo also contains a `shirone.content.json` file, but it only records repository metadata and is never read during builds. To modify content source configuration, update the manifest file in the theme repo.
+
+## Private repositories and tokens
+
+- The token only requires `Contents: Read` on the content repo, with no permissions needed on the theme repo.
+- URLs with tokens must use HTTPS. SSH requires pre-configured private keys on build machines, which most static hosting platforms do not support.
+- Expired or revoked tokens, or tokens lacking content repo access, produce `Authentication failed` errors in build logs.
+- See [Access Tokens](/en/guide/content-separation/pat/) for token creation steps.
+- Never commit `.env`, token strings, or URLs containing tokens to public repositories.
+
+Public content repositories do not require a token. Use `https://github.com/OWNER/REPO.git` directly.
+
+## FAQ
 
 ::: collapse
-- `CONTENT_REPO_URL` is set, but the build still uses the theme repo's bundled content
+- `CONTENT_REPO_URL` is set, but the build still uses theme-bundled content
 
-  Check whether `CONTENT_DIR` is also set; it has higher precedence. Also confirm the variable is configured where the builder reads it, not only in a local `.env`.
+  Check whether `CONTENT_DIR` is also configured; it has higher priority. Confirm the variable is set in the hosting platform's build environment, not just locally in `.env`.
 
-- The content branch changed, but the build still has old content
+- Content repo updated, but the build still produces older content
 
-  Check whether `CONTENT_REPO_REF` is pinned to an old branch or SHA. Platform build caches can also keep an old `.content-src/`. Clear the cache and rebuild if needed.
+  Verify whether `CONTENT_REPO_REF` is pinned to an older branch or commit SHA. Platform build caches may also retain stale copies of `.content-src/`; clear the cache and rebuild.
 
 - `CONTENT_SYNC_PULL=false` fails
 
-  This setting requires `.content-src/` to match the current URL, ref, and commit, and requires a clean working copy. Run a normal sync first, or delete `.content-src/` and rebuild.
+  This mode requires `.content-src/` to match the active URL, ref, and commit SHA exactly, with a clean working copy. Run a standard sync first, or delete `.content-src/` and rebuild.
 
-- The URL contains special characters
+- The repository URL contains special characters
 
-  Token-bearing URLs need URL encoding. Prefer the `x-access-token:<TOKEN>` form and avoid special characters in usernames or passwords.
-
-- Does a public content repo need a token
-
-  No. Use `https://github.com/OWNER/REPO.git` directly. Only private repos need a token-bearing URL.
+  URLs containing access tokens must be URL-encoded. Prefer the `x-access-token:<TOKEN>` format to avoid special characters in username or password fields.
 :::
 
 ## Related pages
 
-- [Local Preview and Debugging](/en/guide/content-separation/local-preview/)
-- [Cross-Repo CI Automation](/en/guide/content-separation/ci-dispatch/)
-- [Cloud Deploy Hook Integrations](/en/guide/content-separation/deploy-hooks/)
-- [CLI Workflows](/en/guide/content-separation/cli-workflows/)
+- [Local Preview & Debugging](/en/guide/content-separation/local-preview/)
+- [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/)
+- [Deployment Hooks](/en/guide/content-separation/deploy-hooks/)
+- [CLI Toolchain](/en/guide/content-separation/cli-workflows/)

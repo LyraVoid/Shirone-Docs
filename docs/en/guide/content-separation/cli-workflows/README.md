@@ -1,206 +1,127 @@
 ---
-title: CLI Workflows & Toolchain
+title: CLI Toolchain
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/cli-workflows/
 ---
 
-Shirone provides a dedicated suite of CLI commands engineered for content separation. From external drafting to ==zero-disk memory validation=={.tip}, and bi-directional synchronization to safe snapshot resets, everything is executable via intuitive commands.
+Content separation commands run in the theme repo root. Day-to-day writing only requires `content:watch`; use `content:status` and `content:validate` when debugging configuration or structure issues.
 
----
+## Commands
 
-## CLI Command Quick Reference
+| Command | Purpose | Modifies files |
+| --- | --- | --- |
+| `pnpm content:sync` | Copy content repo into theme repo | Yes, writes to `src/content/` and targets |
+| `pnpm content:watch` | Watch content repo and sync on save | Yes |
+| `pnpm content:validate` | Check directory structure and YAML fields | No for `src/`; remote sources update `.content-src/` |
+| `pnpm content:status` | Show active content source and commit SHA | No |
+| `pnpm content:export` | Export tuned configuration back to content repo | Yes, writes into content repo |
+| `pnpm content:clean` | Remove materialized copies and restore samples | Yes, creates a backup by default |
+| `pnpm content:eject` | Split a single repo into two | Yes, creates the content repo |
+| `pnpm anime:sync` | Download anime lists and covers | Yes, writes local snapshots |
 
-| Command | Purpose | Typical Use Case | Disk Mutation |
-| :--- | :--- | :--- | :--- |
-| `pnpm content:sync` <Badge text="Frequent" type="tip" /> | Single full or incremental sync | Sync content repository files into theme workspace before preview or build | Writes to theme workspace |
-| `pnpm content:watch` <Badge text="Frequent" type="tip" /> | Live incremental file watcher | External editor drafting with live browser preview | Auto writes on file save |
-| `pnpm content:validate` <Badge text="Safety Check" type="info" /> | In-memory schema & type validation | Fast syntax and typo diagnosis after editing YAML | ==In-memory check, zero disk writes=={.tip} |
-| `pnpm anime:sync` <Badge text="Data Sync" type="tip" /> | Anime watchlist & cover sync | Download watchlist data and covers locally after configuring `config/anime.yaml` | Writes JSON cache & covers |
-| `pnpm content:status` <Badge text="Inspection" type="info" /> | Repository and diff inspection | Check content source, branch, commit SHA, and uncommitted diffs | Read-only inspection |
-| `pnpm content:export` <Badge text="Export" type="warning" /> | Reverse config export | Export modified YAML settings back into content repository | Writes to content repo |
-| `pnpm content:clean` <Badge text="Snapshot Reset" type="warning" /> | Clean reset with auto backup | Restore clean theme workspace with automatic snapshot backup | Cleans local cache |
-| `pnpm content:eject` <Badge text="One-Time Eject" type="tip" /> | One-click decoupling eject | Upgrade monolithic repository to decoupled dual repositories | Generates standalone repo |
+## Common commands
 
----
+### content:sync
 
-## 1. Single Sync: `content:sync` <Badge text="Core" type="tip" />
-
-```bash title="content:sync"
-# 1. Incremental sync (syncs external content and merges configuration)
+```bash
 pnpm content:sync
-
-# 2. Dry-run mode (previews changes without writing to disk)
-pnpm content:sync --dry-run
+pnpm content:sync --dry-run   # compare only, write nothing
 ```
 
-### Key Mechanics
-- **Automatic Content Source Detection**: Checks `CONTENT_DIR` first, falling back to `CONTENT_REPO_URL` for remote Git cloning;
-- **Smart Incremental Diffing**: Only copies changed files to eliminate unnecessary disk I/O;
-- **Automated Config Compilation**: Compiles YAML files into typed `src/user/user-config.ts` bridge module.
+Reads the declared content source, copies files into the theme repo's standard directories, and compiles `config/*.yaml` into `src/user/user-config.ts`. Both `pnpm dev` and `pnpm build` run this automatically before starting.
 
----
+Supported flags: `--dry-run`, `--no-prune`, `--quiet`.
 
-## 2. Live Watch Mode: `content:watch` <Badge text="Recommended for Writing" type="tip" />
+### content:watch
 
-```bash title="content:watch"
+```bash
 pnpm content:watch
 ```
 
-### Key Mechanics
-- Millisecond-level debounced watcher syncing only modified files;
-- Modifying any `config/*.yaml` automatically recompiles TypeScript bridge and triggers ==hot module replacement=={.tip};
-- Pairs with `pnpm dev` running in a companion terminal window.
+Watches the local content directory and incrementally syncs modified files on save. Run it alongside `pnpm dev` in a separate terminal window. It only operates with local directory sources.
 
----
+### content:validate
 
-## 3. In-Memory Validation: `content:validate` <Badge text="Zero Disk Writes" type="info" />
-
-```bash title="content:validate"
+```bash
 pnpm content:validate
 ```
 
-### Key Mechanics
-- **Pure In-Memory Validation**: Parses YAML, validates schemas, and checks TypeScript types in memory;
-- **Zero Disk Writes**: ==Never writes temporary files to disk=={.tip};
-- **Intelligent Typo Suggestions**: Outputs line numbers and suggests correct property names for misspelled keys.
+Checks the content repo's directory structure, mount conflicts, and YAML field types. It is functionally equivalent to `content:sync --dry-run`.
 
-> [!TIP] Recommended Before Committing
-> Run `pnpm content:validate` before pushing commits to catch YAML formatting or typo mistakes early.
+This command does **not** validate post frontmatter. Frontmatter schemas are verified by `astro sync` or during full site builds.
 
----
+With a remote Git source, this command still fetches and updates `.content-src/`, requiring network access on the initial run. It only skips writing to `src/` and generating the configuration bridge.
 
-## 4. Status Inspection: `content:status`
+The official validation workflow executes two steps: `content:validate`, followed by `content:sync && astro sync`. The second step provides comprehensive diagnostics when debugging post metadata.
 
-```bash title="content:status"
+### content:status
+
+```bash
 pnpm content:status
-
-# Inspect remote Git connection and latest commit:
-pnpm content:status --remote
+pnpm content:status --remote   # also check remote branch over the network
 ```
 
----
+Outputs diagnostic information for the active content source:
 
-## 5. Reverse Config Export: `content:export`
+- Running mode (`local` or `external`);
+- Local directory path or remote Git URL;
+- Resolved commit SHA;
+- Active configuration overrides and total post count.
 
-```bash title="content:export"
-pnpm content:export          # Dry run: prints export plan
-pnpm content:export --yes    # Execute export
+Run this command when verifying which repository is active. It runs offline by default and only contacts the remote when passed `--remote`.
+
+## Other commands
+
+::: details Show the four less common commands
+
+### content:export
+
+Use this command when configuration adjustments made in the theme repo need to be exported back to the content repo:
+
+```bash
+pnpm content:export         # preview mode, list files to export
+pnpm content:export --yes   # apply export
 ```
 
-### Key Mechanics
-- **Minimal Overlay Export**: Only exports keys differing from theme defaults, ==avoiding hardcoded default bloat==;
-- **Protects Future Upgrades**: Unmodified keys inherit upstream improvements automatically.
+Only fields differing from default values are exported, ensuring YAML files do not freeze default values permanently and future theme updates apply smoothly. Supported flags: `--config`, `--posts`, `--prune`, `--out`, `--force`.
 
----
+### content:clean
 
-## 6. Safe Reset: `content:clean`
+Restores the theme repo to clean sample content:
 
-```bash title="content:clean"
-pnpm content:clean          # Dry run: prints clean plan
-pnpm content:clean --yes    # Execute clean
+```bash
+pnpm content:clean          # preview mode, print cleanup plan
+pnpm content:clean --yes    # apply, backing up to .content-backup/clean-<timestamp>/
 ```
 
-### Snapshot Backup & Recovery
-- **Automatic Snapshot Backup**: Automatically archives current local content to `.content-backup/clean-<timestamp>/` before removal;
-- **Reset Theme Workspace**: Cleans synced files and restores default demo content;
-- **Source Repository Untouched**: External content repository remains completely unaffected.
+This command only cleans materialized copies inside the theme repo; the content repo remains untouched. To revert, copy files back from the backup directory. `--no-backup` skips snapshots and is generally not recommended.
 
-> [!NOTE] Restoring Snapshot Backup
-> To restore workspace state from backup:
->
-> ::: tabs
-> @tab Windows (PowerShell)
-> ```powershell
-> Copy-Item -Recurse -Force .\.content-backup\clean-<timestamp>\* .
-> ```
-> @tab Linux / macOS (Bash)
-> ```bash
-> cp -a .content-backup/clean-<timestamp>/. .
-> ```
-> :::
+### content:eject
 
----
+Migrates a single-repo blog to a dual-repo setup. See [Creating a Content Repository](/en/guide/content-separation/init-repo/).
 
-## 7. One-Click Decoupling Eject: `content:eject`
-
-```bash title="content:eject"
-pnpm content:eject          # Dry run: preview migration plan
-pnpm content:eject --yes    # Perform eject (default: ../shirone-content)
-pnpm content:eject --yes --out ../my-content  # Custom destination
+```bash
+pnpm content:eject                        # preview mode
+pnpm content:eject --yes                  # apply, default output ../shirone-content
+pnpm content:eject --yes --out ../my-content
 ```
 
----
+### anime:sync
 
-## 8. Anime & External Data Sync: `anime:sync` <Badge text="Data Sync" type="tip" />
-
-```bash title="anime:sync"
-# 1. Smart incremental sync (skips network requests if snapshots are fresh, recommended for CI)
-pnpm anime:sync --if-stale
-
-# 2. Force sync all enabled providers
-pnpm anime:sync
-
-# 3. Target specific providers individually
-pnpm anime:sync --provider bangumi
-pnpm anime:sync --provider bilibili
-pnpm anime:sync --provider all
+```bash
+pnpm anime:sync --if-stale           # skip if snapshot is fresh; use in builds
+pnpm anime:sync                      # force full refresh
+pnpm anime:sync --provider bangumi   # sync single provider only
 ```
 
-### Purpose & Relationship with Content Separation
-In content separation mode, you configure your Bangumi username or Bilibili UID in `config/anime.yaml` within your content repo. Unlike standard markdown text, **anime tracking data requires fetching from external APIs, sanitizing, and downloading local anti-hotlinking covers**.
+Snapshot freshness is controlled by `snapshot.staleAfterDays` in `config/anime.yaml`, defaulting to 30 days. When no providers are configured, the command exits cleanly without interrupting builds. See [Anime Page](/en/guide/pages/anime/).
 
-Therefore, after editing `config/anime.yaml`, you must run `anime:sync` to fetch external data before running the build.
-
-### Core Mechanism & Flags
-- **Smart Stale Cache Check (`--if-stale`)**: Compares existing snapshot modification dates against `snapshot.staleAfterDays` (default 30 days). If snapshots are still valid, network requests are skipped and the command exits cleanly (exit 0), avoiding platform rate limits and significantly speeding up CI builds;
-- **Local Cover Downloading**: When `cover.mode: "local"`, covers are converted to WebP and stored under `public/assets/anime/covers/`;
-- **Non-blocking Exit**: If no provider is enabled or configured, the command prints an informational notice and exits with code 0 without failing your pipeline.
-
-> [!TIP] Recommended Full Build Pipeline
-> In CI/CD or local release workflows, use this unified command chain:
-> ```bash
-> pnpm anime:sync --if-stale && pnpm build
-> ```
-
----
-
-## Manifest & Environment Precedence
-
-### Manifest File: `shirone.content.json`
-
-```json title="shirone.content.json"
-{
-  "schemaVersion": 1,
-  "source": {
-    "type": "path",
-    "path": "../shirone-content"
-  },
-  "mounts": {
-    "content": "src/content",
-    "data": "src/data",
-    "assets": "src/assets",
-    "public": "public"
-  },
-  "keep": ["src/data/my-special-data.ts"],
-  "prune": true
-}
-```
-
-### Environment Precedence
-
-Content sources resolve in this order: `SHIRONE_CONTENT_SYNC=0` > `CONTENT_DIR` > `CONTENT_REPO_URL` > `source` in `shirone.content.json`. Between env files, the order is ==process environment > .env.local > .env==.
-
-For each variable, private repo URLs, and the three deployment setups, see [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/).
-
-::: details Expand to View Advanced CLI Flags
-- `--dry-run`: Supported by mutating commands; prints execution plan without modifying disk;
-- `--verbose`: Outputs per-file timing, MD5, and mtime comparison details;
-- `--force`: Overrides conflict checks and forces synchronization;
-- `--json`: Emits machine-readable JSON output for CI pipeline parsing.
 :::
 
----
+## Manifest
 
-## Next Steps
+`shirone.content.json` in the theme repo root pins the content source and mount mappings. Field definitions are available in [Content Sources](/en/guide/content-separation/content-sources/#manifest); the template is `shirone.content.example.json`.
 
-- Head to [Config Overlay Principles](/en/guide/content-separation/config-overlay/): Understand minimal overlay rules, object merging, and array replacements
+## Next steps
+
+[Configuration Overlay](/en/guide/content-separation/config-overlay/): object merge, array replacement rules, and file categorization.

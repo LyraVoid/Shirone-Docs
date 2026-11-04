@@ -1,139 +1,115 @@
 ---
-title: 本地预览与实时调试
+title: 本地预览与调试
 createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/local-preview/
 ---
 
-在将文章或配置推送到远端之前，你可以在本地启动开发服务器，实时查看 Markdown 排版与样式效果。
-
----
+双仓模式下，主题仓负责构建与渲染，内容仓负责管理文章与配置。本地预览需要让主题仓获知内容仓的存放路径。
 
 ## 准备工作
 
-确保电脑上已具备两个本地目录：
-1. **主题代码仓库**（例如本地路径为 `D:\Code\Shirone`）；
-2. **个人内容仓库**（例如本地路径为 `D:\Code\my-blog-content`）。
+确认满足以下两项前置条件：
 
-并在主题代码仓库目录下已经执行过依赖安装：
-- Windows：`pnpm.cmd install`
-- Linux / macOS：`pnpm install`
+1. 主题仓已完成依赖安装（`pnpm install`）；
+2. 内容仓已存在于本地磁盘目录。
 
----
+若内容仓是通过 `content:eject` 迁出的，主题仓根目录的 `shirone.content.json` 已写入该路径，可直接跳转到[启动预览](#启动预览)。
 
-## 方式一：快速单次同步预览 <Badge text="快捷" type="info" />
+其余情况需要指定内容仓路径，二选一即可：
 
-:::: steps
-1. **配置路径并执行内容同步**
+- 在终端中临时设置环境变量；
+- 在主题仓根目录新建 `.env`，适合长期本地开发。
 
-   进入**主题代码仓库**根目录，依次执行：
+```ini title=".env"
+CONTENT_DIR="../shirone-content"
+```
 
-   ::: tabs
-   @tab Windows (PowerShell)
-   ```powershell title="PowerShell"
-   # 1. 设置内容仓库的本地路径（请替换为你电脑上的真实绝对路径）
-   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
+`CONTENT_DIR` 的相对路径以主题仓根目录为基准解析，亦可填写绝对路径。
 
-   # 2. 执行一次内容同步与配置合并
-   pnpm.cmd content:sync
+## 启动预览
 
-   # 3. 启动本地开发服务器
-   pnpm.cmd dev
-   ```
+### 方式一：同步单次后启动
 
-   @tab Linux / macOS (Bash / Zsh)
-   ```bash title="Bash"
-   # 1. 设置内容仓库的本地路径
-   export CONTENT_DIR="<你的内容仓库绝对路径>" # 例如 "/Users/yourname/Code/my-blog-content"
+适合仅查看页面渲染效果、无需频繁修改文件内容的场景。
 
-   # 2. 执行一次内容同步与配置合并
-   pnpm content:sync
-
-   # 3. 启动本地开发服务器
-   pnpm dev
-   ```
-   :::
-
-   设置内容路径并执行同步：
-
-   ![设置内容仓库路径与执行同步](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
-
-2. **启动本地开发服务器**
-
-   启动开发服务器并在终端查看输出：
-
-   ![终端启动开发服务器输出界面](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
-
-3. **在浏览器中查看效果**
-
-   终端输出本地访问地址后：
-
-   ```text title="Local Server"
-     Local    http://localhost:4321/
-   ```
-
-   在浏览器中打开 `http://localhost:4321/`，即可看到由你的私有内容仓库驱动的博客页面：
-
-   ![本地浏览器预览博客效果](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
-::::
-
----
-
-## 方式二：双终端边写边看（实时增量监听） <Badge text="推荐" type="tip" />
-
-如果你正在频繁撰写 Markdown 文章或调试 YAML 配置，反复手动执行同步命令较为繁琐。
-你可以开启 ==实时增量监听模式=={.tip}：
-
-::: steps
-1. **启动本地预览服务（终端窗口 1）**
-
-   ```powershell title="Terminal 1 (Dev Server)"
-   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
-   pnpm.cmd dev
-   ```
-
-2. **启动实时增量监听（终端窗口 2）**
-
-   ```powershell title="Terminal 2 (Content Watcher)"
-   $env:CONTENT_DIR = "<你的内容仓库绝对路径>" # 例如 "D:\Code\my-blog-content"
-   pnpm.cmd content:watch
-   ```
+::: tabs
+@tab Windows (PowerShell)
+```powershell
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd content:sync
+pnpm.cmd dev
+```
+@tab Linux / macOS
+```bash
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm content:sync
+pnpm dev
+```
 :::
 
-此时，只要你在外部编辑器（如 Obsidian、VS Code、Typora）中按 `Ctrl + S` 保存任何 Markdown 文件或修改 YAML 配置，监听器会自动捕获增量变更并同步至代码仓，触发浏览器的 ==局部热重载=={.tip}，体验与单仓开发完全一致。
+终端输出 `Local http://localhost:4321/` 后，在浏览器中打开对应地址即可。
 
-> [!TIP] 简化环境变量配置
-> 你可以直接在主题代码仓根目录下新建 `.env` 文件，写入内容仓库路径，这样无需每次在终端手动设置环境变量：
->
-> ```ini title=".env"
-> CONTENT_DIR="<你的内容仓库绝对路径>" # 例如 "D:/Code/my-blog-content"
-> ```
->
-> `CONTENT_DIR`、`CONTENT_REPO_URL` 与 `CONTENT_REPO_REF` 的区别见[内容源配置与环境变量](/guide/content-separation/content-sources/)。
+`content:sync` 会将内容仓文件复制到主题仓的 `src/content/`、`src/data/`、`src/assets/` 与 `public/`，并编译生成配置桥接文件 `src/user/user-config.ts`。
 
----
+### 方式二：边写边预览
 
-## 常见疑问排查
+适合持续编写文章或调整 YAML 配置。分别在两个终端中进入主题仓：
+
+::: tabs
+@tab Windows (PowerShell)
+```powershell
+# 终端 1
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd dev
+
+# 终端 2
+$env:CONTENT_DIR = "D:\Code\my-blog-content"
+pnpm.cmd content:watch
+```
+@tab Linux / macOS
+```bash
+# 终端 1
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm dev
+
+# 终端 2
+export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+pnpm content:watch
+```
+:::
+
+在 Markdown 编辑器中保存文件后，`content:watch` 会自动同步变更，浏览器随之热重载刷新。配置了 `.env` 文件后，两个终端均无需重复设置 `CONTENT_DIR`。
+
+## 确认内容源
+
+不确定当前读取的具体仓库时，在主题仓根目录执行：
+
+```bash
+pnpm content:status
+```
+
+命令会列出当前内容源类型、解析到的 commit SHA，以及生效的配置文件。若需核对远端分支是否更新，添加 `--remote` 参数发起网络检查。
+
+## 常见问题
 
 ::: collapse
-- 如何退出本地开发？
+- 提示内容目录不存在
 
-  在对应终端窗口中按下快捷键 `Ctrl + C` 即可停止开发服务器或监听器。
+  检查 `CONTENT_DIR` 是否指向真实存在的目录，以及该目录下是否包含 `content/` 或 `config/`。路径中带有空格时需用引号包裹。
 
-- 报错提示找不到路径
+- 修改了配置但页面未更新
 
-  请检查 `CONTENT_DIR` 的路径是否为有效的绝对路径，且该目录下包含合规的 `config/` 或 `content/` 文件夹。
+  运行 `pnpm content:validate`，检查 YAML 中是否存在拼错的字段。数组字段采用整体替换策略，仅声明新增项不会生效，必须列出完整的配置列表。详见[配置覆盖](/guide/content-separation/config-overlay/)。
 
-- 修改了外部图片但浏览器未更新
+- 添加了新图片但页面未展示
 
-  确保图片放置在内容仓的 `assets/` 或 `public/` 目录下。若属于深层嵌套目录中的新增文件，重新运行一次 `pnpm content:sync` 即可完成全量索引刷新。
+  图片需放置在内容仓的 `assets/` 或 `public/` 目录下。在深层目录中添加文件后，建议重新执行一次 `pnpm content:sync`。
 
-- 修改了 `config/anime.yaml` 番剧配置，但在本地预览中未生效
+- 修改 `config/anime.yaml` 后页面缺少追番数据
 
-  修改 YAML 配置文件本身不会自动联网抓取数据。请在代码仓终端运行 `pnpm anime:sync --if-stale`（首次或想强制刷新时运行 `pnpm anime:sync`），把追番列表和封面图片下载到本地，然后再运行 `pnpm dev` 预览。正式构建发布时执行 `pnpm anime:sync --if-stale && pnpm build` 即可。详见 [番剧页指南](/guide/pages/anime/)。
+  修改 YAML 不会自动拉取网络数据。在主题仓执行 `pnpm anime:sync --if-stale` 下载追番列表与封面后再行预览。首次配置或需要强制刷新时使用 `pnpm anime:sync`，详见[番剧页](/guide/pages/anime/)。
 :::
-
----
 
 ## 下一步
 
-- 前往 [CLI 命令行工具链](/guide/content-separation/cli-workflows/)：掌握预检、状态检查、反向导出与安全重置命令体系
+[内容源配置](/guide/content-separation/content-sources/)：了解本地路径、远程仓库与清单文件的解析优先级。

@@ -1,197 +1,139 @@
 ---
-title: 初始化私有内容仓库
+title: 初始化内容仓
 createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/init-repo/
 ---
 
-构建独立的内容仓库有两种途径，请根据你的现状选择：
+内容仓可以自行创建，也可以基于官方模板初始化。两种方式生成的结构完全相同，区别在于起点不同。
 
-- [方式一：使用 content:eject 一键解耦迁出](#方式一-使用-content-eject-一键解耦迁出) <Badge text="推荐" type="tip" />：适合已在本地克隆主题代码仓，希望一键将文章与配置抽离为独立内容仓的博主；
-- [方式二：从官方模板仓库克隆初始化](#方式二-从官方模板仓库克隆初始化) <Badge text="从零建站" type="info" />：适合全新起步、直接以双仓形态建站的博主。
+| 方式 | 适合场景 | 是否保留现有文章 |
+| --- | --- | --- |
+| `content:eject` 一键迁出 | 已在主题仓中编写过文章 | 是，文章和配置一并迁出 |
+| 克隆官方模板 | 全新开始搭建博客 | 否，仅包含示例内容 |
 
----
+## 方式一：从主题仓迁出
 
-## 方式一：使用 content:eject 一键解耦迁出 <Badge text="官方推荐" type="tip" />
+在**主题仓根目录**执行。先运行预演命令，确认计划无误后再正式执行：
 
-如果你已经在本地拥有主题代码仓库，使用主题内置的解耦向导是最便捷的初始化方式。
-
-### 核心特性
-- **全自动结构组装**：自动提取文章、动态、相册、数据实体，并生成合规的 `shirone.content.json` 清单与自动化触发工作流；
-- **最小化配置安全导出**：仅导出 `site.yaml` 与 `profile.yaml` 等核心身份标识，==绝不硬编码主题默认值==，保障未来主题升级平滑；
-- **代码仓安全防护**：自动在代码仓的 `.gitignore` 中追加忽略规则并安全取消 Git 跟踪，同时物理保留本地文件，本地开发预览完全不受影响；
-- **自动绑定本地路径**：自动将代码仓的开发环境与迁出的外部目录建立本地关联。
-
-> [!TIP] 零风险预演机制
-> `pnpm.cmd content:eject` 在未携带 `--yes` 参数时处于 ==预演模式=={.secondary}，仅在控制台打印迁移计划，不会修改磁盘中的任何文件。
-
-### 操作步骤
-
-:::: steps
-1. **在代码仓运行一键解耦命令**
-
-   打开终端进入你的**主题代码仓库**根目录，运行解耦命令：
-
-   ::: tabs
-   @tab Windows (PowerShell)
-   ```powershell title="PowerShell"
-   # 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
-   pnpm.cmd content:eject
-
-   # 2. 确认无误后执行迁出（默认导出至上一级目录的 ../shirone-content）
-   pnpm.cmd content:eject --yes
-
-   # 也可以通过 --out 参数指定自定义导出路径：
-   pnpm.cmd content:eject --yes --out "<目标路径>" # 例如 "D:\Code\my-blog-content"
-   ```
-
-   @tab Linux / macOS (Bash)
-   ```bash title="Bash"
-   # 1. 预演模式：查看即将迁出的文件清单（不修改磁盘文件）
-   pnpm content:eject
-
-   # 2. 确认无误后执行迁出
-   pnpm content:eject --yes
-
-   # 自定义导出路径
-   pnpm content:eject --yes --out "<目标路径>" # 例如 "/Users/yourname/Code/my-blog-content"
-   ```
-   :::
-
-2. **在 GitHub 上创建空白私有仓库**
-
-   - 登录 GitHub 账号，点击右上角 **+** 号选择 **New repository**；
-   - **Repository name**：建议命名为 `my-blog-content` 或 `shirone-content`；
-   - **Visibility**：==务必勾选 Private（私有仓库）=={.error}；
-   - **Initialize this repository with**：**不要勾选**任何初始化选项（保持完全空白）；
-   - 点击底部的 **Create repository** 创建仓库。
-
-   ![GitHub 新建私有仓库界面](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
-
-   > [!IMPORTANT] 必须勾选 Private
-   > 为了确保你的草稿文章、相册原图和站点私密配置不被公网抓取，==仓库可见性必须选择 Private=={.error}。
-
-3. **将导出的内容仓库推送到 GitHub**
-
-   打开终端进入刚刚导出的内容仓库目录，执行 Git 初始化与推送：
-
-   ```bash title="Git Push"
-   # 1. 进入导出的外部内容目录
-   cd ../shirone-content
-
-   # 2. 初始化 Git 仓库并提交
-   git init -b main
-   git add .
-   git commit -m "feat: 初始化博客私有内容仓库"
-
-   # 3. 关联你的 GitHub 私有仓库地址并推送
-   git remote add origin git@github.com:你的用户名/my-blog-content.git
-   git push -u origin main
-   ```
-::::
-
-至此，你的独立私有内容仓库已初始化完毕。
-
----
-
-## 方式二：从官方模板仓库克隆初始化 <Badge text="从零建站" type="info" />
-
-如果你希望从头开始建立一个全新的空白内容仓库，可以直接克隆官方模板仓库。
-
-### 操作步骤
-
-::: steps
-1. **在 GitHub 上创建空白私有仓库**
-
-   按照上述步骤在 GitHub 上创建一个空白的 ==Private 私有仓库==（保持完全空白，不勾选任何初始化选项）。
-
-   ![GitHub 初始页面](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
-
-2. **克隆官方内容模板到本地**
-
-   在终端中运行：
-
-   ```bash title="Git Clone"
-   # 1. 克隆官方内容模板仓库
-   git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
-
-   # 2. 进入克隆下来的目录
-   cd my-blog-content
-   ```
-
-   ![终端运行克隆命令输出](/images/content-separation/01-quickstart/02-init/03-git-clone-output.png)
-
-3. **将远程地址重定向为你自己的私有仓库**
-
-   ```bash title="Git Remote"
-   # 将远程仓库 origin 的地址更换为你第一步创建的私有仓库地址
-   git remote set-url origin git@github.com:你的用户名/my-blog-content.git
-
-   # 验证远程地址是否修改成功
-   git remote -v
-   ```
-
-   ![个人仓库地址](/images/content-separation/01-quickstart/02-init/04-git-remote-output.png)
-
-4. **推送首次提交到你的私有仓库**
-
-   ```bash title="Git Push"
-   # 将模板内容推送到你的私有仓库 main 分支
-   git push -u origin main
-   ```
-
-   ![终端运行推送命令输出](/images/content-separation/01-quickstart/02-init/05-git-push-output.png)
-:::
-
-推送完成后，刷新 GitHub 页面即可看到完整的目录结构：
-
-![GitHub 私有仓库最终页面](/images/content-separation/01-quickstart/02-init/06-repo-final-page.png)
-
----
-
-## 内容仓库目录结构与映射关系
-
-无论是通过一键解耦还是模板克隆创建的内容仓库，均遵循标准的目录映射规范：
-
-```file-tree title="内容仓库标准结构与代码仓映射"
-shirone-content/
-├── .github/workflows/       # 自动化工作流定义
-│   └── trigger-build.yml.example # 跨仓触发流水线模板
-├── config/                  # 全站配置覆盖 YAML 文件群 -> 编译为 src/user/user-config.ts
-│   ├── site.yaml            # 站点基本信息、色彩与横幅壁纸
-│   ├── profile.yaml         # 博主头像、昵称与社交链接
-│   └── footer.html          # 自定义页脚注入 HTML -> 映射至 src/config/FooterConfig.html
-├── content/                 # 原创文章与生活动态 -> 映射至 src/content/
-│   ├── posts/               # Markdown 与 MDX 博客长文
-│   ├── moments/             # 动态生活说说
-│   ├── series/              # 系列连载实体 -> 映射至 src/content/series/
-│   └── spec/                # 关于与自定义说明文案
-├── data/                    # 结构化数据实体 -> 映射至 src/data/
-│   ├── anime.ts             # 追番数据与离线快照
-│   ├── compass.ts           # 罗盘导航与精选推荐
-│   ├── devices.ts           # 硬件装备
-│   ├── friends.ts           # 友情链接
-│   ├── games.ts             # 游戏清单
-│   ├── music.ts             # 本地音乐曲目数据
-│   ├── projects.ts          # 开源项目清单
-│   ├── skills.ts            # 技能图谱
-│   └── timeline.ts          # 大事记时间线
-├── assets/                  # 高清原始媒体 -> 映射至 src/assets/ (参与构建期压缩优化)
-│   └── images/
-├── public/                  # 静态多媒体资源 -> 映射至 public/ (原样发布不转码)
-│   ├── images/
-│   └── assets/
-└── shirone.content.json     # 内容仓库元数据标识文件
+```bash
+pnpm content:eject          # 打印执行计划，不修改任何文件
+pnpm content:eject --yes    # 默认导出到 ../shirone-content
 ```
 
-### 映射与同步保护规则
+::: warning 执行前先提交改动
+`content:eject` 会修改 `.gitignore` 和 Git 索引。工作区存在未提交改动时，命令将拒绝执行。请先提交或暂存改动，再运行命令。
+:::
 
-1. **资源路径语义一致**：`assets/` 与 `public/` 保持了标准相对路径映射，在 Markdown 或配置中引用图片时路径写法无需额外转换；
-2. **配置安全编译**：`config/` 目录下的 YAML 文件在同步时会自动提取并编译为带完整类型约束的 TypeScript 模块，防止格式错误；
-3. **系统目录跳过**：内容仓中的 `.git/`、`.github/`、`.vscode/`、`scripts/` 以及 `README.md` 等辅助文件不会被同步到主题代码仓；
-4. **派生资源隔离保护**：说说缩略图缓存、番剧封面缓存与中文字体子集抽取产物受系统保护，==不会被误删或覆盖=={.tip}。
+需要指定导出目录时，添加 `--out` 参数：
 
----
+```bash
+pnpm content:eject --yes --out ../my-blog-content
+```
+
+Windows PowerShell 环境下请将 `pnpm` 替换为 `pnpm.cmd`。
+
+迁出命令会执行以下五项操作：
+
+1. 复制 `src/content/`、`src/data/`、`src/assets/` 与 `public/` 到目标目录；
+2. 根据当前站点配置生成 `config/site.yaml`、`config/profile.yaml` 与 `footer.html`，其余配置领域保持默认；
+3. 在主题仓根目录生成 `shirone.content.json`，将内容源指向目标目录；
+4. 在主题仓的 `.gitignore` 中追加忽略规则，并取消这些文件的 Git 跟踪，本地文件完整保留；
+5. 在内容仓中生成 `shirone.content.json`、README 与 `.github/workflows/trigger-build.yml`。
+
+完成后在主题仓提交本次改动：
+
+```bash
+git add -A
+git commit -m "chore: 迁移为双仓模式"
+```
+
+> 本地文件未被删除，运行 `pnpm dev` 依然可以正常预览。区别仅在于这些文件不再由主题仓跟踪管理。
+
+### 推送到 GitHub
+
+1. 在 GitHub 上新建一个**空白私有仓库**，不要勾选创建 README、`.gitignore` 或 License。
+2. 进入迁出的内容目录，完成初始化并推送到远端：
+
+```bash
+cd ../shirone-content
+git init -b main
+git add .
+git commit -m "chore: 初始化内容仓"
+git remote add origin git@github.com:你的用户名/my-blog-content.git
+git push -u origin main
+```
+
+![GitHub 新建私有仓库界面](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
+
+仓库属性必须设置为 Private。公开仓库会导致草稿、相册原图和站点配置对外暴露。
+
+## 方式二：从官方模板开始
+
+1. 在 GitHub 上新建一个空白私有仓库。
+2. 克隆官方模板，并将远程仓库地址修改为您自己的仓库：
+
+```bash
+git clone https://github.com/LyraVoid/Shirone-Content.git my-blog-content
+cd my-blog-content
+git remote set-url origin git@github.com:你的用户名/my-blog-content.git
+git remote -v
+git push -u origin main
+```
+
+模板内置示例文章、图片资源与完整的配置文件，后续可以按需替换。
+
+## 内容仓目录与映射
+
+```file-tree title="内容仓结构与主题仓的对应关系"
+shirone-content/
+├── config/                  # 站点配置，编译为 src/user/user-config.ts
+│   ├── site.yaml            # 站点名称、域名、主题色、横幅
+│   ├── profile.yaml         # 头像、昵称、社交链接
+│   ├── nav-bar.yaml         # 顶部导航
+│   ├── sidebar.yaml         # 侧栏布局与组件
+│   └── ...                  # 其余配置文件见配置覆盖页
+├── content/                 # 文章与页面文案，映射到 src/content/
+│   ├── posts/               # 博客文章
+│   ├── moments/             # 说说
+│   ├── series/              # 系列
+│   └── spec/                # 关于页、友链页文案
+├── data/                    # 结构化数据，映射到 src/data/
+│   ├── projects.ts          # 项目
+│   ├── friends.ts           # 友链
+│   ├── skills.ts            # 技能
+│   └── ...
+├── assets/                  # 参与压缩的图片，映射到 src/assets/
+│   └── images/
+├── public/                  # 原样发布的文件，映射到 public/
+│   ├── images/
+│   └── assets/
+└── shirone.content.json     # 内容仓元数据（主题不会读取它）
+```
+
+注意事项：
+
+- `assets/` 目录可以完全删除，删除后站点将回退使用主题自带图片。若保留该目录，必须放齐正在引用的图片（横幅、头像、封面等），只留空占位文件会导致图片加载失败。
+- 内容仓根目录的 `shirone.content.json` 仅记录仓库自身元数据，**不参与构建**。真正决定内容源的是主题仓根目录的同名文件，详见[内容源配置](/guide/content-separation/content-sources/#清单文件)。
+- `docs/`、`.github/`、`.vscode/` 与 `scripts/` 不会同步到主题仓，放置在内容仓中不会影响构建。
+
+## 验证
+
+在主题仓执行：
+
+```bash
+pnpm content:status
+```
+
+输出信息会显示当前内容源类型、路径或 Git 地址，以及解析到的 commit SHA。显示 `external` 表明内容仓已正确连接；显示 `local` 则表示仍在读取主题仓自带内容。
+
+随后执行一次同步命令：
+
+```bash
+pnpm content:sync
+```
+
+终端会输出同步的文件数量和内容 commit SHA。
 
 ## 下一步
 
-- 前往 [本地预览与实时调试](/guide/content-separation/local-preview/)：在本地启动双仓开发服务器，体验边写边看实时重载
+[本地预览与调试](/guide/content-separation/local-preview/)：确认文章能正常渲染显示，再开展日常写作。

@@ -1,169 +1,138 @@
 ---
-title: Troubleshooting & FAQ
+title: Troubleshooting
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/faq/
 ---
 
-This document aggregates common diagnostic solutions, permission fixes, and configuration troubleshooting for the dual-repo content separation setup.
+Identify the observed symptom, review potential root causes, and follow the remediation steps.
 
----
+## 1. Dispatch fails: 403 Resource not accessible by integration
 
-## 1. CI Build Error: 403 Resource not accessible by integration <Badge text="Permissions" type="danger" />
+**Symptom**: the dispatch step in the content repo's `trigger-build.yml` workflow fails.
 
-### Symptom
-When pushing commits to the content repository, `trigger-build.yml` fails:
-```text title="GitHub Actions Error"
+```text
 HttpError: Resource not accessible by integration
 ```
 
-### Cause
-The `DISPATCH_TOKEN` configured in your content repository lacks write permissions to dispatch events to the theme repository.
+**Cause**: `DISPATCH_TOKEN` lacks write permissions on the theme repo, or was scoped to the wrong repository.
 
-### Solution
-::: steps
-1. **Go to GitHub Personal Access Token Settings**
+**Fix**:
 
-   Go to **Settings** -> **Developer Settings** -> **Personal access tokens**.
+1. Open token settings in GitHub, confirm **Repository access** selects your **theme repo**;
+2. Confirm **Contents** permission is configured to **Read and write**;
+3. Generate a new token and update the `DISPATCH_TOKEN` secret in the content repo.
 
-2. **Verify Fine-Grained Token Permissions**
+See [Access Tokens](/en/guide/content-separation/pat/) for detailed steps.
 
-   - **Repository access**: Ensure the ==Theme Code Repository== is selected;
-   - **Permissions**: Verify **Contents** permission is set to ==Read and write=={.error}.
+## 2. Host build fails: Authentication failed
 
-3. **Update Repository Secret**
+**Symptom**: Cloudflare Pages, Vercel, or other hosts fail to clone the content repo during builds.
 
-   Save the new token into the content repository's `DISPATCH_TOKEN` Secret.
-:::
-
-For the complete step-by-step pictorial guide on PAT generation and permissions, see [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat).
-
----
-
-## 2. Cloud Platform Authentication Failed <Badge text="Auth Error" type="danger" />
-
-### Symptom
-Cloudflare Pages or Vercel build log outputs:
-```text title="Build Log Error"
+```text
 fatal: Authentication failed for 'https://github.com/...'
 ```
 
-### Cause
-The `CONTENT_REPO_URL` environment variable on your hosting platform is missing a valid Personal Access Token or the token has expired.
+**Cause**: `CONTENT_REPO_URL` lacks an access token, or the token expired or lacks read access to the content repo.
 
-### Solution
-1. Generate a token with read access to your content repository;
-2. Update `CONTENT_REPO_URL` on your hosting dashboard:
-   ```text title="CONTENT_REPO_URL"
-   https://x-access-token:YOUR_TOKEN@github.com/YOUR_USERNAME/my-blog-content.git
+**Fix**:
+
+1. Create a personal access token with `Contents: Read` access on the content repo;
+2. Update the platform dashboard environment variable to include the token:
+
+   ```text
+   https://x-access-token:<TOKEN>@github.com/OWNER/CONTENT_REPO.git
    ```
-3. Trigger a fresh deployment.
 
-See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for all variables, and [Create a GitHub Personal Access Token (PAT)](/en/guide/content-separation/ci-dispatch/#step-1-create-a-github-personal-access-token-pat) for the step-by-step pictorial guide.
+3. Trigger a rebuild on the platform.
 
----
+Public content repositories do not require access tokens. If the content repository is public, ensure the URL does not use SSH formatting (build containers usually have no SSH keys configured).
 
-## 3. Modified YAML Configurations Not Taking Effect <Badge text="Config Check" type="warning" />
+## 3. YAML changed but the page did not
 
-### Symptom
-Attributes modified in `config/site.yaml` or other YAML files do not update on the rendered page.
+**Symptom**: edits to `config/site.yaml` or other configuration files do not appear locally or in production.
 
-### Diagnostic Steps
+**Fix**:
+
 ::: steps
-1. **Run Validation Command**
 
-   ```bash title="content:validate"
+1. **Check field spelling**
+
+   ```bash
    pnpm content:validate
    ```
 
-   Check for typo suggestions (e.g. `titel` instead of `title`).
+   The terminal specifies invalid keys and provides suggestions.
 
-2. **Check Merge Strategy**
+2. **Check array syntax**
 
-   If modifying array lists (like `nav-bar.yaml` or `sidebar.yaml` components), remember arrays follow ==atomic full replacement=={.error}. You must provide the complete list of items.
+   List fields in `nav-bar.yaml` and `sidebar.yaml` follow full replacement rules; declaring only newly added entries will not merge. See [Configuration Overlay](/en/guide/content-separation/config-overlay/#object-merge-vs-array-replace).
 
-3. **Verify File Names and Directory**
+3. **Check file location**
 
-   Ensure files reside inside `config/` and filenames match domain names strictly (`site.yaml`, `profile.yaml`).
+   Configuration files must reside in `config/` inside the content repo, with file names matching documented conventions. Files placed elsewhere are ignored.
+
+4. **Verify active content source**
+
+   ```bash
+   pnpm content:status
+   ```
+
+   If the output displays `local`, the theme is reading bundled default content. Verify that `CONTENT_DIR` or `CONTENT_REPO_URL` variables are configured and active.
+
 :::
 
----
+## 4. A new post is missing from the list
 
-## 4. Local Posts Not Rendering After Build <Badge text="Content Filter" type="info" />
+Check the following in order:
 
-### Symptom
-A newly drafted post inside `content/posts/` does not appear in the homepage post list.
+1. `draft: true`: draft posts are excluded from production builds;
+2. `published` contains a future date: unpublished posts are hidden by default;
+3. File extension is neither `.md` nor `.mdx`;
+4. File is not placed directly under `content/posts/`, or the filename contains unescaped whitespace;
+5. Run `npx astro check` in the theme repo to detect missing required frontmatter properties.
 
-### Checklist
-::: details Expand to View 4 Essential Verification Points
-1. **Check Draft Flag**: Is `draft: true`? Draft posts are automatically excluded from production builds;
-2. **Check Publish Date**: Is `published` set to a future date? Future posts are hidden by default;
-3. **Check File Extension**: Is the file extension `.md` or `.mdx`?
-4. **Run Type Check**: Run `npx astro check` in the theme repo to detect missing schema fields.
-:::
+## 5. A deleted post is still reachable
 
----
+**Cause**: stale files remain in local build caches or the hosting platform's build cache.
 
-## 5. Local Cache Glitches or Phantom Data <Badge text="Cache Clean" type="tip" />
+**Fix**:
 
-### Symptom
-Deleted posts still linger in local preview due to outdated caches.
-
-### Solution
-Perform a safe reset and cache purge:
-
-```bash title="Safe Reset"
-# 1. Preview clean plan
-pnpm content:clean
-
-# 2. Execute clean reset
-pnpm content:clean --yes
-
-# 3. Re-sync content
-pnpm content:sync
+```bash
+pnpm content:clean          # preview cleanup plan
+pnpm content:clean --yes    # apply cleanup; backed up to .content-backup/
+pnpm content:sync           # re-sync content
 ```
 
----
+If this occurs on a hosting platform, clear its build cache and redeploy.
 
-## 6. Special Markdown Extension Paths
+## 6. How to write image and file paths
 
-Keep these two path rules in mind:
-- **Standard Media**: Use relative paths `./image.png` or root paths `/images/...`; the sync engine preserves mount mappings;
-- **Direct Filesystem Directives**: `@[code-tree]` and `<!-- @include: ... -->` read the physical filesystem directly and require paths relative to the theme repository root. All other 15 Markdown syntax extensions are completely unaffected.
+- Standard image assets: use relative paths such as `./image.png`, or site-root absolute paths such as `/images/...`;
+- Relative path layouts in the content repo match the theme repo and preserve relative hierarchy after syncing;
+- `@[code-tree]` and `<!-- @include: ... -->` read the filesystem directly, so their paths must be relative to the theme repo root.
 
----
+Other standard Markdown syntax is unaffected by content separation.
 
-## 7. Actions Build Succeeds, but Vercel Fails with `Command "pnpm build" exited with 1` <Badge text="Build Config" type="danger" />
+## 7. Build succeeds but deployment fails
 
-### Symptom
-In the theme repo Actions workflow, `pnpm build` succeeds completely, and the final step `vercel deploy dist --prod` uploads successfully. However, in the Vercel dashboard deployment logs, the build errors out and terminates:
+**Symptom**: the theme repo's Actions build succeeds, but the host's deployment log reports:
 
-```text title="Vercel Build Log"
-Skipping build cache since Package Manager changed from "pnpm" to "npm"
-Running "vercel build"
+```text
 Error: Command "pnpm build" exited with 1
 ```
 
-### Cause
-You are using the "Actions builds and uploads `dist/` static artifacts" mode, but the Vercel project still retains the build settings from when it was originally linked to Git (Framework Preset set to `Astro`, Build Command set to `pnpm build`).
+**Cause**: GitHub Actions uploaded pre-built static `dist/` files containing no `package.json`, but the host still ran its pre-configured build command.
 
-The `dist/` uploaded by Actions contains pure static files without a `package.json`. When Vercel cloud tries to invoke `pnpm build` again, it inevitably fails because no build scripts exist. Note: **Simply disconnecting the Git integration is not enough**, because the Build Command is stored independently in project settings.
+**Fix**: configure the host as pure static hosting:
 
-### Solution
-::: steps
-1. **Switch Project to Pure Static Hosting**
+- Set Framework Preset to `Other`;
+- Clear Build Command and Output Directory fields;
+- Disconnect automatic Git build triggers.
 
-   Log in to Vercel, open your project, and navigate to **Settings** -> **Build & Output Settings**:
-   - Change **Framework Preset** to `Other`;
-   - Toggle OFF the Override switch for **Build Command** (clearing the command);
-   - Toggle OFF the Override switch for **Output Directory** (clearing the directory).
+Menu labels vary across platforms; consult [Deployment Overview](/en/guide/deploy/overview/) and specific platform guides. Disconnecting Git alone is often insufficient, as build commands persist in project settings and must be cleared explicitly.
 
-2. **Disconnect Git Auto-Builds**
+## Other questions
 
-   Go to **Settings** -> **Git** and disconnect the repository (or disable automatic deployments) to prevent Actions direct uploads and Git auto-builds from conflicting and overwriting each other.
-
-3. **Re-trigger Deployment Verification**
-
-   Return to the theme repo Actions and run `deploy.yml` again. Verify in the Vercel deployment log that `Running "vercel build"` no longer appears, confirming that configuration is active.
-:::
-
-For differences between both deployment methods, refer to [Deployment Overview](/en/guide/deploy/overview/) and [Deploy to Vercel](/en/guide/deploy/vercel/).
+- Validating content repo structure: run `pnpm content:validate`;
+- Choosing a deployment platform: see [Deployment Overview](/en/guide/deploy/overview/);
+- Debugging local preview issues: see [Local Preview & Debugging](/en/guide/content-separation/local-preview/).

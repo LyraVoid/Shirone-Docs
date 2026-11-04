@@ -1,237 +1,67 @@
 ---
-title: Cloud Deploy Hook Integrations
+title: Deployment Hooks
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/deploy-hooks/
 ---
 
-If you host the theme repo on Cloudflare Pages, Vercel, Tencent Cloud EdgeOne, or Netlify, you can use ==Deploy Hook Trigger Mode==.
-
-A push to the content repo sends one HTTP POST to the platform's Deploy Hook. The platform then pulls the theme repo and rebuilds. Its build runs `pnpm build`, which already includes `content:sync`; **do not prepend `pnpm content:sync &&`** to the build command.
+A deployment hook is an HTTP trigger URL provided by a hosting platform. After pushing changes to the content repo, sending a POST request to that URL triggers the platform to fetch the theme repo and build.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Author as Author (Content Repo)
-    participant ContentRepo as Private Content Repo
-    participant Hook as Platform Deploy Hook
-    participant Builder as Platform Builder
-    participant CDN as Production Edge
+    actor Author as You (content repo)
+    participant ContentRepo as Content repo
+    participant Hook as Host Deploy Hook
+    participant Builder as Host builder
 
-    Author->>ContentRepo: 1. git push new posts or config changes
-    ContentRepo->>Hook: 2. POST the Deploy Hook
-    Hook->>Builder: 3. Rebuild the theme repo
-    Builder->>ContentRepo: 4. Pull private content via CONTENT_REPO_URL
-    Builder->>Builder: 5. pnpm build (includes content:sync)
-    Builder->>CDN: 6. Distribute dist/
+    Author->>ContentRepo: Push posts or config
+    ContentRepo->>Hook: POST to the hook URL
+    Hook->>Builder: Rebuild the theme repo
+    Builder->>Builder: pnpm build (includes content:sync)
 ```
 
-See [Content Sources and Environment Variables](/en/guide/content-separation/content-sources/) for `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and private repo token formats.
+## Pick one: Actions or hooks
 
-::: warning Deploy Hooks and Actions dispatch are mutually exclusive
-Deploy Hooks and [cross-repo GitHub Actions dispatch](/en/guide/content-separation/ci-dispatch/) are mutually exclusive solutions:
+| Comparison | Actions dispatch | Deployment hook |
+| --- | --- | --- |
+| Builder | Theme repo GitHub Actions | Hosting platform builder |
+| Host settings | Disable host build; receive static `dist/` | Keep `pnpm build` |
+| Content source | `CONTENT_DIR` pointing to checked-out `.content-src/` | `CONTENT_REPO_URL` fetching remote repo |
+| Build precision | Builds exact commit SHA that triggered run | Fetches latest HEAD of branch |
 
-- **Using Actions dispatch**: Only configure `DISPATCH_TOKEN` in the content repo. Theme repo Actions handles building and direct artifact upload. At this time, **cloud builds must be disabled on the hosting platform** (Framework Preset set to `Other`, Build Command cleared, and Git auto-build disconnected).
+Do not configure both workflows simultaneously, as each push triggers duplicate builds that overwrite one another. If the host keeps its build command while Actions uploads prebuilt `dist/` files, the host log fails with `Error: Command "pnpm build" exited with 1`.
 
-- **Using Deploy Hooks**: Only configure the corresponding `*_DEPLOY_HOOK` in the content repo. The platform's build runner pulls code and builds. At this time, the platform **must retain** `pnpm build` and have environment variables like `CONTENT_REPO_URL` configured.
+## Platform quick reference
 
-If both are configured, a single commit will trigger two builds simultaneously, causing live artifacts to overwrite each other; furthermore, if the platform retains a build command while Actions pushes static `dist/` artifacts, the cloud build will fail with an error.
-:::
+The content repo's `trigger-build.yml.example` includes hook steps for all four supported platforms. Steps are automatically skipped when the corresponding secret is not configured, so you do not need separate workflows per host.
 
-::: tip Start from the official trigger template
-You do not need a separate workflow per platform. The content repo's `.github/workflows/trigger-build.yml.example` already contains Cloudflare, Vercel, EdgeOne, and Netlify hook steps; each is skipped when its secret is absent.
+| Platform | Hook configuration location | Content repo secret | Details |
+| --- | --- | --- | --- |
+| Cloudflare Pages | Settings -> Builds & deployments -> Deploy hooks | `CLOUDFLARE_DEPLOY_HOOK` | [Cloudflare Pages](/en/guide/deploy/cloudflare/) |
+| Vercel | Settings -> Git -> Deploy Hooks | `VERCEL_DEPLOY_HOOK` | [Vercel](/en/guide/deploy/vercel/) |
+| EdgeOne Pages | Project settings -> Build and deployment -> Deploy trigger | `EDGEONE_DEPLOY_HOOK` | [EdgeOne Pages](/en/guide/deploy/edgeone/) |
+| Netlify | Site configuration -> Build & deploy -> Build hooks | `NETLIFY_DEPLOY_HOOK` | [Netlify](/en/guide/deploy/netlify/) |
 
-After copying it to `trigger-build.yml`, replace two placeholders: `repository` must point to your theme repo, and the `validate` job's `theme_repository` must point to the same repo. Then add only the secrets you need.
+When creating hooks, set the target branch to `main`. Copy the generated URL and add it to the corresponding secret in your content repo.
 
-If you want validation first, its `validate` job calls the theme repo's `content-validate.yml`.
-:::
+## Required platform variables
 
----
+When using deployment hooks, the dual-repo setup requires the following environment variables in the platform dashboard:
 
-## 1. Cloudflare Pages Setup <Badge text="Recommended" type="tip" />
+```text
+CONTENT_REPO_URL=https://x-access-token:<TOKEN>@github.com/OWNER/REPO.git
+CONTENT_REPO_REF=main
+GIT_TERMINAL_PROMPT=0
+```
 
-::: steps
-1. **Create the Deploy Hook**
+`GIT_TERMINAL_PROMPT=0` prevents the build machine from halting on interactive credential prompts. Keep the build command as `pnpm build` and the output directory as `dist`; `pnpm build` already runs the content sync step, so do not add it a second time.
 
-   - Cloudflare Dashboard -> **Workers & Pages** -> your project;
-   - **Settings** -> **Builds & deployments** -> **Deploy hooks** -> **Add deploy hook**;
-   - Name it `content-push`, select ==main==, create it, and copy the URL.
+Configure Node.js versions per platform: Cloudflare, Vercel, and Netlify require Node 26. EdgeOne currently supports up to Node 24, which builds Shirone reliably.
 
-2. **Configure build and environment variables**
+## Build precision
 
-   Under **Settings** -> **Environment variables**, add:
+A deployment hook triggers a rebuild on the hosting platform, but platforms usually fetch the latest HEAD commit of the branch. This might not correspond to the commit that initiated the hook. For rapid successive pushes or reproducible historical builds, use [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/).
 
-   | Variable | Value |
-   | --- | --- |
-   | `NODE_VERSION` | `26` |
-   | `PNPM_VERSION` | `11.28.2` |
-   | `GIT_TERMINAL_PROMPT` | `0` |
-   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
+## Next steps
 
-   Build command `pnpm build`, output `dist`. For dual-repo mode, also consider `CONTENT_REPO_REF=main`.
-
-   > [!WARNING]
-   > Create a **Pages** project, not a Worker. A Worker build fails with `__dirname is not defined`.
-
-3. **Add the content repo secret**
-
-   In the private content repo -> **Settings** -> **Secrets and variables** -> **Actions**:
-
-   - **Name**: `CLOUDFLARE_DEPLOY_HOOK`
-   - **Secret**: the URL from step 1
-
-4. **Enable the trigger workflow**
-
-   Use `trigger-build.yml.example`, or a dedicated workflow:
-
-   ```yaml title=".github/workflows/trigger-cloudflare.yml"
-   name: Trigger Cloudflare Pages Build
-
-   on:
-     push:
-       branches: [main]
-     workflow_dispatch:
-
-   jobs:
-     deploy-hook:
-       runs-on: ubuntu-latest
-       steps:
-         - name: Call Cloudflare Deploy Hook
-           env:
-             CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
-           if: ${{ env.CLOUDFLARE_DEPLOY_HOOK != '' }}
-           run: |
-             curl --fail-with-body --silent --show-error \
-               --retry 3 --retry-delay 2 --max-time 30 \
-               --request POST "$CLOUDFLARE_DEPLOY_HOOK"
-   ```
-:::
-
----
-
-## 2. Vercel Setup <Badge text="Popular" type="info" />
-
-::: steps
-1. **Create the Deploy Hook**
-
-   - Vercel -> project -> **Settings** -> **Git** -> **Deploy Hooks**;
-   - Name it `content-push`, branch `main`, create it, and copy the URL.
-
-2. **Configure project and environment variables**
-
-   Under **Settings** -> **General** -> **Node.js Version**, select `26.x`. Vercel does not read a `NODE_VERSION` environment variable.
-
-   You can add environment variables on the import screen under **Environment Variables**, or later under **Deployments** -> **Environments**:
-
-   | Variable | Value |
-   | --- | --- |
-   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
-   | `CONTENT_REPO_REF` | `main` (optional) |
-   | `GIT_TERMINAL_PROMPT` | `0` |
-
-   Keep the build command `pnpm build` and output `dist`.
-
-3. **Add the content repo secret**
-
-   Add `VERCEL_DEPLOY_HOOK` with the URL from step 1.
-
-4. **Enable the trigger workflow**
-
-   Use the Vercel hook step in `trigger-build.yml.example`, or POST with:
-
-   ```bash
-   curl --fail-with-body --silent --show-error \
-     --retry 3 --retry-delay 2 --max-time 30 \
-     --request POST "$VERCEL_DEPLOY_HOOK"
-   ```
-:::
-
----
-
-## 3. Tencent Cloud EdgeOne Setup <Badge text="APAC" type="tip" />
-
-::: steps
-1. **Create the deploy trigger**
-
-   - EdgeOne Pages console -> project settings -> **Build & Deploy** -> **Deploy Hooks**;
-   - Add a hook for `main` and copy the URL.
-
-2. **Configure build and environment variables**
-
-   | Setting | Value |
-   | --- | --- |
-   | Node.js version | `24` |
-   | Build command | `npm i -g pnpm@11.28.2 && pnpm build` |
-   | Output directory | `dist` |
-   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
-   | `CONTENT_REPO_REF` | `main` (optional) |
-   | `GIT_TERMINAL_PROMPT` | `0` |
-
-   EdgeOne currently offers Node.js 24 as its highest selectable version, and Shirone builds correctly on it. If the image lacks the matching pnpm, install it in the build command; EdgeOne has no documented `PNPM_VERSION` variable.
-
-3. **Add the content repo secret**
-
-   Add `EDGEONE_DEPLOY_HOOK` with the hook URL.
-
-4. **Enable the trigger workflow**
-
-   Use the EdgeOne hook step in `trigger-build.yml.example`.
-:::
-
----
-
-## 4. Netlify Setup
-
-::: steps
-1. **Create the Build Hook**
-
-   - **Site configuration** -> **Build & deploy** -> **Continuous deployment**;
-   - **Build hooks** -> **Add build hook**;
-   - Choose `main`, save, and copy the URL.
-
-2. **Configure build and environment variables**
-
-   Under **Site configuration** -> **Environment variables**, add:
-
-   | Variable | Value |
-   | --- | --- |
-   | `NODE_VERSION` | `26` |
-   | `GIT_TERMINAL_PROMPT` | `0` |
-   | `CONTENT_REPO_URL` | `https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git` |
-
-   Build command `pnpm build`, publish directory `dist`. Netlify selects pnpm from `package.json` `packageManager` or mise. If the log still shows a mismatched pnpm, prepend `npm i -g pnpm@11.28.2 &&` to the build command.
-
-3. **Add the content repo secret**
-
-   Add `NETLIFY_DEPLOY_HOOK` with the Build Hook URL.
-
-4. **Enable the trigger workflow**
-
-   Use the Netlify hook step in `trigger-build.yml.example`.
-:::
-
----
-
-## Version and trigger precision
-
-- A Deploy Hook only asks the platform to rebuild. The platform usually builds the content branch HEAD, not necessarily the exact commit that triggered it. For exact SHA builds under rapid pushes, use [cross-repo Actions dispatch](/en/guide/content-separation/ci-dispatch/).
-- Platform builders support different Node versions: Cloudflare / Vercel / Netlify use 26; EdgeOne uses 24. Do not write 26 for every platform.
-- A private content repo requires `CONTENT_REPO_URL` and `GIT_TERMINAL_PROMPT=0`; otherwise the builder can hang on an interactive credential prompt.
-- `pnpm build` already includes `content:sync`; keep the build command as `pnpm build`.
-
----
-
-## Deploy Secret Reference Table
-
-| Platform | GitHub Secret Name (Strict Match) | Trigger Type |
-| :--- | :--- | :--- |
-| **Cross-Repo CI (Recommended)** | `DISPATCH_TOKEN` <Badge text="Recommended" type="tip" /> | Dispatches GitHub Actions in the theme repo for the full build |
-| **Cloudflare Pages** | `CLOUDFLARE_DEPLOY_HOOK` <Badge text="Edge" type="info" /> | POSTs to the Cloudflare Deploy Hook |
-| **Vercel** | `VERCEL_DEPLOY_HOOK` <Badge text="Global" type="info" /> | POSTs to the Vercel Deploy Hook |
-| **Tencent Cloud EdgeOne** | `EDGEONE_DEPLOY_HOOK` <Badge text="APAC" type="tip" /> | POSTs to the EdgeOne Deploy Hook |
-| **Netlify** | `NETLIFY_DEPLOY_HOOK` <Badge text="General" type="info" /> | POSTs to the Netlify Build Hook |
-
----
-
-## Next Steps
-
-- Head to [Troubleshooting & FAQ](/en/guide/content-separation/faq/): View permission diagnosis, config overrides, and build error resolutions
+[Troubleshooting](/en/guide/content-separation/faq/): token permissions, authentication errors, and configuration debugging.
