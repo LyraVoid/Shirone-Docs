@@ -134,6 +134,9 @@ If any step fails, check the Actions log in that repository first. Token permiss
 
 ## Next steps
 
+- [CI/CD Workflows](/en/guide/development/workflows/): In-depth look at workflow architecture and validation guards
+- [Deploy to a Server](/en/guide/deploy/server/): Build with GitHub Actions and sync via rsync
+
 [Deployment Overview](/en/guide/deploy/overview/): pick a hosting platform and bring the site online.
 
 If you prefer not to maintain GitHub Actions, [Deployment Hooks](/en/guide/content-separation/deploy-hooks/) let the hosting platform pull and build on its own.

@@ -134,6 +134,9 @@ env:
 
 ## 下一步
 
+- [CI/CD 工作流解析](/guide/development/workflows/)：深入了解工作流架构与质量校验防线
+- [部署到服务器](/guide/deploy/server/)：通过 GitHub Actions 构建并增量同步到服务器
+
 [部署总览](/guide/deploy/overview/)：选择部署平台，完成站点上线。
 
 若不想维护 GitHub Actions，可改用[部署钩子](/guide/content-separation/deploy-hooks/)，让托管平台自行拉取构建。

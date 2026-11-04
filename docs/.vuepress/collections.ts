@@ -181,6 +181,7 @@ const zhGuideDoc = defineCollection({
       prefix: '/guide/development/',
       collapsed: true,
       items: [
+        { text: 'CI/CD 工作流', link: 'workflows/', icon: 'ri:git-merge-line', badge: { type: 'tip', text: '工程化' } },
         { text: '主题开发与贡献', link: 'theme-contributing/', icon: 'ri:git-pull-request-line' },
         { text: '路由系统', link: 'routing/', icon: 'ri:route-line' },
       ],
@@ -484,6 +485,7 @@ const enGuideDoc = defineCollection({
       prefix: '/en/guide/development/',
       collapsed: true,
       items: [
+        { text: 'CI/CD Workflows', link: 'workflows/', icon: 'ri:git-merge-line', badge: { type: 'tip', text: 'Engineering' } },
         { text: 'Theme Development & Contribution', link: 'theme-contributing/', icon: 'ri:git-pull-request-line' },
         { text: 'Routing System', link: 'routing/', icon: 'ri:route-line' },
       ],
