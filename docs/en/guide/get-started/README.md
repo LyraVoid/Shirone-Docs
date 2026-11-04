@@ -4,9 +4,9 @@ createTime: 2026/08/31 21:30:00
 permalink: /en/guide/get-started/
 ---
 
-Shirone supports both single-repo and dual-repo modes. This guide explains how to prepare your environment, choose a route, run the site locally, and publish your first post.
+Shirone supports both single-repo and dual-repo modes. This guide explains how to prepare your environment, choose one, run the site locally, and publish your first post.
 
-## Choose a route
+## Single repo or dual repo
 
 | | Single repo | Dual repo |
 | --- | --- | --- |
@@ -18,7 +18,7 @@ Shirone supports both single-repo and dual-repo modes. This guide explains how t
 Start with the single repo. You can split later with `pnpm content:eject`, which moves existing posts and configuration into a new repository without rewriting anything.
 :::
 
-## Route A: single repository
+## Getting started with a single repository
 
 ::: steps
 
@@ -89,9 +89,9 @@ Start with the single repo. You can split later with `pnpm content:eject`, which
 If PowerShell blocks scripts, use `pnpm.cmd` and `npx.cmd` instead of `pnpm` and `npx`.
 :::
 
-## Route B: dual repository
+## Getting started with a dual repository
 
-Work through the steps in order. Each step is self-contained, so you can stop after any of them.
+The dual-repo setup is divided into the steps below. Each step ends at a natural checkpoint, so you can stop after any of them and pick up later.
 
 ::: steps
 
