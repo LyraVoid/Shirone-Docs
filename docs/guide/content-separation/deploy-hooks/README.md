@@ -66,4 +66,5 @@ GIT_TERMINAL_PROMPT=0
 
 ## 下一步
 
-[常见问题](/guide/content-separation/faq/)：令牌权限、身份鉴权失败与配置未生效排查。
+- [自动打包与部署工作流](/guide/development/workflows/)：了解内容仓库 trigger-build 工作流如何调用部署钩子
+- [常见问题](/guide/content-separation/faq/)：令牌权限、身份鉴权失败与配置未生效排查。

@@ -1,346 +1,77 @@
 ---
-title: CI/CD Workflows
+title: Automated Build and Deployment Workflows
 createTime: 2026/09/01 04:00:00
 permalink: /en/guide/development/workflows/
 ---
 
-Shirone provides 4 core GitHub Actions workflows located in the theme code repository and the official content repository. This document walks through the YAML source code of each workflow, explaining trigger events, check logic, and build/deployment pipelines line by line.
+If you use dual-repo mode (one repo for theme code, another for articles) or want GitHub to build and publish your site automatically on code push, you will use GitHub Actions workflows.
 
-```mermaid
-flowchart TD
-    subgraph ContentRepo ["Content Repository (Shirone-Content-Offical)"]
-        direction TB
-        CPush["Push articles or config<br/>(push to main)"]
-        WTrigger["trigger-build.yml<br/>(Trigger build process)"]
-        CPush --> WTrigger
-    end
+The entire automated publishing process relies on three workflow files:
 
-    subgraph ThemeRepo ["Theme Code Repository (Shirone)"]
-        direction TB
-        TPush["Developer push / PR<br/>(push / PR to main)"]
-        WCI["ci.yml<br/>(Code quality & tests)"]
-        TPush --> WCI
+1. **`deploy.yml.example`** (in the theme repo): Pulls articles, installs dependencies, builds static pages, and copies output files to your server;
+2. **`trigger-build.yml.example`** (in the content repo): Notifies the theme repo to start building when you push new posts;
+3. **`content-validate.yml`** (in the theme repo): Checks article and configuration formatting before building starts.
 
-        WValidate["content-validate.yml<br/>(Content validation workflow)"]
-        WDeploy["deploy.yml<br/>(Site build & deployment workflow)"]
-    end
-
-    subgraph TargetHost ["Deployment Targets"]
-        direction TB
-        ServerHost["Own Server (rsync sync)"]
-        CloudHost["Vercel / Cloudflare / Netlify"]
-    end
-
-    WTrigger -- "1. Remote call" --> WValidate
-    WTrigger -- "2. Notify theme repo after checks pass" --> WDeploy
-    WDeploy -- "Download content and run build" --> WDeploy
-    WDeploy -- "Sync dist/ files to server" --> TargetHost
-```
+::: info Note
+The theme code repository also includes a `ci.yml` file used for automated testing when developing theme code. Routine writing and site deployment do not require it.
+:::
 
 ---
 
-## Workflow Overview
+## 1. Automated Build and Deployment: `deploy.yml.example`
 
-| Repository | File Path | Trigger Event | Main Purpose |
-| --- | --- | --- | --- |
-| **Theme Code Repo** | `.github/workflows/ci.yml` | Code push to `main`, PR, manual dispatch | **Code checking and automated testing**: Checks code style, runs framework diagnostics, and verifies page rendering. |
-| **Theme Code Repo** | `.github/workflows/content-validate.yml` | Invoked by external repositories (`workflow_call`) | **Content validation**: Called by content repos to check directory structure, YAML configs, and article frontmatter format. |
-| **Theme Code Repo** | `.github/workflows/deploy.yml.example` | Code push, content repository notification, schedule, manual dispatch | **Site build and deployment**: Merges content and runs the build, syncing the resulting `dist/` web files to servers or hosting platforms. |
-| **Content Repo** | `.github/workflows/trigger-build.yml.example` | Push articles or config changes, manual dispatch | **Content update trigger**: Runs validation checks first, then notifies the theme repo to start the build. |
+Located at `.github/workflows/deploy.yml.example` in the theme repository, copy and rename it to `.github/workflows/deploy.yml` (removing `.example`) to enable it.
 
----
-
-## 1. Theme Code Checking Workflow (`ci.yml`)
-
-Located at `.github/workflows/ci.yml` in the theme repository, this workflow runs on every push or Pull Request to `main` to verify code format and prevent regression issues.
-
-### Triggers and Concurrency
-
-```yaml title=".github/workflows/ci.yml"
-name: Shirone CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
-```
-
-- `on`: Monitors pushes and Pull Requests targeting the `main` branch, and supports manual triggering via the GitHub web UI;
-- `concurrency`: Cancels older in-progress runs when new commits arrive on the same branch or PR;
-- `permissions: contents: read`: Grants read-only access to repository code.
-
-### Core Jobs and Code Breakdown
-
-#### Job 1: Path change analysis (`changes`)
-
-Not all code changes require running heavy browser tests. This job determines which test suites are needed:
-
-```yaml title=".github/workflows/ci.yml"
-  changes:
-    name: Detect changed paths
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    outputs:
-      comments: ${{ steps.filter.outputs.comments }}
-      styles: ${{ steps.filter.outputs.styles }}
-    steps:
-      - name: Checkout history for path detection
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - name: Classify changed paths
-        id: filter
-        shell: bash
-        run: |
-          scripts/ci/classify-browser-suites.sh "$base" "$head" "$GITHUB_OUTPUT"
-```
-
-- Outputs `comments=true` if comment system logic was touched;
-- Outputs `styles=true` if fonts, banners, or stylesheet files were modified;
-- Skips unrelated browser test suites if neither area was touched.
-
-#### Job 2: Code quality check (`quality`)
-
-```yaml title=".github/workflows/ci.yml"
-  quality:
-    name: Code quality
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 26.13.0
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Run Biome
-        continue-on-error: true
-        run: pnpm exec biome ci ./src --reporter=github
-```
-
-- Uses Node.js 26 and pnpm to install dependencies;
-- Executes Biome to scan `src/` files and report formatting notices on the GitHub PR page.
-
-#### Job 3: Framework diagnostics and unit tests (`checks`)
-
-```yaml title=".github/workflows/ci.yml"
-  checks:
-    name: Diagnostics and tests
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 26.13.0
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-
-      - name: Check Astro diagnostics
-        run: pnpm exec astro check
-
-      - name: Check Svelte diagnostics
-        run: pnpm exec svelte-check --tsconfig ./tsconfig.json
-
-      - name: Validate atom manifest
-        run: pnpm check:manifest
-
-      - name: Run unit tests
-        run: node --test "tests/**/*.test.mjs"
-```
-
-- `astro check`: Validates Astro templates and TypeScript types;
-- `svelte-check`: Type-checks Svelte components and properties;
-- `pnpm check:manifest`: Ensures atom component manifests are complete;
-- `node --test`: Runs native lightweight unit tests.
-
-#### Job 4: Browser rendering and style tests (`comment-tests` & `styles`)
-
-```yaml title=".github/workflows/ci.yml"
-  comment-tests:
-    name: Comment regression fixtures
-    needs: changes
-    if: needs.changes.outputs.comments == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        mode: [disabled, waline, twikoo, no-toc]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-      - run: pnpm install --frozen-lockfile
-      - name: Run comment tests
-        run: pnpm exec playwright test tests/site/comments.spec.ts
-```
-
-- Receives change detection outputs from the `changes` job;
-- Uses a matrix to run Playwright browser tests across disabled, Waline, Twikoo, and no-toc configurations.
-
----
-
-## 2. Reusable Content Validation Workflow (`content-validate.yml`)
-
-Located at `.github/workflows/content-validate.yml` in the theme repository, this workflow is defined as a reusable workflow (`workflow_call`). Content repositories invoke it on push to catch formatting and configuration errors before deployment.
-
-### Source Code and Breakdown
-
-```yaml title=".github/workflows/content-validate.yml"
-name: Validate content
-
-on:
-  workflow_call:
-    inputs:
-      theme_repository:
-        description: "Theme repository in OWNER/REPO format"
-        type: string
-        required: true
-      theme_ref:
-        description: "Branch or ref of the theme repository"
-        type: string
-        required: false
-        default: main
-    secrets:
-      theme_token:
-        description: "Token for private theme repositories"
-        required: false
-
-jobs:
-  validate:
-    name: Schema and structure
-    runs-on: ubuntu-latest
-    steps:
-      # 1. Download caller (content repo) files into content/
-      - name: Checkout content
-        uses: actions/checkout@v4
-        with:
-          path: content
-
-      # 2. Download theme repository code into theme/
-      - name: Checkout theme
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ inputs.theme_repository }}
-          ref: ${{ inputs.theme_ref }}
-          path: theme
-          token: ${{ secrets.theme_token || github.token }}
-
-      # 3. Read pinned pnpm version from theme package.json
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          package_json_file: theme/package.json
-          run_install: false
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.13.0
-          cache: pnpm
-          cache-dependency-path: theme/pnpm-lock.yaml
-
-      - name: Install dependencies
-        working-directory: theme
-        run: pnpm install --frozen-lockfile --prefer-offline
-
-      # 4. Stage 1: Validate directory structure and config/*.yaml files
-      - name: Validate content structure and config
-        working-directory: theme
-        env:
-          CONTENT_DIR: ${{ github.workspace }}/content
-        run: pnpm content:validate
-
-      # 5. Stage 2: Validate Markdown frontmatter schemas
-      - name: Validate frontmatter schemas
-        working-directory: theme
-        env:
-          CONTENT_DIR: ${{ github.workspace }}/content
-        run: |
-          set -euo pipefail
-          pnpm content:sync
-          pnpm exec astro sync
-
-      # 6. Generate summary report
-      - name: Summarize
-        if: always()
-        working-directory: theme
-        run: |
-          {
-            echo "### Content validation"
-            echo "- Theme: \`${{ inputs.theme_repository }}@${{ inputs.theme_ref }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-```
-
-### Key Mechanisms
-
-- **Dual Checkout**: Downloads the content repository into `content/` and the theme repository into `theme/`;
-- **Structure & Config Validation (`pnpm content:validate`)**: Checks that required folders exist and that `config/*.yaml` files conform to schemas;
-- **Frontmatter Validation (`astro sync`)**: Syncs articles and runs Astro collection schemas to verify category, tag, date, and image formats;
-- **Step Summary**: Writes a summary report to the GitHub Actions page for quick inspection.
-
----
-
-## 3. Site Build and Deployment Pipeline (`deploy.yml.example`)
-
-Located at `.github/workflows/deploy.yml.example` in the theme repository, rename it to `deploy.yml` to enable production deployment.
-
-### Triggers and Concurrency
+### Complete File Content
 
 ```yaml title=".github/workflows/deploy.yml.example"
 name: Deploy
 
 on:
+  # Triggers when code updates (documentation edits excluded)
   push:
     branches: [main]
     paths-ignore:
       - "docs/**"
       - "rules/**"
       - "*.md"
+  # Triggers on notification from the content repository
   repository_dispatch:
     types: [content-updated]
+  # Allows manual triggers via GitHub web UI
   workflow_dispatch:
     inputs:
       content_ref:
         description: "Content commit SHA or ref (leave empty for main)"
         required: false
         default: ""
+  # Runs once daily to avoid missing updates
   schedule:
     - cron: "17 4 * * *"
 
+# Runs only one build task at a time; new pushes cancel older running tasks
 concurrency:
   group: deploy
   cancel-in-progress: true
-```
 
-- `paths-ignore`: Skips builds when only documentation files are modified;
-- `repository_dispatch`: Listens for `content-updated` events dispatched by the content repository;
-- `workflow_dispatch`: Allows manual runs from the GitHub UI with an optional historical commit ID for rollbacks;
-- `schedule`: Runs once daily to ensure the site stays in sync;
-- `concurrency`: Cancels older queued or running tasks when new pushes arrive, preventing out-of-order deployments.
+permissions:
+  contents: read
 
-### Execution Steps Breakdown
+env:
+  CONTENT_REPOSITORY: OWNER/shirone-content
+  CONTENT_WORKING_COPY: .content-src
 
-```yaml title=".github/workflows/deploy.yml.example"
 jobs:
   deploy:
     name: Build and deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       CI: true
       CONTENT_DIR: .content-src
 
     steps:
-      # 1. Resolve content commit SHA (uses payload SHA if provided)
+      # Identify the content commit version to pull
       - name: Resolve content ref
         id: target
         env:
@@ -353,11 +84,11 @@ jobs:
           [ -n "$ref" ] || ref="main"
           echo "ref=$ref" >> "$GITHUB_OUTPUT"
 
-      # 2. Checkout theme code
+      # Download theme code
       - name: Checkout theme
         uses: actions/checkout@v4
 
-      # 3. Checkout specified content commit
+      # Download content posts
       - name: Checkout content
         uses: actions/checkout@v4
         with:
@@ -365,15 +96,29 @@ jobs:
           ref: ${{ steps.target.outputs.ref }}
           path: ${{ env.CONTENT_WORKING_COPY }}
           token: ${{ secrets.CONTENT_REPO_TOKEN }}
+          persist-credentials: false
 
-      # 4. Set up pnpm and Node.js
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      # Record content commit version
+      - name: Record content commit
+        id: content
+        run: |
+          set -euo pipefail
+          echo "sha=$(git -C '${{ env.CONTENT_WORKING_COPY }}' rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Install Node.js and pnpm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 26.13.0
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      # 5. Restore thumbnail cache to accelerate builds
+      # Cache existing image thumbnails to avoid redundant processing
       - name: Restore build caches
         uses: actions/cache@v4
         with:
@@ -381,18 +126,19 @@ jobs:
           key: ${{ runner.os }}-shirone-thumbnails-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-shirone-thumbnails-
 
+      # Install dependencies
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      # 6. Synchronize content files into the theme directory
+      # Copy content and configurations into theme directory
       - name: Materialize content and config
         run: pnpm content:sync
 
-      # 7. Build production site into dist/
+      # Build static web pages into dist/ directory
       - name: Build site
         run: pnpm build
 
-      # 8. Deploy to server via rsync
+      # Synchronize dist/ web files to server
       - name: Deploy to server
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -407,20 +153,39 @@ jobs:
           ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
           rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
             dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_DIR/dist/"
+
+      # Display summary on GitHub UI
+      - name: Summarize
+        if: always()
+        run: |
+          set -euo pipefail
+          {
+            echo "### Shirone deploy"
+            echo "- Content repo: \`${CONTENT_REPOSITORY}\`"
+            echo "- Content ref: \`${{ steps.target.outputs.ref }}\`"
+            echo "- Content commit: \`${{ steps.content.outputs.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 ```
 
-- **Commit Resolution**: Reads `sha` safely via environment variables to avoid shell injection;
-- **Thumbnail Caching**: Uses `actions/cache` to reuse previously generated image thumbnails;
-- **Content Sync (`pnpm content:sync`)**: Merges files from the content repository into standard theme paths before compilation;
-- **Incremental Sync (`rsync`)**: Uses SSH keys to sync only modified static files from `dist/` to the server.
+### Core Steps Explanation
+
+- **Trigger conditions (`on`)**: Covers four events. Triggers when theme code updates, when the content repo pushes posts, during daily scheduled runs, or on manual web UI clicks;
+- **Avoid conflicts (`concurrency`)**: When multiple updates are pushed in rapid succession, older runs are canceled so only the newest content builds;
+- **Download content (`Checkout content`)**: Downloads posts and configurations into a temporary folder using the passed commit version ID;
+- **Reuse thumbnails (`Restore build caches`)**: Photo compression is time-consuming; generated thumbnails are cached so new posts do not trigger re-compressing existing photos;
+- **Sync files (`pnpm content:sync`)**: Places downloaded articles, assets, and configurations into corresponding theme paths;
+- **Build site (`pnpm build`)**: Compiles Markdown posts and styles into final HTML pages inside `dist/`;
+- **Sync to server (`rsync`)**: Connects to your server, uploading only modified files and removing outdated files.
 
 ---
 
-## 4. Content Repository Trigger (`trigger-build.yml.example`)
+## 2. Notify Build After Content Update: `trigger-build.yml.example`
 
-Located at `.github/workflows/trigger-build.yml.example` in the content repository, rename it to `trigger-build.yml` in your content repo to enable decoupled builds.
+Located at `.github/workflows/trigger-build.yml.example` in the content repository, rename it to `trigger-build.yml` in your content repo.
 
-### Source Code and Breakdown
+Its role is simple: after pushing articles to the content repo, verify formatting first, then notify the code repo to build.
+
+### Complete File Content
 
 ```yaml title=".github/workflows/trigger-build.yml.example"
 name: Trigger Theme Build
@@ -429,6 +194,7 @@ on:
   push:
     branches:
       - main
+    # Triggers only when posts, configs, data, or images change
     paths:
       - "content/**"
       - "config/**"
@@ -438,24 +204,26 @@ on:
       - "shirone.content.json"
   workflow_dispatch: {}
 
+# Keeps only the newest task if pushed multiple times in short succession
 concurrency:
   group: trigger-build
   cancel-in-progress: true
 
 jobs:
-  # Step 1: Run pre-flight content validation
+  # Step 1: Check format of posts and configs
   validate:
     uses: LyraVoid/Shirone/.github/workflows/content-validate.yml@main
     with:
       theme_repository: LyraVoid/Shirone
       theme_ref: main
 
-  # Step 2: Notify the theme repo to build once validation passes
+  # Step 2: Notify theme code repository to build once checks pass
   dispatch:
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # Option 1: Send dispatch event to theme repository
       - name: Dispatch build event to theme repository
         env:
           DISPATCH_TOKEN: ${{ secrets.DISPATCH_TOKEN }}
@@ -465,20 +233,131 @@ jobs:
           token: ${{ env.DISPATCH_TOKEN }}
           repository: LyraVoid/Shirone
           event-type: content-updated
-          # Pass the commit SHA so the theme repo builds this exact version
+          # Send the commit version ID to ensure accurate build content
           client-payload: '{"sha": "${{ github.sha }}"}'
+
+      # Option 2: Trigger platform deploy hooks (skipped if secret is unset)
+      - name: Trigger Cloudflare Pages deploy hook
+        env:
+          CLOUDFLARE_DEPLOY_HOOK: ${{ secrets.CLOUDFLARE_DEPLOY_HOOK }}
+        if: ${{ env.CLOUDFLARE_DEPLOY_HOOK != '' }}
+        run: |
+          curl -s -S -X POST "${{ env.CLOUDFLARE_DEPLOY_HOOK }}"
+
+      - name: Trigger Vercel deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        if: ${{ env.VERCEL_DEPLOY_HOOK != '' }}
+        run: |
+          curl -s -S -X POST "${{ env.VERCEL_DEPLOY_HOOK }}"
 ```
 
-### Key Mechanisms
+### Core Steps Explanation
 
-1. **Path filters**: Triggers only when files inside `content/`, `config/`, `data/`, or `public/` change;
-2. **Pre-flight validation (`needs: validate`)**: Formatting errors fail the job immediately in the content repo before triggering downstream builds;
-3. **Commit ID passing**: Injects `github.sha` into `client-payload`, enabling the theme repository to check out the exact commit.
+- **Ignore unrelated edits (`paths`)**: If you only edit `README.md` in the content repo, the workflow will not run;
+- **Validate before building (`needs: validate`)**: If an article frontmatter or YAML file has syntax errors, Step 1 halts with an error, preventing broken pages from being published;
+- **Notify theme repo (Option 1)**: Transmits the commit version ID to the theme code repository so it pulls the exact new posts;
+- **Trigger platform directly (Option 2)**: Calls hosting platform deploy hooks directly if using platform builds.
+
+::: tip Deploy Hooks Note
+Besides notifying theme repo Actions, you can trigger deploy hooks if you host your site on Cloudflare Pages, Vercel, EdgeOne, or Netlify.
+
+The platform then pulls your content and builds the site on its own machines. For detailed setup steps, see [Deployment Hooks](/en/guide/content-separation/deploy-hooks/).
+:::
+
+---
+
+## 3. Article Format Check: `content-validate.yml`
+
+Located at `.github/workflows/content-validate.yml` in the theme repository.
+
+This file does not run manually; it is called automatically by `trigger-build.yml` in Step 1.
+
+### Execution Code
+
+```yaml title=".github/workflows/content-validate.yml"
+name: Validate content
+
+on:
+  workflow_call:
+    inputs:
+      theme_repository:
+        description: "Theme repository path, e.g. OWNER/REPO"
+        type: string
+        required: true
+      theme_ref:
+        description: "Theme branch"
+        type: string
+        required: false
+        default: main
+    secrets:
+      theme_token:
+        description: "Token for private theme repositories"
+        required: false
+
+jobs:
+  validate:
+    name: Schema and structure
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Download content repo files
+      - name: Checkout content
+        uses: actions/checkout@v4
+        with:
+          path: content
+
+      # Download theme code
+      - name: Checkout theme
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.theme_repository }}
+          ref: ${{ inputs.theme_ref }}
+          path: theme
+          token: ${{ secrets.theme_token || github.token }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: theme/package.json
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.13.0
+          cache: pnpm
+          cache-dependency-path: theme/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile --prefer-offline
+        working-directory: theme
+
+      # Check 1: Verify directory structure and config/*.yaml syntax
+      - name: Validate content structure and config
+        working-directory: theme
+        env:
+          CONTENT_DIR: ${{ github.workspace }}/content
+        run: pnpm content:validate
+
+      # Check 2: Verify post frontmatter fields like title, date, category
+      - name: Validate frontmatter schemas
+        working-directory: theme
+        env:
+          CONTENT_DIR: ${{ github.workspace }}/content
+        run: |
+          set -euo pipefail
+          pnpm content:sync
+          pnpm exec astro sync
+```
+
+### What Gets Checked
+
+- **Configuration checks (`pnpm content:validate`)**: Checks files in `config/` and points out typos in configuration keys;
+- **Article frontmatter checks (`astro sync`)**: Checks title, category, tag, and date formatting at the top of each article to prevent build errors.
 
 ---
 
 ## Next Steps
 
-- [Server Deployment](/en/guide/deploy/server/): Learn how to synchronize your site to a personal server with GitHub Actions
-- [Cross-Repo CI Guide](/en/guide/content-separation/ci-dispatch/): Learn token and permission configuration for dual-repo setups
-- [Theme Contribution](/en/guide/development/theme-contributing/): Learn how to modify theme code and add new components
+- [Server Deployment](/en/guide/deploy/server/): Learn how to synchronize built pages to your server with GitHub Actions
+- [Cross-Repo CI Guide](/en/guide/content-separation/ci-dispatch/): Learn token setup steps between two repositories
+- [Deployment Hooks](/en/guide/content-separation/deploy-hooks/): Learn how to trigger hosting platforms directly
+- [Deployment Overview](/en/guide/deploy/overview/): Compare hosting on Vercel, Cloudflare, and other platforms

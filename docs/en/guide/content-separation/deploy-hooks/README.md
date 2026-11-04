@@ -66,4 +66,5 @@ A deployment hook triggers a rebuild on the hosting platform, but platforms usua
 
 ## Next steps
 
-[Troubleshooting](/en/guide/content-separation/faq/): token permissions, authentication errors, and configuration debugging.
+- [Automated Build and Deployment Workflows](/en/guide/development/workflows/): Learn how the content repository workflow triggers deploy hooks
+- [Troubleshooting](/en/guide/content-separation/faq/): token permissions, authentication errors, and configuration debugging.
