@@ -4,7 +4,9 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/init-repo/
 ---
 
-You can create the content repository yourself or start from the official template. Both produce identical structures; only the starting point differs.
+You can move content out of an existing theme repo or start from the official template.
+
+Both produce the same directory structure; the only difference is what the initial content is.
 
 | Method | Best for | Retains existing posts |
 | --- | --- | --- |
@@ -21,7 +23,9 @@ pnpm content:eject --yes    # write to ../shirone-content by default
 ```
 
 ::: warning Commit your work first
-`content:eject` modifies `.gitignore` and the Git index. It refuses to run when the working tree has uncommitted changes. Commit or stash your changes before running the command.
+`content:eject` modifies `.gitignore` and the Git index. It refuses to run when the working tree has uncommitted changes.
+
+Commit or stash your changes before running the command.
 :::
 
 Use `--out` to specify a different directory:
@@ -51,7 +55,10 @@ git commit -m "chore: switch to a dual-repo setup"
 
 ### Push to GitHub
 
+::: steps
+
 1. Create an **empty private repository** on GitHub. Do not initialize it with a README, `.gitignore`, or license.
+
 2. Enter the exported directory and push:
 
 ```bash
@@ -63,13 +70,24 @@ git remote add origin git@github.com:YOUR_NAME/my-blog-content.git
 git push -u origin main
 ```
 
+:::
+
 ![Creating a private repository on GitHub](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
 
+After creation, GitHub shows the quick-start page for the empty repository:
+
+![GitHub empty-repository quick-start page](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
+
+::: caution
 The repository must be private. A public repository exposes drafts, original photos, and site configuration.
+:::
 
 ## Option 2: start from the official template
 
+::: steps
+
 1. Create an empty private repository on GitHub.
+
 2. Clone the official template and point its remote URL to your repository:
 
 ```bash
@@ -80,7 +98,13 @@ git remote -v
 git push -u origin main
 ```
 
+:::
+
 The template includes sample posts, sample images, and complete configuration files. Replace them as needed.
+
+Refresh the GitHub repository page after pushing — the full directory layout is in place:
+
+![Final state of the private GitHub repository](/images/content-separation/01-quickstart/02-init/06-repo-final-page.png)
 
 ## Content repo layout and mapping
 
@@ -112,27 +136,37 @@ shirone-content/
 
 Important details:
 
-- The `assets/` directory can be deleted entirely; the site then falls back to the theme's default images. If you keep it, include every image the site references (banner, avatar, covers). A folder containing only a placeholder breaks image loading.
+- The `assets/` directory can be deleted entirely; the site then falls back to the theme's default images.
+
+  If you keep it, include every image the site references (banner, avatar, covers). A folder containing only a placeholder breaks image loading.
 - `shirone.content.json` in the content repo only describes the repository itself. It is **not used during the build**. The file that selects the content source lives in the theme repo root. See [Content Sources](/en/guide/content-separation/content-sources/#manifest).
 - `docs/`, `.github/`, `.vscode/`, and `scripts/` are not copied to the theme repo, so placing them in the content repo will not impact the build.
 
 ## Verify
 
-In the theme repo:
+In the theme repo, run these in order:
+
+::: steps
+
+1. **Check the content source connection**
 
 ```bash
 pnpm content:status
 ```
 
-The output shows the content source type, path or Git URL, and the resolved commit SHA. `external` means the content repo is connected; `local` means the theme's own content is still in use.
+The output shows the content source type, path or Git URL, and the resolved commit SHA.
 
-Run a sync command:
+`external` means the content repo is connected; `local` means the theme's own content is still in use.
+
+2. **Run a sync**
 
 ```bash
 pnpm content:sync
 ```
 
 The command prints the number of files synced and the content commit SHA.
+
+:::
 
 ## Next steps
 

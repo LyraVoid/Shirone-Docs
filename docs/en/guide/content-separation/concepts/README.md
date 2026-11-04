@@ -6,8 +6,17 @@ permalink: /en/guide/content-separation/concepts/
 
 Content separation splits a blog into two Git repositories:
 
-- **Theme repo**: Shirone source, styles, and build scripts. It can follow upstream updates and stay public.
-- **Content repo**: your posts, moments, albums, data, and site configuration. It can be private.
+:::: card-grid
+
+::: card title="Theme repo" icon="ri:code-s-slash-line"
+Shirone source, styles, and build scripts. It can follow upstream updates and stay public.
+:::
+
+::: card title="Content repo" icon="ri:quill-pen-line"
+Your posts, moments, albums, data, and site configuration. It can be private.
+:::
+
+::::
 
 Before building, the theme repo copies files from the content repo into its standard directories, then runs the normal build. The theme code itself does not need special handling for content separation.
 

@@ -4,7 +4,9 @@ createTime: 2026/09/01 10:00:00
 permalink: /guide/content-separation/init-repo/
 ---
 
-内容仓可以自行创建，也可以基于官方模板初始化。两种方式生成的结构完全相同，区别在于起点不同。
+内容仓可以由现有的主题仓迁出而来，也可以从官方模板克隆。
+
+两种方式得到的目录结构完全一致，区别只是初始内容不同。
 
 | 方式 | 适合场景 | 是否保留现有文章 |
 | --- | --- | --- |
@@ -21,7 +23,9 @@ pnpm content:eject --yes    # 默认导出到 ../shirone-content
 ```
 
 ::: warning 执行前先提交改动
-`content:eject` 会修改 `.gitignore` 和 Git 索引。工作区存在未提交改动时，命令将拒绝执行。请先提交或暂存改动，再运行命令。
+`content:eject` 会修改 `.gitignore` 和 Git 索引。工作区存在未提交改动时，命令将拒绝执行。
+
+请先提交或暂存改动，再运行命令。
 :::
 
 需要指定导出目录时，添加 `--out` 参数：
@@ -51,7 +55,10 @@ git commit -m "chore: 迁移为双仓模式"
 
 ### 推送到 GitHub
 
+::: steps
+
 1. 在 GitHub 上新建一个**空白私有仓库**，不要勾选创建 README、`.gitignore` 或 License。
+
 2. 进入迁出的内容目录，完成初始化并推送到远端：
 
 ```bash
@@ -63,13 +70,24 @@ git remote add origin git@github.com:你的用户名/my-blog-content.git
 git push -u origin main
 ```
 
+:::
+
 ![GitHub 新建私有仓库界面](/images/content-separation/01-quickstart/02-init/01-github-create-repo.png)
 
+创建完成后，GitHub 会显示空白仓库的推送指引页面：
+
+![GitHub 空白仓库指引页面](/images/content-separation/01-quickstart/02-init/02-repo-initial-page.png)
+
+::: caution
 仓库属性必须设置为 Private。公开仓库会导致草稿、相册原图和站点配置对外暴露。
+:::
 
 ## 方式二：从官方模板开始
 
+::: steps
+
 1. 在 GitHub 上新建一个空白私有仓库。
+
 2. 克隆官方模板，并将远程仓库地址修改为您自己的仓库：
 
 ```bash
@@ -80,7 +98,13 @@ git remote -v
 git push -u origin main
 ```
 
+:::
+
 模板内置示例文章、图片资源与完整的配置文件，后续可以按需替换。
+
+推送后刷新 GitHub 仓库页面，完整目录结构已就绪：
+
+![GitHub 私有仓库最终页面](/images/content-separation/01-quickstart/02-init/06-repo-final-page.png)
 
 ## 内容仓目录与映射
 
@@ -112,27 +136,37 @@ shirone-content/
 
 注意事项：
 
-- `assets/` 目录可以完全删除，删除后站点将回退使用主题自带图片。若保留该目录，必须放齐正在引用的图片（横幅、头像、封面等），只留空占位文件会导致图片加载失败。
+- `assets/` 目录可以完全删除，删除后站点将回退使用主题自带图片。
+
+  若保留该目录，必须放齐正在引用的图片（横幅、头像、封面等），只留空占位文件会导致图片加载失败。
 - 内容仓根目录的 `shirone.content.json` 仅记录仓库自身元数据，**不参与构建**。真正决定内容源的是主题仓根目录的同名文件，详见[内容源配置](/guide/content-separation/content-sources/#清单文件)。
 - `docs/`、`.github/`、`.vscode/` 与 `scripts/` 不会同步到主题仓，放置在内容仓中不会影响构建。
 
 ## 验证
 
-在主题仓执行：
+在主题仓依次执行：
+
+::: steps
+
+1. **检查内容源连接**
 
 ```bash
 pnpm content:status
 ```
 
-输出信息会显示当前内容源类型、路径或 Git 地址，以及解析到的 commit SHA。显示 `external` 表明内容仓已正确连接；显示 `local` 则表示仍在读取主题仓自带内容。
+输出信息会显示当前内容源类型、路径或 Git 地址，以及解析到的 commit SHA。
 
-随后执行一次同步命令：
+显示 `external` 表明内容仓已正确连接；显示 `local` 则表示仍在读取主题仓自带内容。
+
+2. **执行一次同步**
 
 ```bash
 pnpm content:sync
 ```
 
 终端会输出同步的文件数量和内容 commit SHA。
+
+:::
 
 ## 下一步
 

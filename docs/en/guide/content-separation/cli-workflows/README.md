@@ -85,6 +85,17 @@ pnpm content:export --yes   # apply export
 
 Only fields differing from default values are exported, ensuring YAML files do not freeze default values permanently and future theme updates apply smoothly. Supported flags: `--config`, `--posts`, `--prune`, `--out`, `--force`.
 
+This is a local development command with several restrictions:
+
+::: warning Restrictions
+
+- It refuses to run in CI.
+- It refuses `git` content sources — `.content-src/` is a shallow working copy, and committing into it would lose changes, so use `--out` to point at a real local checkout.
+- It refuses to run when the content repo has uncommitted changes.
+- `nav-bar.yaml` is never exported automatically.
+
+:::
+
 ### content:clean
 
 Restores the theme repo to clean sample content:
@@ -124,4 +135,4 @@ Snapshot freshness is controlled by `snapshot.staleAfterDays` in `config/anime.y
 
 ## Next steps
 
-[Configuration Overlay](/en/guide/content-separation/config-overlay/): object merge, array replacement rules, and file categorization.
+[Cross-Repo CI](/en/guide/content-separation/ci-dispatch/): trigger theme-repo builds automatically after pushing content.

@@ -29,7 +29,9 @@ sequenceDiagram
 | Content source | `CONTENT_DIR` pointing to checked-out `.content-src/` | `CONTENT_REPO_URL` fetching remote repo |
 | Build precision | Builds exact commit SHA that triggered run | Fetches latest HEAD of branch |
 
+::: warning
 Do not configure both workflows simultaneously, as each push triggers duplicate builds that overwrite one another. If the host keeps its build command while Actions uploads prebuilt `dist/` files, the host log fails with `Error: Command "pnpm build" exited with 1`.
+:::
 
 ## Platform quick reference
 

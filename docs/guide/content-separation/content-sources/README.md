@@ -11,12 +11,10 @@ permalink: /guide/content-separation/content-sources/
 系统按以下顺序依次查找，命中首个有效配置即刻停止：
 
 1. `SHIRONE_CONTENT_SYNC=0`：强制关闭同步，回退为单仓模式；
-2. `CONTENT_DIR`：读取本地内容仓路径；
+2. `CONTENT_DIR`：读取本地内容仓路径（同时配置了 `CONTENT_REPO_URL` 时优先使用本地路径）；
 3. `CONTENT_REPO_URL`：克隆或拉取远程 Git 仓库；
 4. 主题仓根目录 `shirone.content.json` 中的 `source` 声明；
 5. 未命中上述任何配置：使用主题仓自带内容。
-
-`CONTENT_DIR` 的优先级高于 `CONTENT_REPO_URL`。本地已指定内容仓路径时，即使同时配置了远程仓库地址，也会优先读取本地目录。
 
 环境变量加载优先级如下：
 
@@ -69,13 +67,17 @@ https://x-access-token:<TOKEN>@github.com/OWNER/shirone-content.git
 CONTENT_SYNC_PULL="false"
 ```
 
-设为 `false` 后仅复用本地现有的 `.content-src/`。生效前提是该目录的仓库 URL、ref 与 commit 与当前配置完全一致，且工作区无未提交改动，否则命令将报错中断。
+设为 `false` 后只复用本地现有的 `.content-src/`。
+
+::: warning
+前提是 `.content-src/` 的仓库地址、ref 和 commit 与当前配置完全一致，且工作区没有未提交改动，否则命令会报错中断。
+:::
 
 ### SHIRONE_CONTENT_SYNC
 
 用于临时回退到单仓模式，排查是否因内容源配置异常导致构建问题。该变量关闭后，`CONTENT_DIR` 与 `CONTENT_REPO_URL` 均不再生效。
 
-## 三种常见场景
+## 常见场景
 
 ### 本地预览
 
@@ -165,8 +167,9 @@ GIT_TERMINAL_PROMPT=0
 - 访问令牌仅需内容仓的 `Contents: Read` 权限，无需主题仓权限。
 - 携带令牌的地址必须使用 HTTPS 协议。SSH 协议要求构建机预设私钥，多数托管平台不支持此项配置。
 - 令牌过期、被吊销或未授予内容仓读取权限时，构建日志将报错 `Authentication failed`。
-- 申请流程详见[申请个人访问令牌](/guide/content-separation/pat/)。
 - 切勿将 `.env`、令牌明文或包含令牌的地址提交至公开仓库。
+
+申请流程详见[申请个人访问令牌](/guide/content-separation/pat/)。
 
 公开内容仓无需配置令牌，直接填写 `https://github.com/OWNER/REPO.git` 即可。
 
@@ -175,24 +178,35 @@ GIT_TERMINAL_PROMPT=0
 ::: collapse
 - 配置了 `CONTENT_REPO_URL`，但构建仍然使用主题仓自带内容
 
-  检查是否同时设置了 `CONTENT_DIR`，其优先级更高。并确认变量已配置在构建平台实际读取的环境变量设置中，而非仅存在于本地 `.env`。
+  检查是否同时设置了 `CONTENT_DIR`，其优先级更高。
+
+  再确认变量已配置在构建平台实际读取的环境变量设置中，而非仅存在于本地 `.env`。
 
 - 内容仓已推送更新，但构建结果仍为旧内容
 
-  检查 `CONTENT_REPO_REF` 是否固定为了旧分支或历史 commit SHA。托管平台的构建缓存亦可能残留旧的 `.content-src/`，清理缓存后重新触发构建。
+  检查 `CONTENT_REPO_REF` 是否固定为了旧分支或历史 commit SHA。
+
+  托管平台的构建缓存也可能残留旧的 `.content-src/`，清理缓存后重新触发构建即可。
 
 - `CONTENT_SYNC_PULL=false` 报错失败
 
-  该选项要求 `.content-src/` 必须与当前的 URL、ref 及 commit 完全一致，且工作区无未跟踪修改。建议先执行一次常规同步，或删除 `.content-src/` 后重新构建。
+  该选项要求 `.content-src/` 必须与当前的 URL、ref 及 commit 完全一致，且工作区无未跟踪修改。
+
+  建议先执行一次常规同步，或删除 `.content-src/` 后重新构建。
 
 - 仓库地址中含有特殊字符
 
-  包含访问令牌的地址需遵循 URL 编码规范。建议统一采用 `x-access-token:<TOKEN>` 格式，避免在用户名或密码字段中出现特殊字符。
+  包含访问令牌的地址需遵循 URL 编码规范。
+
+  建议统一采用 `x-access-token:<TOKEN>` 格式，避免在用户名或密码字段中出现特殊字符。
 :::
+
+## 下一步
+
+[配置覆盖](/guide/content-separation/config-overlay/)：在内容仓中定制站点标题、导航、侧栏等配置。
 
 ## 相关页面
 
-- [本地预览与调试](/guide/content-separation/local-preview/)
 - [跨仓自动构建](/guide/content-separation/ci-dispatch/)
 - [部署钩子](/guide/content-separation/deploy-hooks/)
 - [CLI 工具链](/guide/content-separation/cli-workflows/)

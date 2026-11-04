@@ -134,4 +134,6 @@ If any step fails, check the Actions log in that repository first. Token permiss
 
 ## Next steps
 
-[Deployment Hooks](/en/guide/content-separation/deploy-hooks/): let the host build, or consult platform-specific hook configurations.
+[Deployment Overview](/en/guide/deploy/overview/): pick a hosting platform and bring the site online.
+
+If you prefer not to maintain GitHub Actions, [Deployment Hooks](/en/guide/content-separation/deploy-hooks/) let the hosting platform pull and build on its own.

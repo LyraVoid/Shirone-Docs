@@ -85,6 +85,17 @@ pnpm content:export --yes   # 正式执行导出
 
 导出时仅提取与主题默认值不同的差异字段，不会将全量默认值写死到 YAML 中，从而确保后续主题升级仍能继承新默认值。支持参数：`--config`、`--posts`、`--prune`、`--out`、`--force`。
 
+这是一条本地开发命令，有以下限制：
+
+::: warning 使用限制
+
+- CI 环境中会拒绝执行；
+- 内容源为 `git` 时同样拒绝——`.content-src/` 只是浅克隆工作副本，往里提交会丢失改动，需用 `--out` 指向一份真正的本地检出；
+- 内容仓工作区不干净时拒绝执行；
+- `nav-bar.yaml` 不会被自动导出。
+
+:::
+
 ### content:clean
 
 将主题仓还原为仅包含示例内容的纯净状态：
@@ -124,4 +135,4 @@ pnpm anime:sync --provider bangumi   # 仅同步指定的数据源
 
 ## 下一步
 
-[配置覆盖](/guide/content-separation/config-overlay/)：对象合并、数组替换规则与配置文件分类说明。
+[跨仓自动构建](/guide/content-separation/ci-dispatch/)：推送内容后自动触发主题仓构建与部署。

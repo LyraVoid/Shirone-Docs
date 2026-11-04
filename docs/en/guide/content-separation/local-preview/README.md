@@ -4,7 +4,9 @@ createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/local-preview/
 ---
 
-In the dual-repo setup, the theme repo builds and renders the site, while the content repo manages posts and configuration. Local preview requires pointing the theme repo to your content repo path.
+In the dual-repo setup, the theme repo builds and renders the site, while the content repo manages posts and configuration.
+
+Local preview requires pointing the theme repo to your content repo path.
 
 ## Before you start
 
@@ -30,7 +32,7 @@ Relative paths in `CONTENT_DIR` resolve from the theme repo root. Absolute paths
 
 ### Option 1: sync once, then start
 
-Suitable when you only need to inspect pages without making frequent file modifications.
+Use this when you only want to check how pages render and will not be editing content often.
 
 ::: tabs
 @tab Windows (PowerShell)
@@ -47,13 +49,21 @@ pnpm dev
 ```
 :::
 
+![Set the content repo path and run the sync](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
+
 When the terminal prints `Local http://localhost:4321/`, open that address in your browser.
 
-`content:sync` copies files from the content repo into `src/content/`, `src/data/`, `src/assets/`, and `public/`, then generates the configuration bridge at `src/user/user-config.ts`.
+![Terminal output after the dev server starts](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
+
+![Local browser preview](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
+
+`content:sync` copies files from the content repo into `src/content/`, `src/data/`, `src/assets/`, and `public/`.
+
+It then generates the configuration bridge at `src/user/user-config.ts`.
 
 ### Option 2: write and preview at the same time
 
-Suitable when continuously writing posts or adjusting YAML configurations. Open two terminal windows in the theme repo:
+Use this when you will be writing posts or adjusting YAML configurations over time. Open two terminal windows in the theme repo:
 
 ::: tabs
 @tab Windows (PowerShell)
@@ -78,17 +88,21 @@ pnpm content:watch
 ```
 :::
 
-Saving a file in your Markdown editor prompts `content:watch` to sync changes, and the browser reloads automatically. When `.env` is configured, neither terminal requires `CONTENT_DIR`.
+Saving a file in your Markdown editor prompts `content:watch` to sync changes, and the browser reloads automatically.
+
+When `.env` is configured, neither terminal requires `CONTENT_DIR`.
 
 ## Check the content source
 
-When you are unsure which repository is currently active:
+When you are unsure which content repo is currently in use:
 
 ```bash
 pnpm content:status
 ```
 
-The output lists the active content source, the resolved commit SHA, and the overridden configuration files. Add `--remote` to verify the remote branch over the network.
+The output lists the active content source, the resolved commit SHA, and the overridden configuration files.
+
+Add `--remote` to verify the remote branch over the network.
 
 ## Common problems
 
@@ -99,7 +113,9 @@ The output lists the active content source, the resolved commit SHA, and the ove
 
 - A configuration change has no effect
 
-  Run `pnpm content:validate` to detect misspelled YAML fields. Array fields are replaced entirely; adding only a new item will not merge. See [Configuration Overlay](/en/guide/content-separation/config-overlay/).
+  Run `pnpm content:validate` to detect misspelled YAML fields.
+
+  Array fields are replaced entirely; adding only a new item will not merge. See [Configuration Overlay](/en/guide/content-separation/config-overlay/).
 
 - A new image does not appear
 
@@ -107,7 +123,9 @@ The output lists the active content source, the resolved commit SHA, and the ove
 
 - `config/anime.yaml` has no data
 
-  Editing YAML does not fetch remote data automatically. Run `pnpm anime:sync --if-stale` in the theme repo, then preview again. Use `pnpm anime:sync` for first-time setup or forced refreshes. See [Anime Page](/en/guide/pages/anime/).
+  Editing YAML does not fetch remote data automatically. Run `pnpm anime:sync --if-stale` in the theme repo, then preview again.
+
+  Use `pnpm anime:sync` for first-time setup or forced refreshes. See [Anime Page](/en/guide/pages/anime/).
 :::
 
 ## Next steps

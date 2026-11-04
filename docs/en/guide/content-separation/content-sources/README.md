@@ -11,12 +11,10 @@ permalink: /en/guide/content-separation/content-sources/
 The system checks configurations in the following order and stops at the first match:
 
 1. `SHIRONE_CONTENT_SYNC=0`: disables syncing and stays in single-repo mode.
-2. `CONTENT_DIR`: path to a local content repository.
+2. `CONTENT_DIR`: path to a local content repository (used in preference to `CONTENT_REPO_URL` when both are set).
 3. `CONTENT_REPO_URL`: Git URL of a remote content repository.
 4. `source` declaration in `shirone.content.json` at the theme repo root.
 5. None of the above: uses the content bundled with the theme.
-
-`CONTENT_DIR` takes precedence over `CONTENT_REPO_URL`. If a local checkout path is set, it is used even when a remote URL is also configured.
 
 Environment variable loading follows this priority order:
 
@@ -69,7 +67,11 @@ When unset, the value defaults to `source.ref` in the manifest; if the manifest 
 CONTENT_SYNC_PULL="false"
 ```
 
-Only reuses an existing `.content-src/`. The working copy must match the current URL, ref, and commit SHA exactly, with no uncommitted changes, or the command exits with an error.
+When set to `false`, the command only reuses the existing local `.content-src/`.
+
+::: warning
+This requires the repository URL, ref, and commit SHA of `.content-src/` to match the current configuration exactly, and the working tree to have no uncommitted changes; otherwise the command aborts with an error.
+:::
 
 ### SHIRONE_CONTENT_SYNC
 
@@ -165,8 +167,9 @@ The content repo also contains a `shirone.content.json` file, but it only record
 - The token only requires `Contents: Read` on the content repo, with no permissions needed on the theme repo.
 - URLs with tokens must use HTTPS. SSH requires pre-configured private keys on build machines, which most static hosting platforms do not support.
 - Expired or revoked tokens, or tokens lacking content repo access, produce `Authentication failed` errors in build logs.
-- See [Access Tokens](/en/guide/content-separation/pat/) for token creation steps.
 - Never commit `.env`, token strings, or URLs containing tokens to public repositories.
+
+For token creation steps, see [Access Tokens](/en/guide/content-separation/pat/).
 
 Public content repositories do not require a token. Use `https://github.com/OWNER/REPO.git` directly.
 
@@ -175,24 +178,35 @@ Public content repositories do not require a token. Use `https://github.com/OWNE
 ::: collapse
 - `CONTENT_REPO_URL` is set, but the build still uses theme-bundled content
 
-  Check whether `CONTENT_DIR` is also configured; it has higher priority. Confirm the variable is set in the hosting platform's build environment, not just locally in `.env`.
+  Check whether `CONTENT_DIR` is also configured; it has higher priority.
+
+  Also confirm the variable is set in the hosting platform's build environment, not just locally in `.env`.
 
 - Content repo updated, but the build still produces older content
 
-  Verify whether `CONTENT_REPO_REF` is pinned to an older branch or commit SHA. Platform build caches may also retain stale copies of `.content-src/`; clear the cache and rebuild.
+  Verify whether `CONTENT_REPO_REF` is pinned to an older branch or commit SHA.
+
+  Platform build caches may also retain a stale `.content-src/`; clear the cache and trigger a new build.
 
 - `CONTENT_SYNC_PULL=false` fails
 
-  This mode requires `.content-src/` to match the active URL, ref, and commit SHA exactly, with a clean working copy. Run a standard sync first, or delete `.content-src/` and rebuild.
+  This mode requires `.content-src/` to match the active URL, ref, and commit SHA exactly, with a clean working copy.
+
+  Run a standard sync first, or delete `.content-src/` and rebuild.
 
 - The repository URL contains special characters
 
-  URLs containing access tokens must be URL-encoded. Prefer the `x-access-token:<TOKEN>` format to avoid special characters in username or password fields.
+  URLs containing access tokens must be URL-encoded.
+
+  Prefer the `x-access-token:<TOKEN>` format to avoid special characters in username or password fields.
 :::
+
+## Next steps
+
+[Configuration Overlay](/en/guide/content-separation/config-overlay/): customize site title, navigation, sidebar, and more from the content repo.
 
 ## Related pages
 
-- [Local Preview & Debugging](/en/guide/content-separation/local-preview/)
 - [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/)
 - [Deployment Hooks](/en/guide/content-separation/deploy-hooks/)
 - [CLI Toolchain](/en/guide/content-separation/cli-workflows/)

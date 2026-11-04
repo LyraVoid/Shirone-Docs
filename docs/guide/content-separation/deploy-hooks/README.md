@@ -29,7 +29,9 @@ sequenceDiagram
 | 内容源配置 | `CONTENT_DIR` 指向检出的 `.content-src/` | `CONTENT_REPO_URL` 远程拉取内容仓 |
 | 构建精度 | 精确按触发提交的 commit SHA 构建 | 拉取平台分支最新 HEAD 提交 |
 
+::: warning
 两套方案不可同时配置，否则单次推送会引发两次部署，导致线上产物相互覆盖。若平台仍保留构建命令，而 Actions 同时上传静态 `dist/`，平台构建日志将报错 `Error: Command "pnpm build" exited with 1`。
+:::
 
 ## 四个平台速查
 

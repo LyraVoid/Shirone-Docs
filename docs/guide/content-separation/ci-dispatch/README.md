@@ -134,4 +134,6 @@ env:
 
 ## 下一步
 
-[部署钩子](/guide/content-separation/deploy-hooks/)：让托管平台自行构建，或查阅具体平台的部署钩子配置。
+[部署总览](/guide/deploy/overview/)：选择部署平台，完成站点上线。
+
+若不想维护 GitHub Actions，可改用[部署钩子](/guide/content-separation/deploy-hooks/)，让托管平台自行拉取构建。
