@@ -23,7 +23,7 @@ For everyday writing, you generally only need to remember one command: `pnpm con
 
 ---
 
-## Daily Writing and Live Preview
+## Common Commands
 
 ### 1. content:watch (Real-Time Watcher)
 
@@ -68,10 +68,6 @@ pnpm content:sync --dry-run
 
 Both `pnpm dev` and `pnpm build` automatically run this synchronization step before starting.
 
----
-
-## Validation and Status Inspection
-
 ### 3. content:validate (Format and Syntax Checking)
 
 Checks for formatting and syntax errors before pushing commits:
@@ -106,7 +102,9 @@ pnpm content:status --remote
 
 ---
 
-## Maintenance and Migration
+## Other Commands
+
+The following commands are displayed openly without default folding for easy reading and searching:
 
 ### 5. anime:sync (Anime Data Synchronization)
 

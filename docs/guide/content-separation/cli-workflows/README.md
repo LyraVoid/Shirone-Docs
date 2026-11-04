@@ -23,7 +23,7 @@ permalink: /guide/content-separation/cli-workflows/
 
 ---
 
-## 日常写作与实时预览
+## 常用命令
 
 ### 1. content:watch（实时监听）
 
@@ -68,10 +68,6 @@ pnpm content:sync --dry-run
 
 `pnpm dev` 与 `pnpm build` 在启动前都会自动执行该命令，通常无需在打包脚本中重复手动调用。
 
----
-
-## 配置检查与状态排查
-
 ### 3. content:validate（格式与语法校验）
 
 用于在正式推送前检查内容仓库是否存在语法错误：
@@ -106,7 +102,9 @@ pnpm content:status --remote
 
 ---
 
-## 维护与迁移命令
+## 其余命令
+
+以下命令平铺展示，不设默认折叠，便于直接通读与检索：
 
 ### 5. anime:sync（番剧数据同步）
 
