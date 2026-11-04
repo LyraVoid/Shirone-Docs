@@ -12,7 +12,9 @@ This guide covers Cloudflare Pages platform configuration. For decisions on buil
 - A Cloudflare account (the free tier is fully sufficient);
 - `site` is set to your production domain (edit `src/config/siteConfig.ts` in single-repo mode, or `config/site.yaml` in the content repo).
 
-> You must create a **Pages** project, not a Worker. Selecting the Worker type causes builds to fail with `__dirname is not defined`.
+::: caution
+You must create a **Pages** project, not a Worker. Selecting the Worker type causes builds to fail with `__dirname is not defined`.
+:::
 
 ## Option 1: Git integration
 
@@ -22,13 +24,21 @@ This guide covers Cloudflare Pages platform configuration. For decisions on buil
 
    Log into the [Cloudflare Dashboard](https://dash.cloudflare.com/) and go to **Workers & Pages** -> **Create** -> **Pages** -> **Connect to Git**.
 
+   ![Workers & Pages entry in the Cloudflare dashboard](/images/content-separation/04-deploy/02-hook/01-cloudflare.png)
+
 2. **Select repository**
 
    Select your Git provider, grant permissions, and choose the Shirone repository.
 
+   ![Selecting the Git provider and granting access](/images/content-separation/04-deploy/02-hook/03-github-connect.png)
+
+   ![Choosing the Shirone repository from the list](/images/content-separation/04-deploy/02-hook/04-shirone-connect.png)
+
 3. **Configure build parameters**
 
    Confirm the following build settings:
+
+   ![Build configuration page in Cloudflare Pages](/images/content-separation/04-deploy/02-hook/05-default-build.png)
 
    | Setting | Value |
    | --- | --- |
@@ -40,6 +50,8 @@ This guide covers Cloudflare Pages platform configuration. For decisions on buil
 4. **Add environment variables**
 
    Expand the environment variables section and configure the following:
+
+   ![Environment variables section in Cloudflare Pages](/images/content-separation/04-deploy/02-hook/06-env-config.png)
 
    | Variable | Value | Purpose |
    | --- | --- | --- |
@@ -73,6 +85,18 @@ A Pages project can only use one distribution mode: connected Git repository wit
 
 To upload files via CLI, create a separate **Direct Upload** project in the dashboard (without linking Git or specifying build commands) and point `--project-name` to it.
 :::
+
+## Create a Deploy Hook
+
+To rebuild automatically after the content repo pushes, go to **Settings -> Builds & deployments -> Deploy hooks**, fill in a name (for example `content-update`), select the `main` branch, and click **Add hook**:
+
+![Cloudflare Deploy Hook configuration](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+
+Copy the generated webhook URL once the hook is created:
+
+![Webhook URL shown after the deploy hook is created](/images/content-separation/04-deploy/02-hook/08-webhook-success.png)
+
+Hand this URL to the [deployment hooks](/en/guide/content-separation/deploy-hooks/) workflow.
 
 ## Custom domain
 

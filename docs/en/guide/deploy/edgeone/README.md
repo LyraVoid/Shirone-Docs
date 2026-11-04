@@ -51,6 +51,12 @@ EdgeOne Pages is Tencent Cloud's static hosting platform, providing reduced netw
 
 Once deployment completes, EdgeOne assigns a domain in the format `<random>.edgeone.app`. Subsequent pushes to `main` automatically trigger new deployments.
 
+## Create a deploy trigger
+
+Used by the [deployment hooks](/en/guide/content-separation/deploy-hooks/) workflow: go to project settings -> **Build & deploy** -> **Deploy triggers**, select the `main` branch, then save and copy the generated trigger URL.
+
+![Where to create an EdgeOne deploy trigger](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+
 ## Custom domain
 
 1. Open project management, go to **Domain management** -> **Custom domain**, and add your domain;

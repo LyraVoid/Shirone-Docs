@@ -12,7 +12,9 @@ permalink: /guide/deploy/cloudflare/
 - 拥有 Cloudflare 账号，免费套餐即可满足需求；
 - `site` 已设置为正式域名。单仓修改 `src/config/siteConfig.ts`，双仓修改内容仓的 `config/site.yaml`。
 
-> 必须创建 **Pages** 项目，切勿创建为 Worker。若选错项目类型，构建时将报错 `__dirname is not defined`。
+::: caution
+必须创建 **Pages** 项目，切勿创建为 Worker。若选错项目类型，构建时将报错 `__dirname is not defined`。
+:::
 
 ## 方式一：Git 集成
 
@@ -22,13 +24,21 @@ permalink: /guide/deploy/cloudflare/
 
    登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)，依次进入 **Workers & Pages** -> **Create** -> **Pages** -> **Connect to Git**。
 
+   ![Cloudflare 控制台的 Workers & Pages 入口](/images/content-separation/04-deploy/02-hook/01-cloudflare.png)
+
 2. **选择代码仓库**
 
    选择 Git 托管提供商并完成授权，选中 Shirone 仓库。
 
+   ![选择 Git 托管提供商并授权](/images/content-separation/04-deploy/02-hook/03-github-connect.png)
+
+   ![在仓库列表中选中 Shirone 仓库](/images/content-separation/04-deploy/02-hook/04-shirone-connect.png)
+
 3. **配置构建参数**
 
    核对并填写以下构建配置：
+
+   ![Cloudflare Pages 的构建配置页面](/images/content-separation/04-deploy/02-hook/05-default-build.png)
 
    | 配置项 | 设定值 |
    | --- | --- |
@@ -40,6 +50,8 @@ permalink: /guide/deploy/cloudflare/
 4. **配置环境变量**
 
    展开环境变量配置区域，添加以下键值：
+
+   ![Cloudflare Pages 的环境变量配置区域](/images/content-separation/04-deploy/02-hook/06-env-config.png)
 
    | 变量名 | 设定值 | 说明 |
    | --- | --- | --- |
@@ -73,6 +85,18 @@ wrangler pages deploy dist --project-name=shirone-blog
 
 若需要通过 CLI 上传产物，请在控制台新建一个独立的 **Direct Upload** 项目（不绑定 Git、不填写构建命令），并将 `--project-name` 参数指向该项目。
 :::
+
+## 创建 Deploy Hook
+
+需要在内容仓推送后自动触发重建时，进入项目 **Settings -> Builds & deployments -> Deploy hooks**，填写名称（如 `content-update`）、分支选择 `main`，点击 **Add hook**：
+
+![Cloudflare Deploy Hook 配置](/images/content-separation/04-deploy/02-hook/07-deploy-hook-config.png)
+
+创建完成后复制生成的 Webhook URL：
+
+![Deploy Hook 创建成功后的 Webhook URL](/images/content-separation/04-deploy/02-hook/08-webhook-success.png)
+
+将该 URL 交给[部署钩子](/guide/content-separation/deploy-hooks/)流程使用即可。
 
 ## 自定义域名
 

@@ -98,7 +98,9 @@ server {
 }
 ```
 
-> Font subsetting and Pagefind indexing cause memory usage to peak during builds. Allocate at least 4 GB of RAM to Docker.
+::: warning
+Font subsetting and Pagefind indexing cause memory usage to peak during builds. Allocate at least 4 GB of RAM to Docker.
+:::
 
 ## Dual-repo setup
 

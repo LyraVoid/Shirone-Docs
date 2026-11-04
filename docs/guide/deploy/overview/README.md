@@ -32,7 +32,9 @@ Shirone 经构建后输出为纯静态站点，生成物位于 `dist/`。选择�
 - 在平台设置中将 Framework Preset 修改为 `Other`，清空 Build Command 与 Output Directory，并关闭 Git 自动触发；
 - 上传的 `dist/` 产物中不含 `package.json`，若平台重复执行构建将报错 `Error: Command "pnpm build" exited with 1`。
 
+::: warning
 上述两套模式只能二选一。切换模式后请重新触发一次部署以使设置生效。
+:::
 
 ## 平台对照表
 
@@ -49,13 +51,15 @@ Shirone 经构建后输出为纯静态站点，生成物位于 `dist/`。选择�
 | [Docker](/guide/deploy/docker/) | 镜像采用 `node:26-alpine` | `pnpm build` | `dist` | `.dockerignore` 切勿排除 `scripts/` 目录 |
 | [本地构建](/guide/deploy/local/) | 本地使用 `26.13.0` | `pnpm build` | `dist` | 作为所有其他交付方式的基础底座 |
 
+::: info
 Node.js 26 不再内置 corepack。需要手动安装 pnpm 时，统一执行 `npm install -g pnpm@11.28.2`。
+:::
 
 ## 双仓模式的内容从哪来
 
 双仓模式下有两种内容同步对接方式：
 
-- **平台自行构建**：平台利用 `CONTENT_REPO_URL` 远程拉取内容仓，变量配置见[内容源配置](/guide/content-separation/content-sources/#三种常见场景)；
+- **平台自行构建**：平台利用 `CONTENT_REPO_URL` 远程拉取内容仓，变量配置见[内容源配置](/guide/content-separation/content-sources/#常见场景)；
 - **GitHub Actions 构建**：内容仓推送触发事件，主题仓将内容仓检出至 `.content-src/` 后执行构建，详见[跨仓自动构建](/guide/content-separation/ci-dispatch/)。
 
 内容仓更新后促使平台重新拉取构建的设置流程，请参阅[部署钩子](/guide/content-separation/deploy-hooks/)。

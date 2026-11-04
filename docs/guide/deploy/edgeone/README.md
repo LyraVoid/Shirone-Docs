@@ -51,6 +51,12 @@ EdgeOne Pages 是腾讯云提供的静态托管服务，国内节点访问延迟
 
 部署完成后平台会分配一个形如 `<random>.edgeone.app` 的默认访问域名。推送到 `main` 分支会自动触发重新部署。
 
+## 创建部署触发器
+
+用于[部署钩子](/guide/content-separation/deploy-hooks/)流程：进入项目设置 -> **构建与部署** -> **部署触发器**，选择分支 `main`，保存并复制生成的触发 URL。
+
+![EdgeOne 部署触发器创建位置](/images/content-separation/04-deploy/02-hook/12-edgeone-deploy-hook.png)
+
 ## 自定义域名
 
 1. 进入项目管理页面，依次点击 **域名管理** -> **自定义域名**，添加目标域名；

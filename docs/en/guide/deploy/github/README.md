@@ -39,7 +39,9 @@ export const siteConfig = {
 
 `base` must match the repository name exactly (including character casing), and must include leading and trailing slashes.
 
-> Rebuild the site after modifying `base`. This parameter directly determines link paths, RSS feeds, sitemap entries, and social share images.
+::: warning
+Rebuild the site after modifying `base`. This parameter directly determines link paths, RSS feeds, sitemap entries, and social share images.
+:::
 
 ## Step 2: create the workflow
 

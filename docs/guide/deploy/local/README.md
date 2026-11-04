@@ -46,7 +46,9 @@ permalink: /guide/deploy/local/
 | `pagefind` | 提取文章文本，生成全站离线搜索索引 `dist/pagefind/` |
 | `fonts:check` | 验证字体子集化产物是否完整覆盖页面文本字符 |
 
+::: warning
 切勿使用 `astro build` 代替 `pnpm build`，否则将缺失 Pagefind 离线搜索索引。
+:::
 
 ## 产物结构
 

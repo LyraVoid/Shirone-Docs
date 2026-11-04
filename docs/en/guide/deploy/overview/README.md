@@ -32,7 +32,9 @@ Configuration mismatches are the leading cause of deployment failures, typically
 - In platform settings, change Framework Preset to `Other`, clear Build Command and Output Directory, and disable Git auto-deploy triggers;
 - The uploaded `dist/` contains no `package.json`, causing leftover build commands to fail with `Error: Command "pnpm build" exited with 1`.
 
+::: warning
 Choose only one of these approaches. After switching, trigger a new deployment for settings to take effect.
+:::
 
 ## Platform reference
 
@@ -49,7 +51,9 @@ The table below applies to "the host builds" scenarios. If GitHub Actions or loc
 | [Docker](/en/guide/deploy/docker/) | Use `node:26-alpine` | `pnpm build` | `dist` | Never exclude `scripts/` in `.dockerignore` |
 | [Local build](/en/guide/deploy/local/) | Use `26.13.0` locally | `pnpm build` | `dist` | Foundational base for all other distribution workflows |
 
+::: info
 Node.js 26 no longer bundles corepack. To install pnpm manually, run `npm install -g pnpm@11.28.2`.
+:::
 
 ## Where dual-repo content comes from
 

@@ -46,7 +46,9 @@ In dual-repo mode, define `CONTENT_DIR` or `CONTENT_REPO_URL` in `.env` beforeha
 | `pagefind` | Indexes content to build offline search assets under `dist/pagefind/` |
 | `fonts:check` | Verifies that subsetted fonts cover all characters used on pages |
 
+::: warning
 Never replace `pnpm build` with `astro build`, or the offline Pagefind search index will be omitted.
+:::
 
 ## Output
 
