@@ -4,137 +4,96 @@ createTime: 2026/11/03 16:00:00
 permalink: /guide/content-separation/content-sources/
 ---
 
-`pnpm content:sync` 在构建前决定从何处读取内容。单仓模式无需额外配置；双仓模式通过环境变量或主题仓根目录的清单文件指定。
+在双仓分离架构下，你的博客代码存放在主题代码仓，而所有文章、配置、图片等数据存放在独立的内容仓库中。
 
-## 解析顺序
+每次执行构建或本地预览前，Shirone 需要知道从何处读取这些内容。「内容源」就是告诉 Shirone 去哪里拉取你的文章和配置文件。
 
-系统按以下顺序依次查找，命中首个有效配置即刻停止：
+## 两种核心内容源
 
-1. `SHIRONE_CONTENT_SYNC=0`：强制关闭同步，回退为单仓模式；
-2. `CONTENT_DIR`：读取本地内容仓路径（同时配置了 `CONTENT_REPO_URL` 时优先使用本地路径）；
-3. `CONTENT_REPO_URL`：克隆或拉取远程 Git 仓库；
-4. 主题仓根目录 `shirone.content.json` 中的 `source` 声明；
-5. 未命中上述任何配置：使用主题仓自带内容。
+根据使用场景，内容源分为**本地目录**与**远程 Git 仓库**两种形式：
 
-环境变量加载优先级如下：
+### 1. 本地目录（用于本地写作与预览）
 
-```text
-进程环境变量 > .env.local > .env
-```
-
-`.env` 与 `.env.local` 仅对本地命令生效。平台构建机不会读取仓库中的 `.env` 文件，必须在平台控制台中配置对应的环境变量。
-
-## 变量说明
-
-| 变量 | 作用 | 默认值 |
-| --- | --- | --- |
-| `CONTENT_DIR` | 本地内容仓路径 | 无 |
-| `CONTENT_REPO_URL` | 远程内容仓的 Git 地址 | 无 |
-| `CONTENT_REPO_REF` | 分支、标签或 commit SHA | `main` |
-| `CONTENT_SYNC_PULL` | 设为 `false` 时不联网拉取，直接复用 `.content-src/` | `true` |
-| `SHIRONE_CONTENT_SYNC` | 设为 `0`、`false`、`no` 或 `off` 时关闭同步 | 未设置 |
-| `GIT_TERMINAL_PROMPT` | 设为 `0` 时禁止 Git 弹出交互式输入提示 | 未设置 |
-
-### CONTENT_DIR
+在个人电脑上写作时，通常将内容仓库与主题代码仓库克隆在相邻的文件夹中。此时通过 `CONTENT_DIR` 指定本地内容目录：
 
 ```ini title=".env"
 CONTENT_DIR="../shirone-content"
 ```
 
-相对路径基于主题仓根目录解析。适用于本地预览场景，配合 `pnpm content:watch` 使用时无需频繁请求远端。
+- **路径说明**：支持相对路径或绝对路径。相对路径基于主题代码仓的根目录进行解析；
+- **协同工作**：配合 `pnpm content:watch` 监听命令使用，你在本地编辑器保存文章时，改动会实时同步到博客预览中，无需频繁向远端请求或提交代码。
 
-### CONTENT_REPO_URL
+### 2. 远程 Git 仓库（用于云端自动化构建）
 
-```ini title=".env"
-CONTENT_REPO_URL="https://github.com/OWNER/shirone-content.git"
-```
+当博客部署到托管平台（Cloudflare Pages、Vercel、EdgeOne、Netlify）时，平台的构建机通常只克隆了主题代码仓。此时必须通过 `CONTENT_REPO_URL` 让构建机在打包时自动拉取远程内容仓库：
 
-私有仓库需在 URL 中包含访问令牌：
-
-```text
-https://x-access-token:<TOKEN>@github.com/OWNER/shirone-content.git
-```
-
-同步脚本会在日志输出中自动隐藏凭据信息。即便如此，切勿将包含令牌的地址提交到代码仓或示例配置中。
-
-### CONTENT_REPO_REF
-
-未设置时默认使用清单中的 `source.ref`；若清单未声明则使用 `main`。针对特定提交执行可重现构建时，请填写完整的 commit SHA，避免使用短 SHA 或可变分支名。
-
-### CONTENT_SYNC_PULL
-
-```ini title=".env"
-CONTENT_SYNC_PULL="false"
-```
-
-设为 `false` 后只复用本地现有的 `.content-src/`。
-
-::: warning
-前提是 `.content-src/` 的仓库地址、ref 和 commit 与当前配置完全一致，且工作区没有未提交改动，否则命令会报错中断。
-:::
-
-### SHIRONE_CONTENT_SYNC
-
-用于临时回退到单仓模式，排查是否因内容源配置异常导致构建问题。该变量关闭后，`CONTENT_DIR` 与 `CONTENT_REPO_URL` 均不再生效。
-
-## 常见场景
-
-### 本地预览
-
-```ini title=".env"
-CONTENT_DIR="../shirone-content"
-```
-
-```bash
-pnpm content:sync
-pnpm dev
-```
-
-完整操作步骤见[本地预览与调试](/guide/content-separation/local-preview/)。
-
-### GitHub Actions
-
-主题仓的 `deploy.yml.example` 预设步骤会先将内容仓检出至 `.content-src/`，再通过 `CONTENT_DIR` 指向该目录：
-
-```yaml
-env:
-  CONTENT_DIR: .content-src
-```
-
-检出步骤使用 `CONTENT_REPO_TOKEN`。该令牌仅供 checkout 使用，`content:sync` 本身不直接读取：
-
-```yaml
-- uses: actions/checkout@v4
-  with:
-    repository: OWNER/shirone-content
-    ref: ${{ github.event.client_payload.sha || 'main' }}
-    path: .content-src
-    token: ${{ secrets.CONTENT_REPO_TOKEN }}
-    persist-credentials: false
-```
-
-### Cloudflare Pages / Vercel / EdgeOne / Netlify
-
-托管平台的构建机仅克隆主题仓，无法直接检出第二个仓库，因此需配置 `CONTENT_REPO_URL`：
-
-```text
-CONTENT_REPO_URL=https://x-access-token:<TOKEN>@github.com/OWNER/shirone-content.git
+```ini title="平台环境变量"
+CONTENT_REPO_URL=https://github.com/你的用户名/你的内容仓库名.git
 CONTENT_REPO_REF=main
 GIT_TERMINAL_PROMPT=0
 ```
 
-平台执行 `pnpm build` 时会自动执行内容同步，切勿在构建命令前添加 `pnpm content:sync &&`。
+关于远程内容源的关键参数说明：
 
-## 清单文件
+| 环境变量 | 必填 | 说明 |
+| --- | --- | --- |
+| `CONTENT_REPO_URL` | 是 | 远程内容仓库的 Git 地址（公开仓与私有仓格式见下方） |
+| `CONTENT_REPO_REF` | 否 | 指定拉取的分支、标签或 commit SHA，默认值为 `main` |
+| `GIT_TERMINAL_PROMPT` | 是 | 固定设置为 `0`，禁止 Git 在权限不足时弹出交互式密码输入，防止云端构建卡死超时 |
 
-主题仓根目录下的 `shirone.content.json` 为可选配置文件，用于固定内容源信息。仓库提供了示例模板 `shirone.content.example.json`，复制并重命名即可：
+**公开仓与私有仓格式说明**：
+
+- **公开内容仓库**：直接填写标准的 HTTPS 仓库地址：
+  ```text
+  https://github.com/你的用户名/你的内容仓库名.git
+  ```
+- **私有内容仓库**：需要在 URL 中携带具备读取权限的个人访问令牌（PAT）：
+  ```text
+  https://x-access-token:<你的TOKEN>@github.com/你的用户名/你的内容仓库名.git
+  ```
+  令牌仅需内容仓库的 `Contents: Read` 读取权限。同步脚本在输出日志时会自动遮蔽令牌信息，但切勿将带有令牌的地址提交到公开代码或示例文件中。申请令牌流程请参考[申请个人访问令牌](/guide/content-separation/pat/)。
+
+## 变量配置生效位置
+
+根据运行环境的不同，环境变量的配置位置也有所区分：
+
+| 运行环境 | 配置位置 | 说明 |
+| --- | --- | --- |
+| 本地开发与预览 | 主题仓根目录的 `.env` 或 `.env.local` | 仅在本地终端命令中生效，不会被推送到线上 |
+| 云端托管平台 | 托管平台的项目控制台（Environment Variables） | 托管平台构建机不会读取代码里的本地 `.env` 文件，必须在平台后台添加 |
+| GitHub Actions | 仓库的 Settings -> Secrets / Variables | 在工作流文件（如 `deploy.yml`）中通过 `env:` 引用 |
+
+环境变量加载优先级为：`系统/进程环境变量` > `.env.local` > `.env`。
+
+## 内容源查找优先级
+
+当系统中同时存在多种配置时，Shirone 会按照以下顺序查找内容源，一旦匹配到第一个有效项即停止后续检索：
+
+1. **`SHIRONE_CONTENT_SYNC=0`**：强制关闭同步功能，直接回退为使用主题仓自带的内置示例内容。适用于排查构建异常时临时排障；
+2. **`CONTENT_DIR`**：如果配置了本地目录，且该目录存在，优先从本地目录读取内容（即使同时配置了 `CONTENT_REPO_URL` 也以本地路径为准）；
+3. **`CONTENT_REPO_URL`**：从远程 Git 仓库拉取内容至临时工作目录 `.content-src/`；
+4. **清单文件中的 `source` 声明**：读取主题仓根目录 `shirone.content.json` 中配置的来源；
+5. **主题仓默认内容**：上述配置均未命中时，使用主题自带的内置内容。
+
+## 高级变量
+
+在特定调试或网络受限场景下，还可选用以下辅助控制变量：
+
+| 变量名 | 可选值 | 说明 |
+| --- | --- | --- |
+| `CONTENT_SYNC_PULL` | `false` / `true`（默认） | 设为 `false` 时不发起网络拉取，直接复用现有的 `.content-src/` 临时目录。要求该目录与当前 URL、ref 完全一致且无未提交修改 |
+| `SHIRONE_CONTENT_SYNC` | `0` / `false` / `off` | 关闭内容同步逻辑，用于快速定位是否由于内容源引起构建故障 |
+
+## 清单文件（shirone.content.json）
+
+主题仓根目录下的 `shirone.content.json` 是一个可选的持久化清单文件。如果你希望将内容源的默认地址直接固化在代码仓中，可以使用该文件。代码仓提供了参考模板 `shirone.content.example.json`，复制并重命名即可：
 
 ```json title="shirone.content.json"
 {
   "schemaVersion": 1,
   "source": {
     "type": "git",
-    "url": "https://github.com/OWNER/shirone-content.git",
+    "url": "https://github.com/你的用户名/你的内容仓库名.git",
     "ref": "main"
   },
   "mounts": {
@@ -148,65 +107,39 @@ GIT_TERMINAL_PROMPT=0
 }
 ```
 
-| 字段 | 说明 |
-| --- | --- |
-| `schemaVersion` | 清单结构版本，当前为 `1` |
-| `source.type` | `path`（本地目录）或 `git`（远程仓库） |
-| `source.path` | 本地内容仓路径，相对主题仓根目录 |
-| `source.url` / `source.ref` | 远程仓库地址与对应的分支、标签或 commit SHA |
-| `mounts` | 挂载映射关系，设为 `null` 可禁用对应挂载点 |
-| `keep` | 豁免同步裁剪的文件白名单，支持 `*` 与 `**` 通配符 |
-| `prune` | 设为 `false` 时执行增量复制，不删除内容仓已移除的文件 |
+字段功能简述：
 
-执行 `pnpm content:eject` 会自动生成此文件，并将内容源指向迁出目录。
+- **`source`**：声明默认的内容源。`type` 可选 `path`（本地路径）或 `git`（远程仓库）；
+- **`mounts`**：声明内容仓各目录与主题代码仓的映射挂载关系；
+- **`keep`**：文件保护白名单列表，匹配到的文件在同步时不会被删除，支持通配符；
+- **`prune`**：同步时是否清理主题仓内多余的废弃文件，默认为 `true`。
 
-内容仓根目录下虽然也存在 `shirone.content.json`，但该文件仅记录内容仓自身的元数据，构建流程不会读取。如需修改内容源配置，请修改主题仓中的清单文件。
+::: tip 区分主题仓与内容仓的清单文件
+内容仓根目录也包含一个 `shirone.content.json`，该文件仅用于标记内容仓自身的元数据。构建系统读取的是**主题代码仓**中的配置，修改内容源配置请在主题代码仓中操作。
+:::
 
-## 私有仓与令牌
-
-- 访问令牌仅需内容仓的 `Contents: Read` 权限，无需主题仓权限。
-- 携带令牌的地址必须使用 HTTPS 协议。SSH 协议要求构建机预设私钥，多数托管平台不支持此项配置。
-- 令牌过期、被吊销或未授予内容仓读取权限时，构建日志将报错 `Authentication failed`。
-- 切勿将 `.env`、令牌明文或包含令牌的地址提交至公开仓库。
-
-申请流程详见[申请个人访问令牌](/guide/content-separation/pat/)。
-
-公开内容仓无需配置令牌，直接填写 `https://github.com/OWNER/REPO.git` 即可。
-
-## 常见问题
+## 常见问题排查
 
 ::: collapse
-- 配置了 `CONTENT_REPO_URL`，但构建仍然使用主题仓自带内容
+- 配置了 CONTENT_REPO_URL，但构建时依然读取主题自带的示例内容？
 
-  检查是否同时设置了 `CONTENT_DIR`，其优先级更高。
+  检查本地或环境变量中是否同时配置了 `CONTENT_DIR`。本地目录优先级高于远程仓库，一旦检测到本地路径存在就会优先使用。
 
-  再确认变量已配置在构建平台实际读取的环境变量设置中，而非仅存在于本地 `.env`。
+  如果是部署到云端托管平台，请检查变量是否添加在平台的控制台环境变量设置中，切勿仅写在本地 `.env` 文件里。
 
-- 内容仓已推送更新，但构建结果仍为旧内容
+- 内容仓推送了新文章，但打包构建出来的页面依然是旧文章？
 
-  检查 `CONTENT_REPO_REF` 是否固定为了旧分支或历史 commit SHA。
+  检查托管平台或工作流中的 `CONTENT_REPO_REF` 是否写死了特定的旧 commit SHA 或历史分支。
 
-  托管平台的构建缓存也可能残留旧的 `.content-src/`，清理缓存后重新触发构建即可。
+  若配置无误，可能是托管平台构建机缓存了旧的 `.content-src/` 临时目录，在平台控制台清理构建缓存后重新部署即可。
 
-- `CONTENT_SYNC_PULL=false` 报错失败
+- 私有内容仓库构建时报错 Authentication failed？
 
-  该选项要求 `.content-src/` 必须与当前的 URL、ref 及 commit 完全一致，且工作区无未跟踪修改。
-
-  建议先执行一次常规同步，或删除 `.content-src/` 后重新构建。
-
-- 仓库地址中含有特殊字符
-
-  包含访问令牌的地址需遵循 URL 编码规范。
-
-  建议统一采用 `x-access-token:<TOKEN>` 格式，避免在用户名或密码字段中出现特殊字符。
+  检查 `CONTENT_REPO_URL` 中的个人访问令牌（PAT）是否已过期，或者是否未勾选 `Contents: Read` 读取权限。
 :::
 
 ## 下一步
 
-[配置覆盖](/guide/content-separation/config-overlay/)：在内容仓中定制站点标题、导航、侧栏等配置。
-
-## 相关页面
-
-- [跨仓自动构建](/guide/content-separation/ci-dispatch/)
-- [部署钩子](/guide/content-separation/deploy-hooks/)
-- [CLI 工具链](/guide/content-separation/cli-workflows/)
+- [配置覆盖](/guide/content-separation/config-overlay/)：了解如何在内容仓中修改博客标题、导航栏与侧栏等外观设置
+- [本地预览与调试](/guide/content-separation/local-preview/)：在本地电脑上搭配主题代码实时预览文章
+- [CLI 工具链](/guide/content-separation/cli-workflows/)：熟悉内容同步与状态检查命令

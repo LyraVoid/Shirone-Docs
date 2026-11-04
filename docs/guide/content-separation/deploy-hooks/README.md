@@ -46,13 +46,13 @@ sequenceDiagram
 
 整个配置流程分为五个步骤：
 
-::: steps
+:::: steps
 
 1. **在托管平台获取部署钩子网址**
 
    进入你所使用的托管平台控制台，为博客项目创建一个部署钩子（Deploy Hook），并复制生成的 Webhook 网址：
 
-   :::: tabs
+   ::: tabs
    @tab Cloudflare Pages
    进入项目的 **Settings** -> **Builds & deployments**，向下滚动找到 **Deploy hooks** 分组：
 
@@ -89,7 +89,7 @@ sequenceDiagram
    - **Title** 填写名称（例如 `content-update`）；
    - **Branch to build** 选择 `main`；
    - 点击 **Save**，复制生成的 Webhook 网址。
-   ::::
+   :::
 
 2. **在托管平台添加内容仓环境变量**
 
@@ -124,10 +124,10 @@ sequenceDiagram
 
    打开你的**内容仓库**（存放文章的仓库），把第一步复制到的钩子网址保存为 GitHub Actions 密钥，避免公开泄露：
 
-   1. 进入内容仓库的 **Settings** -> **Secrets and variables** -> **Actions**；
-   2. 点击 **New repository secret** 按钮；
-   3. 根据你使用的平台，填入对应的密钥名称（Name），并在 Secret 中粘贴第一步获取的完整网址；
-   4. 点击 **Add secret** 保存。
+   - 进入内容仓库的 **Settings** -> **Secrets and variables** -> **Actions**；
+   - 点击右上角的 **New repository secret** 按钮；
+   - 根据你使用的平台，填入对应的密钥名称（Name），并在 Secret 中粘贴第一步获取的完整网址；
+   - 点击 **Add secret** 保存。
 
    ![进入仓库 Settings](/images/content-separation/04-deploy/02-hook/09-github-secret-config.png)
 
@@ -208,13 +208,13 @@ sequenceDiagram
 
    配置完成后，你可以进行一次推送测试：
 
-   1. 在内容仓库中修改任意一篇文章，或者新增一篇测试文章；
-   2. 执行 `git push` 推送到内容仓的 `main` 分支；
-   3. 进入内容仓库的 **Actions** 标签页，查看 `Trigger Theme Build` 工作流是否顺利跑完并显示绿色勾号；
-   4. 进入你的托管平台控制台，在部署历史（Deployments）中查看是否已经收到了触发请求，并且正在自动打包；
-   5. 等待构建完成后，刷新博客网页，确认新发布的文章已经展示在线上。
+   - 在内容仓库中修改任意一篇文章，或者新增一篇测试文章；
+   - 执行 `git push` 推送到内容仓的 `main` 分支；
+   - 进入内容仓库的 **Actions** 标签页，查看 `Trigger Theme Build` 工作流是否顺利跑完并显示绿色勾号；
+   - 进入你的托管平台控制台，在部署历史（Deployments）中查看是否已经收到了触发请求，并且正在自动打包；
+   - 等待构建完成后，刷新博客网页，确认新发布的文章已经展示在线上。
 
-:::
+::::
 
 ## 常见问题排查
 

@@ -46,13 +46,13 @@ Enabling both causes every content push to trigger two duplicate builds, potenti
 
 The setup process consists of five steps:
 
-::: steps
+:::: steps
 
 1. **Obtain the Deploy Hook URL from your hosting platform**
 
    Open your hosting platform console, create a deployment hook for your blog project, and copy the generated Webhook URL:
 
-   :::: tabs
+   ::: tabs
    @tab Cloudflare Pages
    Go to your project **Settings** -> **Builds & deployments**, and scroll down to the **Deploy hooks** section:
 
@@ -89,7 +89,7 @@ The setup process consists of five steps:
    - Set **Title** (for example, `content-update`);
    - Select `main` under **Branch to build**;
    - Click **Save** and copy the generated Webhook URL.
-   ::::
+   :::
 
 2. **Add content repository environment variables to your hosting platform**
 
@@ -124,10 +124,10 @@ The setup process consists of five steps:
 
    Open your **content repository** (the repository where your markdown posts live) on GitHub, and save the hook URL as a GitHub Actions secret:
 
-   1. Go to your content repo **Settings** -> **Secrets and variables** -> **Actions**;
-   2. Click the **New repository secret** button;
-   3. Enter the secret name (Name) corresponding to your platform, and paste the URL in the Secret field;
-   4. Click **Add secret** to save.
+   - Go to your content repo **Settings** -> **Secrets and variables** -> **Actions**;
+   - Click the **New repository secret** button;
+   - Enter the secret name (Name) corresponding to your platform, and paste the URL in the Secret field;
+   - Click **Add secret** to save.
 
    ![Navigating to repository settings](/images/content-separation/04-deploy/02-hook/09-github-secret-config.png)
 
@@ -208,13 +208,13 @@ The setup process consists of five steps:
 
    With everything configured, run a quick verification test:
 
-   1. Edit an article or add a new test post in your content repository;
-   2. Run `git push` to push your commit to branch `main`;
-   3. Check the **Actions** tab in your content repository to confirm that the `Trigger Theme Build` run completes with a green checkmark;
-   4. Open your hosting platform dashboard under Deployments to confirm that a new build triggered automatically;
-   5. Once the build finishes, refresh your live site to confirm the new post is visible.
+   - Edit an article or add a new test post in your content repository;
+   - Run `git push` to push your commit to branch `main`;
+   - Check the **Actions** tab in your content repository to confirm that the `Trigger Theme Build` run completes with a green checkmark;
+   - Open your hosting platform dashboard under Deployments to confirm that a new build triggered automatically;
+   - Once the build finishes, refresh your live site to confirm the new post is visible.
 
-:::
+::::
 
 ## Troubleshooting
 

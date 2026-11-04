@@ -1,17 +1,27 @@
 ---
-title: Configuration Overlay
+title: Configuration Overlays
 createTime: 2026/09/01 10:00:00
 permalink: /en/guide/content-separation/config-overlay/
 ---
 
-In the dual-repo setup, site configuration lives in the content repo's `config/` directory. During sync, the theme reads these YAML files, merges them with defaults, and generates `src/user/user-config.ts`. You do not need to modify theme source files.
+In a single-repo blog setup, site settings are scattered across TypeScript configuration files inside the theme source (such as `src/config/siteConfig.ts`).
 
-## Declare only what changes
+In a separated repository architecture, all site settings are centralized inside the `config/` directory of your content repository and formatted as clean, readable YAML files. Whenever a local preview or cloud deployment runs, Shirone reads these YAML files, merges them with the theme default settings, and compiles the final `src/user/user-config.ts`.
 
-Write only the keys you want to override. Everything else inherits theme defaults.
+You do not need to modify a single line of theme code. When future theme versions are released, you can upgrade cleanly without risking overwritten configuration settings.
+
+## Two Merging Rules
+
+Understanding configuration overlays requires only two rules:
+
+### Rule 1: Declare on Demand (Only write what you change)
+
+When writing YAML configuration files, you only need to specify the keys you wish to customize. Any settings omitted from your YAML automatically inherit the theme's default values.
+
+For example, to change only the blog title and home typewriter speed in `config/site.yaml`:
 
 ```yaml title="config/site.yaml"
-title: "My tech blog"
+title: "My Tech Blog"
 
 banner:
   homeText:
@@ -19,96 +29,156 @@ banner:
       speed: 150
 ```
 
-This configuration only modifies the site title and the typewriter speed. All other banner and typewriter properties keep their default values.
+Banner background images, overlay opacity, and other typewriter settings are not mentioned here, so they cleanly retain their default theme styles.
 
-This structure ensures smooth upgrades: when a new theme release introduces new configuration options, your site adopts the new defaults automatically without conflicts caused by hardcoding every field.
+This "declare on demand" design provides an essential advantage: when newer theme versions introduce additional options, your site adopts the updated defaults automatically instead of breaking due to an outdated monolithic configuration file.
 
-## Object merge vs. array replace
+### Rule 2: Objects Merge, Arrays Replace
 
-Configuration merge rules depend on data types:
+Configuration keys merge according to their data type:
 
-| Type | Rule |
-| --- | --- |
-| Nested object | Merged recursively; only declared keys are overridden |
-| Array | Replaced entirely; your declared list wins |
+| Data Type | Merge Strategy | Behavior |
+| --- | --- | --- |
+| **Objects / Nested dictionaries** | Recursive merge | Only declared child keys are overridden; unmentioned sibling keys keep defaults |
+| **Arrays / Lists** | Complete replacement | Declaring an array replaces the default list entirely with your declared items |
 
-Arrays are replaced as a whole because list items, ordering, and exclusions operate as a unified set. Partial appending would create ambiguous intent. When editing files with array definitions such as `nav-bar.yaml` or `sidebar.yaml`, specify the complete list.
+Why are arrays replaced completely? Navigation menus and sidebar widgets function as ordered units. Appending custom items to default lists frequently leads to unwanted duplicates or scrambled menu ordering.
+
+When editing files containing lists (such as `config/nav-bar.yaml` or `config/sidebar.yaml`), provide the complete list of items you want displayed:
 
 ```yaml title="config/sidebar.yaml"
+# Sidebar widget list (completely replaces default configuration)
 components:
-  - "profile"
-  - "toc"
-  - "recent-posts"
-  - "tags"
+  - "profile"      # Author profile card
+  - "toc"          # Table of contents
+  - "recent-posts" # Recent articles
+  - "tags"         # Tag cloud
 ```
 
-This configuration **replaces** the default widget list rather than appending four items to it.
+## Core Configuration Files
 
-## Validation and activation
+Inside your content repository's `config/` directory, the most frequently customized configuration files include:
 
-After modifying configurations, run the validation command in the theme repo:
+### 1. Site Basics and Appearance (`config/site.yaml`)
+
+Controls basic blog metadata, domain, primary color palette, and homepage banner:
+
+```yaml title="config/site.yaml"
+title: "Shirone"
+subtitle: "Clean and elegant static blog"
+description: "Notes on software development and daily thoughts"
+site: "https://example.com"
+
+# Primary brand accent color (Hex color code)
+primaryColor: "#3B82F6"
+
+# Homepage banner and typewriter text
+banner:
+  enable: true
+  homeText:
+    enable: true
+    title: "Hello, traveler"
+    subtitle:
+      - "Welcome to my personal blog"
+      - "Glad you stopped by"
+```
+
+For full option details, see the [Site Configuration Guide](/en/guide/config/site/).
+
+### 2. Author Profile Card (`config/profile.yaml`)
+
+Displays author information, avatar, bio, and social links in sidebars and footers:
+
+```yaml title="config/profile.yaml"
+avatar: "https://github.com/USERNAME.png"
+name: "Your Nickname"
+bio: "A frontend developer passionate about open source"
+
+# Social media links (icons support the Iconify collection)
+socialLinks:
+  - name: "GitHub"
+    icon: "ri:github-line"
+    url: "https://github.com/USERNAME"
+  - name: "X"
+    icon: "ri:twitter-x-line"
+    url: "https://x.com/USERNAME"
+```
+
+### 3. Top Navigation Bar (`config/nav-bar.yaml`)
+
+Defines header links and dropdown menus. Uses array replacement rules:
+
+```yaml title="config/nav-bar.yaml"
+links:
+  - title: "Home"
+    url: "/"
+    icon: "ri:home-4-line"
+  - title: "Archives"
+    url: "/archives/"
+    icon: "ri:archive-line"
+  - title: "About"
+    url: "/about/"
+    icon: "ri:user-3-line"
+```
+
+See [Navigation Bar Configuration](/en/guide/layout/navbar/).
+
+### 4. Custom Pages and Integrations
+
+Activate specific blog features by adjusting their dedicated YAML files:
+
+- **Comment System (`config/comment.yaml`)**: Supports Twikoo, Waline, and other backends. See [Comment Settings](/en/guide/article/comments/);
+- **Anime Tracking (`config/anime.yaml`)**: Connects Bilibili or Bangumi accounts. See [Anime Page](/en/guide/pages/anime/);
+- **Music Player (`config/music.yaml`)**: Configures background music playlists. See [Music Player](/en/guide/plugins/music/);
+- **Friends Page (`config/friends.yaml`)**: Manage blogroll links and card categories.
+
+::: tip Syncing anime data
+After editing accounts in `config/anime.yaml`, run `pnpm anime:sync --if-stale` to download watch lists and cover assets.
+:::
+
+## Complete File Reference
+
+Additional configuration files in `config/` and their roles:
+
+| Group | File | Purpose |
+| --- | --- | --- |
+| Fonts & Typography | `font.yaml` | Font families and font subsetting optimizations |
+| Footer | `footer.yaml`, `footer.html` | Footer copyright text and custom HTML injections |
+| Visual Effects | `image-bloom.yaml`, `context-menu.yaml` | Image bloom effects, custom right-click context menu |
+| Reading Experience | `article.yaml` | Estimated read time, update notices, recommended posts |
+| Post Listing | `post-list.yaml` | Pagination sizes and card display formats |
+| URL Structure | `permalink.yaml` | Permanent post link formatting |
+| Code Highlighting | `expressive-code.yaml` | Code block themes and line number toggles |
+| Custom Page Lists | `devices.yaml`, `games.yaml`, `projects.yaml`, `skills.yaml` | Data sources for gear, gaming, projects, and skills pages |
+
+## Validation and Effect
+
+### Syntax and Type Validation
+
+After editing YAML files, run the validation command from the theme repository root to verify syntax and field spelling:
 
 ```bash
 pnpm content:validate
 ```
 
-It checks directory structure, mount conflicts, and YAML field types without writing to `src/`. Misspelled keys trigger helpful suggestions, such as using `titel` instead of `title`:
+This runs a dry-run check without modifying workspace files. If you misspell `title` as `titel`, the validator points directly to the line and suggests the correct field:
 
 ```text
 config/site.yaml's banner.homeText: Type '{ titel: string }' is not assignable to type 'DeepPartial<HomeTextConfig>'
   Did you mean "title"?
 ```
 
-Configuration activates during two processes:
+### When Configurations Take Effect
 
-- Running `pnpm content:sync` compiles the YAML files into `src/user/user-config.ts`.
-- Running `pnpm dev` or `pnpm build` triggers that sync step automatically beforehand.
+Configurations compile and take effect automatically in two scenarios:
 
-`src/user/user-config.ts` is an auto-generated file overwritten on every sync; do not edit it manually. The generation process also bundles referenced icons locally and feeds title and nickname text into font subsetting, avoiding redundant network requests or missing glyphs.
+1. **Running builds or local dev servers**: Every `pnpm dev` or `pnpm build` execution automatically runs the sync step first;
+2. **Manual synchronization**: Running `pnpm content:sync` reads all YAML files and outputs `src/user/user-config.ts`.
 
-## Configuration files
-
-Configuration files in `config/` are organized into four groups:
-
-**Basics and appearance**
-
-| File | Purpose |
-| --- | --- |
-| `site.yaml` | Site name, URL, theme color, banner, background texture |
-| `profile.yaml` | Avatar, nickname, bio, social links |
-| `nav-bar.yaml` | Top navigation menu |
-| `sidebar.yaml` | Sidebar layout and widget order |
-| `font.yaml` | Fonts and font subsetting |
-| `footer.yaml`, `footer.html` | Footer copy and custom HTML injection |
-| `image-bloom.yaml`, `context-menu.yaml` | Image bloom effect, context menu |
-
-**Posts and lists**
-
-| File | Purpose |
-| --- | --- |
-| `article.yaml` | Reading time, update notices, recommendations, share cards |
-| `post-list.yaml` | Pagination size and card display style |
-| `permalink.yaml` | Post permalink format |
-| `license.yaml` | Copyright license |
-| `expressive-code.yaml` | Code block theme and line numbering |
-
-**Pages and features**
-
-| File | Purpose |
-| --- | --- |
-| `anime.yaml` | Anime data source settings |
-| `music.yaml` | Music player |
-| `comment.yaml` | Comment system |
-| `announcement.yaml`, `fab.yaml` | Announcement bar, floating action buttons |
-| `umami.yaml`, `llms.yaml` | Traffic analytics, LLM retrieval output |
-| `devices.yaml`, `games.yaml`, `projects.yaml`, `skills.yaml`, `timeline.yaml`, `friends.yaml`, `series.yaml` | Categorization and filter rules for standalone pages |
-
-For field-level documentation, consult the corresponding feature guide, such as [Navbar Configuration](/en/guide/layout/navbar/) or [Comment System](/en/guide/article/comments/).
-
-::: warning Anime needs a separate sync
-`config/anime.yaml` only declares accounts and data providers. After editing it, run `pnpm anime:sync --if-stale` to download anime entries and covers; otherwise the page will have no data. In build environments, run `pnpm anime:sync --if-stale && pnpm build`. See [Anime Page](/en/guide/pages/anime/).
-:::
+`src/user/user-config.ts` is an ephemeral file generated during builds; never edit it manually.
 
 ## Next steps
 
-[CLI Toolchain](/en/guide/content-separation/cli-workflows/): sync, watch, validate, export, and clean commands.
+- [CLI Workflows](/en/guide/content-separation/cli-workflows/): Commands for sync, watch, and status checks
+- [Site Configuration](/en/guide/config/site/): Full catalog of site configuration properties
+- [Navigation Bar](/en/guide/layout/navbar/): Learn dropdown menus and navigation icon settings
