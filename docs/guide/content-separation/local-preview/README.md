@@ -17,10 +17,7 @@ permalink: /guide/content-separation/local-preview/
 
 若内容仓是通过 `content:eject` 迁出的，主题仓根目录的 `shirone.content.json` 已写入该路径，可直接跳转到[启动预览](#启动预览)。
 
-其余情况需要指定内容仓路径，二选一即可：
-
-- 在终端中临时设置环境变量；
-- 在主题仓根目录新建 `.env`，适合长期本地开发。
+其余情况需要指定内容仓路径。推荐在主题仓根目录新建 `.env` 文件（适合长期本地开发）：
 
 ```ini title=".env"
 CONTENT_DIR="../shirone-content"
@@ -28,69 +25,57 @@ CONTENT_DIR="../shirone-content"
 
 `CONTENT_DIR` 的相对路径以主题仓根目录为基准解析，也可以填写绝对路径。
 
-## 启动预览
-
-### 方式一：同步单次后启动
-
-只是看看渲染效果、不打算频繁改内容时，用这种方式。
+如果不想创建 `.env` 文件，也可以在每次打开终端时临时设置环境变量：
 
 ::: tabs
 @tab Windows (PowerShell)
 ```powershell
 $env:CONTENT_DIR = "D:\Code\my-blog-content"
-pnpm.cmd content:sync
-pnpm.cmd dev
 ```
 @tab Linux / macOS
 ```bash
 export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
-pnpm content:sync
-pnpm dev
 ```
 :::
 
 ![设置内容仓路径并执行同步](/images/content-separation/01-quickstart/03-preview/01-local-preview-content.png)
 
-终端输出 `Local http://localhost:4321/` 后，在浏览器中打开对应地址即可。
+## 启动预览
+
+在主题代码仓根目录下运行启动命令：
+
+```bash
+pnpm dev
+```
+
+`pnpm dev` 在启动开发服务器前，会自动执行一次内容同步（`content:sync`），将内容仓的文章、图片和数据复制到主题仓，并生成 `src/user/user-config.ts`。
+
+当终端输出 `Local http://localhost:4321/` 时，在浏览器中打开对应网址即可查看博客：
 
 ![开发服务器启动后的终端输出](/images/content-separation/01-quickstart/03-preview/02-local-preview-terminal.png)
 
 ![本地浏览器预览效果](/images/content-separation/01-quickstart/03-preview/03-local-preview-browser.png)
 
-`content:sync` 会将内容仓文件复制到主题仓的 `src/content/`、`src/data/`、`src/assets/` 与 `public/`。
+## 边写边预览（实时监听）
 
-随后编译生成配置桥接文件 `src/user/user-config.ts`。
+当你需要持续编写新文章或调试 YAML 配置文件时，可以使用 `content:watch` 脚本命令开启实时监听，无需每次改动都手动重启预览。
 
-### 方式二：边写边预览
+建议在主题代码仓中开启两个终端窗口协同工作：
 
-需要持续写文章或调整 YAML 配置时，用这种方式。分别在两个终端中进入主题仓：
+1. **终端 1（启动预览）**：运行 `pnpm dev` 保持本地网页服务运行；
+2. **终端 2（监听变动）**：运行 `pnpm content:watch` 实时监听内容仓目录。
 
-::: tabs
-@tab Windows (PowerShell)
-```powershell
-# 终端 1
-$env:CONTENT_DIR = "D:\Code\my-blog-content"
-pnpm.cmd dev
-
-# 终端 2
-$env:CONTENT_DIR = "D:\Code\my-blog-content"
-pnpm.cmd content:watch
-```
-@tab Linux / macOS
 ```bash
-# 终端 1
-export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
-pnpm dev
-
-# 终端 2
-export CONTENT_DIR="/Users/yourname/Code/my-blog-content"
+# 在终端 2 运行
 pnpm content:watch
 ```
+
+**运作机制**：
+你在编辑器中保存任意 Markdown 文章或 YAML 配置后，`content:watch` 会即刻将变动增量同步到主题仓，Astro 开发服务器随即自动热重载，几秒内浏览器就能呈现最新内容。
+
+::: tip 环境变量继承
+如果在准备工作中已将 `CONTENT_DIR` 写入了 `.env` 文件，两个终端均会自动读取，无需每次打开新终端重复设置路径。
 :::
-
-在 Markdown 编辑器中保存文件后，`content:watch` 会自动同步变更，浏览器随之热重载刷新。
-
-配置了 `.env` 文件后，两个终端均无需重复设置 `CONTENT_DIR`。
 
 ## 确认内容源
 
@@ -130,4 +115,5 @@ pnpm content:status
 
 ## 下一步
 
-[内容源配置](/guide/content-separation/content-sources/)：了解本地路径、远程仓库与清单文件的解析优先级。
+- [内容源配置](/guide/content-separation/content-sources/)：了解本地路径、远程仓库与清单文件的解析优先级
+- [配置覆盖](/guide/content-separation/config-overlay/)：在内容仓中定制站点标题、导航、侧栏等外观设置

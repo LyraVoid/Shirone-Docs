@@ -104,8 +104,6 @@ pnpm content:status --remote
 
 ## Other Commands
 
-The following commands are displayed openly without default folding for easy reading and searching:
-
 ### 5. anime:sync (Anime Data Synchronization)
 
 When using the anime tracking page (`config/anime.yaml`), use this command to download watch list progress and cover art:
