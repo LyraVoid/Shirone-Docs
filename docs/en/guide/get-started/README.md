@@ -18,7 +18,7 @@ Shirone supports both single-repo and dual-repo modes. This guide explains how t
 Start with the single repo. You can split later with `pnpm content:eject`, which moves existing posts and configuration into a new repository without rewriting anything.
 :::
 
-## Getting started with a single repository
+## Single-repo mode
 
 ::: steps
 
@@ -89,7 +89,7 @@ Start with the single repo. You can split later with `pnpm content:eject`, which
 If PowerShell blocks scripts, use `pnpm.cmd` and `npx.cmd` instead of `pnpm` and `npx`.
 :::
 
-## Getting started with a dual repository
+## Dual-repo mode
 
 The dual-repo setup is divided into the steps below. Each step ends at a natural checkpoint, so you can stop after any of them and pick up later.
 
