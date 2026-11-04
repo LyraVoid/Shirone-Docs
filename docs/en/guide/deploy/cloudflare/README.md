@@ -4,92 +4,115 @@ createTime: 2026/08/31 21:53:00
 permalink: /en/guide/deploy/cloudflare/
 ---
 
-Cloudflare Pages provides global CDN acceleration, free SSL certificates, and unlimited bandwidth for personal blogs.
+This guide covers Cloudflare Pages platform configuration. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Prerequisites
+## Requirements
 
-- Code hosted on GitHub or GitLab
-- A Cloudflare account
-- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml`)
+- Source code is pushed to a GitHub or GitLab repository;
+- A Cloudflare account (the free tier is fully sufficient);
+- `site` is set to your production domain (edit `src/config/siteConfig.ts` in single-repo mode, or `config/site.yaml` in the content repo).
 
-> [!IMPORTANT]
-> **Mandatory Node.js Version Variable**
-> Cloudflare Pages build runners default to an older Node.js runtime. You must specify `NODE_VERSION = 26` in project Environment variables to meet engine requirements (Node.js ≥ 26.13.0, Node.js 26 LTS).
+> You must create a **Pages** project, not a Worker. Selecting the Worker type causes builds to fail with `__dirname is not defined`.
 
-## Method 1: Git Integration
+## Option 1: Git integration
 
 ::: steps
 
-1. In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Workers & Pages → Create → Pages → Connect to Git**.
+1. **Create Pages project**
 
-2. Select your Git provider, authorize Cloudflare, and choose your Shirone repository.
+   Log into the [Cloudflare Dashboard](https://dash.cloudflare.com/) and go to **Workers & Pages** -> **Create** -> **Pages** -> **Connect to Git**.
 
-3. Configure build settings:
+2. **Select repository**
+
+   Select your Git provider, grant permissions, and choose the Shirone repository.
+
+3. **Configure build parameters**
+
+   Confirm the following build settings:
 
    | Setting | Value |
    | --- | --- |
-   | Project name | Your project name (determines `<name>.pages.dev`) |
+   | Project name | Custom name; determines the `<name>.pages.dev` subdomain |
    | Production branch | `main` |
    | Build command | `pnpm build` |
    | Build output directory | `dist` |
 
-4. Under **Environment variables**, add:
+4. **Add environment variables**
 
-   | Variable | Value | Why |
+   Expand the environment variables section and configure the following:
+
+   | Variable | Value | Purpose |
    | --- | --- | --- |
-   | `NODE_VERSION` | `26` | Cloudflare's default image ships an older Node |
-   | `PNPM_VERSION` | `11.28.2` | Matches the repo's `packageManager` pin |
-   | `GIT_TERMINAL_PROMPT` | `0` | Prevents interactive credential prompts when pulling a private content repo |
+   | `NODE_VERSION` | `26` | Default build images bundle older Node versions |
+   | `PNPM_VERSION` | `11.28.2` | Matches the pinned version in `packageManager` |
+   | `GIT_TERMINAL_PROMPT` | `0` | Prevents interactive credential prompts from stalling builds |
 
-   For dual-repo mode, also set `CONTENT_REPO_URL` (private: `https://x-access-token:<TOKEN>@github.com/...`) and optional `CONTENT_REPO_REF=main`.
+   Dual-repo setups also require `CONTENT_REPO_URL`, and optionally `CONTENT_REPO_REF` when pinning a branch. See [Content Sources](/en/guide/content-separation/content-sources/).
 
-5. Click **Save and Deploy**.
+5. **Deploy**
+
+   Click **Save and Deploy**. Initial site builds take approximately 3 to 6 minutes.
 
 :::
 
-## Method 2: Wrangler CLI
+Subsequent pushes to `main` trigger production deployments, while pushes to other branches generate preview deployments with isolated preview URLs.
+
+## Option 2: upload with Wrangler
+
+Suitable when building locally or in external CI pipelines, without consuming Cloudflare Pages build minutes.
 
 ```bash
 pnpm add -g wrangler
-
-# Build locally
-pnpm install
+wrangler login
 pnpm build
-
-# Deploy output directory
-wrangler pages deploy dist --project-name=<your-project-name>
+wrangler pages deploy dist --project-name=shirone-blog
 ```
 
-::: tip
-CLI deployment skips the platform build step. Running `pnpm build` locally already includes the Pagefind index and font subsetting in the output artifacts, so uploading delivers full functionality.
+::: warning A Git project cannot accept CLI uploads
+A Pages project can only use one distribution mode: connected Git repository with automatic builds, or Direct Upload for prebuilt files. Running `wrangler pages deploy` against a Git-connected project returns an error.
+
+To upload files via CLI, create a separate **Direct Upload** project in the dashboard (without linking Git or specifying build commands) and point `--project-name` to it.
 :::
 
-::: warning Git-integrated projects do not support direct CLI upload
-A Cloudflare Pages project **must either connect to Git for automatic builds, or use Direct Upload for artifacts**; the two cannot be mixed. Running `wrangler pages deploy` against a project already connected to Git in Method 1 will fail with an error. For CLI deployment, go to **Workers & Pages -> Create -> Pages -> Upload assets** to create a separate Direct Upload project (no build command needed), and point the `--project-name` argument to it.
-:::
+## Custom domain
 
-## Custom Domains
+1. Open your project page, navigate to **Custom domains** -> **Set up a custom domain**, and enter your domain;
+2. If your domain is managed under the same Cloudflare account, DNS records are added automatically. Otherwise, add a `CNAME` record pointing to `<name>.pages.dev` in your DNS provider;
+3. SSL certificates are issued automatically once DNS records propagate.
 
-::: steps
+## Caching
 
-1. Go to your Pages project in Cloudflare Dashboard and select **Custom domains → Set up a custom domain**.
-2. If your DNS is managed on Cloudflare, DNS records and SSL are configured automatically.
-3. If DNS is hosted externally, add a `CNAME` pointing to `<project>.pages.dev`.
+Cloudflare's default caching rules fit static websites well: short caches for HTML to reflect content updates quickly, and long caches for fingerprinted assets. For fine-grained control, place a `_headers` file in `public/`:
 
-:::
+```ini title="public/_headers"
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/pagefind/*
+  Cache-Control: public, max-age=86400
+```
 
 ## Troubleshooting
 
 ::: collapse
-- Build Error: Node Version Unsupported
+- Build fails with `Unsupported engine`
 
-  Ensure `NODE_VERSION` is set to `26` in project Environment variables (under **Settings → Environment variables**) and `PNPM_VERSION=11.28.2`. Node.js 26 no longer bundles corepack; do not fall back to `corepack enable`. If you must install pnpm manually, use `npm i -g pnpm@11.28.2`.
+  The `NODE_VERSION=26` environment variable is missing, or the build command is not using pnpm. Ensure Build Command is set to `pnpm build` and set `PNPM_VERSION=11.28.2`. Node.js 26 no longer bundles corepack; do not use `corepack enable` in place of manual installation.
 
-- Build Error: `__dirname is not defined`
+- Build fails with `__dirname is not defined`
 
-  The project was created as a **Worker**, not a **Pages** project. Workers do not provide Node's `__dirname`, so Shirone's build scripts fail. Delete the Worker project and create a **Pages** project connected to Git instead.
+  The project was accidentally created as a Cloudflare Worker. Delete the Worker, create a Pages project instead, and reconnect the Git repository.
 
-- Dual-repo mode
+- Monthly build quota exceeded
 
-  Set `CONTENT_REPO_URL`, `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already includes `content:sync`; keep the build command as `pnpm build` and do not prepend another sync. Site config belongs in the content repo's `config/site.yaml`.
+  Cloudflare's free plan provides 500 build minutes per month. GitHub Actions and Pages builds count separately. For frequent minor post revisions, batch commits or use Wrangler to upload prebuilt files directly.
+
+- High latency from mainland China
+
+  Cloudflare network routing from mainland China can fluctuate. If most of your readership is located there, consider evaluating [EdgeOne Pages](/en/guide/deploy/edgeone/).
 :::
+
+## Next steps
+
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers
+- [Deployment Hooks](/en/guide/content-separation/deploy-hooks/): trigger rebuilds via webhook after content updates

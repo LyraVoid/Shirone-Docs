@@ -4,76 +4,81 @@ createTime: 2026/11/03 10:00:00
 permalink: /guide/deploy/overview/
 ---
 
-Shirone 构建后是纯静态站点，产物统一在 `dist/`。部署方式的区别只在于：**谁执行构建**、**谁托管产物**、**内容仓更新后如何触发重建**。
+Shirone 经构建后输出为纯静态站点，生成物位于 `dist/`。选择部署方案时通常需确定两项核心决策：**由谁执行构建任务**，以及**内容仓更新后如何触发站点重新构建**。
 
-## 先确定两件事
+## 第一步：决定构建位置
 
-### 1. 单仓还是双仓
-
-| 模式 | 内容位置 | 站点配置 | 适合谁 |
+| 方案 | 构建执行方 | 主要优势 | 注意事项 |
 | --- | --- | --- | --- |
-| 单仓 | 主题仓 `src/content/` | `src/config/siteConfig.ts` | 内容公开、想少配一套仓库 |
-| 双仓 | 独立内容仓的 `content/`、`data/`、`assets/`、`public/` | 优先用内容仓的 `config/site.yaml` | 内容私有、希望主题升级与写作互不干扰 |
+| 平台 Git 集成 | 托管平台构建机 | 配置门槛最低，代码推送即自动构建 | 受平台 Node、pnpm 版本支持与每月构建时长配额限制 |
+| 平台 Deploy Hook | 托管平台构建机 | 内容仓可独立发起触发请求 | 构建拉取目标分支最新 commit，不保证对应单次特定推送 |
+| GitHub Actions | GitHub Actions Runner | 运行环境与版本高度可控，可精准指定 commit SHA | 需配置跨仓事件派发密钥与访问令牌 |
+| 本地构建 | 本地开发机 | 构建产物完全可控，支持离线构建 | 需手动或编写脚本分发产物 |
+| Docker | 本地机或 CI 容器 | 环境完全隔离一致，便于版本回滚 | 镜像需安装对应 pnpm 版本，且必须包含 `scripts/` 目录 |
 
-双仓构建时，`content:sync` 会根据 `CONTENT_DIR`、`CONTENT_REPO_URL` 或 `shirone.content.json` 找到内容源。`pnpm build` 已经包含这一步，平台构建命令保持 `pnpm build` 即可。
+## 第二步：平台设置与构建位置配套
 
-### 2. 构建放在哪里
+配置冲突是部署失败最常见的诱因，核心在于构建执行方与平台预设不匹配。
 
-| 方式 | 构建位置 | 优点 | 注意 |
-| --- | --- | --- | --- |
-| 平台 Git 集成 | 平台构建机 | 配置最少，推送即构建 | 受平台 Node/pnpm 版本与构建额度限制 |
-| GitHub Actions + 平台 Hook | GitHub runner | 版本可控，可先校验内容 | 多一层派发配置 |
-| 本地构建 | 自己的机器 | 产物完全可控，可离线 | 需要手动上传 |
-| Docker | 本地或 CI | 环境隔离，可回滚 | 镜像需安装正确 pnpm，且不能漏掉 `scripts/` |
+**托管平台自行执行构建**（Git 集成、Deploy Hook、Docker 镜像内构建）：
 
-::: warning 构建位置与平台设置必须配套
-选择哪种构建方式，直接决定了托管平台该怎么配置。如果配置不配套，部署就会报错：
+- 平台控制台保持构建命令为 `pnpm build`，输出目录为 `dist`；
+- 双仓模式下在平台环境变量中配置 `CONTENT_REPO_URL`、`CONTENT_REPO_REF` 与 `GIT_TERMINAL_PROMPT=0`；
+- 无需在构建命令前额外添加 `pnpm content:sync`，`pnpm build` 内部已包含同步逻辑。
 
-- **选平台 Git 集成 / Deploy Hook**：构建由平台执行，平台需要保留构建命令 `pnpm build`，并配置好 `CONTENT_REPO_URL` 等环境变量。
+**由 Actions 或本地构建后交付 `dist/`**：
 
-- **选 GitHub Actions 或本地构建直接交付产物**：平台只充当纯静态托管，项目里**必须清空 Build Command**，Framework Preset 改为 `Other`，并断开 Git 自动构建。因为上传上来的 `dist/` 里没有 `package.json`，平台一旦残留了构建命令就会报错退出（典型报错 `Error: Command "pnpm build" exited with 1`）。
+- 托管平台仅承担静态资源托管职责，必须关闭平台的自动构建；
+- 在平台设置中将 Framework Preset 修改为 `Other`，清空 Build Command 与 Output Directory，并关闭 Git 自动触发；
+- 上传的 `dist/` 产物中不含 `package.json`，若平台重复执行构建将报错 `Error: Command "pnpm build" exited with 1`。
 
-两种部署方式选一种即可，切换设置后需要重新触发一次部署。
-:::
+上述两套模式只能二选一。切换模式后请重新触发一次部署以使设置生效。
 
-## 平台选择
+## 平台对照表
 
-下表为使用「平台自带构建」时的配置参考；如果通过 Actions 或本地打包后直接交付 `dist/`，平台侧请按上方提示关闭构建命令。
+下表给出的参数适用于“托管平台自行构建”场景。若由 Actions 或本地直接上传产物，请按上一节说明关闭平台构建。
 
-| 平台 | Node 版本 | 构建命令 | 输出 | 备注 |
+| 托管平台 | Node.js 版本要求 | 构建命令 | 输出目录 | 平台特性备注 |
 | --- | --- | --- | --- | --- |
-| [Vercel](/guide/deploy/vercel/) | 项目设置选 `26.x` | `pnpm build` | `dist` | 不读取 `NODE_VERSION` 环境变量 |
-| [Netlify](/guide/deploy/netlify/) | `NODE_VERSION=26` | `pnpm build` | `dist` | pnpm 由 `packageManager`/mise 决定 |
-| [Cloudflare Pages](/guide/deploy/cloudflare/) | `NODE_VERSION=26` | `pnpm build` | `dist` | 另设 `PNPM_VERSION=11.28.2`；必须是 Pages 不是 Worker |
-| [EdgeOne Pages](/guide/deploy/edgeone/) | `24` | `pnpm build` | `dist` | 当前最高可选 24，Node 24 可正常构建 |
-| [GitHub Pages](/guide/deploy/github/) | `26.13.0` | `pnpm build` | `dist` | 子路径部署必须配 `base` |
-| [服务器](/guide/deploy/server/) | 不限制 | `pnpm build` | `dist` | Nginx 托管，HTML 不缓存 |
-| [Docker](/guide/deploy/docker/) | 镜像内 `node:26-alpine` | `pnpm build` | `dist` | 不要从 `.dockerignore` 排除 `scripts/` |
-| [本地构建](/guide/deploy/local/) | `26.13.0` | `pnpm build` | `dist` | 其他方式的底层原语 |
+| [Vercel](/guide/deploy/vercel/) | 项目设置中选 `26.x` | `pnpm build` | `dist` | 忽略 `NODE_VERSION` 环境变量 |
+| [Netlify](/guide/deploy/netlify/) | 环境变量 `NODE_VERSION=26` | `pnpm build` | `dist` | pnpm 版本由 `package.json` 的 `packageManager` 确定 |
+| [Cloudflare Pages](/guide/deploy/cloudflare/) | 环境变量 `NODE_VERSION=26` | `pnpm build` | `dist` | 需额外配置 `PNPM_VERSION=11.28.2`；项目类型必须为 Pages |
+| [EdgeOne Pages](/guide/deploy/edgeone/) | 控制台版本选 `24` | `pnpm build` | `dist` | 腾讯云边缘托管，当前最高支持 Node 24 |
+| [GitHub Pages](/guide/deploy/github/) | Actions 声明 `26.13.0` | `pnpm build` | `dist` | 部署至仓库子路径时必须在配置中指定 `base` |
+| [服务器](/guide/deploy/server/) | 宿主机无限制 | `pnpm build` | `dist` | Nginx 静态托管，建议 HTML 设置为禁止缓存 |
+| [Docker](/guide/deploy/docker/) | 镜像采用 `node:26-alpine` | `pnpm build` | `dist` | `.dockerignore` 切勿排除 `scripts/` 目录 |
+| [本地构建](/guide/deploy/local/) | 本地使用 `26.13.0` | `pnpm build` | `dist` | 作为所有其他交付方式的基础底座 |
 
-> Node.js 26 不再内置 corepack。需要手动装 pnpm 时统一用 `npm install -g pnpm@11.28.2`，不要在 Node 26 上只写 `corepack enable`。
+Node.js 26 不再内置 corepack。需要手动安装 pnpm 时，统一执行 `npm install -g pnpm@11.28.2`。
 
-## 双仓更新链路
+## 双仓模式的内容从哪来
 
-推荐链路是「内容仓校验 → 派发 → 主题仓构建」：
+双仓模式下有两种内容同步对接方式：
 
-1. 内容仓推送 `content/`、`config/`、`data/`、`assets/`、`public/` 等目录；
-2. 内容仓的 `trigger-build.yml` 调用 `content-validate.yml` 校验；
-3. 校验通过后发 `repository_dispatch`，事件名 `content-updated`，payload 带 `sha`；
-4. 主题仓的 `deploy.yml` 按该 SHA 拉取内容仓，执行 `pnpm build`；
-5. 按所选方案发布到 Vercel、GitHub Pages、服务器或平台 Deploy Hook。
+- **平台自行构建**：平台利用 `CONTENT_REPO_URL` 远程拉取内容仓，变量配置见[内容源配置](/guide/content-separation/content-sources/#三种常见场景)；
+- **GitHub Actions 构建**：内容仓推送触发事件，主题仓将内容仓检出至 `.content-src/` 后执行构建，详见[跨仓自动构建](/guide/content-separation/ci-dispatch/)。
 
-完整文件直接使用主题仓的 `.github/workflows/deploy.yml.example` 和内容仓的 `.github/workflows/trigger-build.yml.example`，不要手写简化版。详见 [跨仓自动化构建与发布](/guide/content-separation/ci-dispatch/)。
+内容仓更新后促使平台重新拉取构建的设置流程，请参阅[部署钩子](/guide/content-separation/deploy-hooks/)。
 
-如果让平台自己构建，则用 [Deploy Hook](/guide/content-separation/deploy-hooks/)：内容仓 POST 平台 Hook，平台拉主题仓并构建。Hook 方式通常构建分支 HEAD，不保证精确到触发它的那个 commit；需要严格按 SHA 构建时用 Actions 派发。
+## 上线前检查清单
 
-## 部署前检查清单
+- [ ] `site` 已设置为正式域名，`base` 与实际访问路径完全一致
+- [ ] 构建命令显式指定为 `pnpm build`，而非 `astro build` 或 `npm run build`
+- [ ] 输出目录指定为 `dist`，产物中包含完整的 `dist/pagefind/` 目录
+- [ ] 平台 Node.js 版本满足规范（EdgeOne 选 24，其余平台选 26）
+- [ ] 由 Actions 或本地交付产物时，已在平台侧关闭自带构建与清空构建命令
+- [ ] 双仓模式下已配置 `CONTENT_REPO_URL`、`CONTENT_REPO_REF` 与 `GIT_TERMINAL_PROMPT=0`
+- [ ] `DISPATCH_TOKEN` 已存入内容仓，`CONTENT_REPO_TOKEN` 已存入主题仓
 
-- [ ] `site` 是正式域名，`base` 与实际访问路径一致
-- [ ] 构建命令是 `pnpm build`，不是 `astro build`
-- [ ] 若由 Actions / 本地交付 `dist/`：平台已关闭构建（Framework Preset = `Other`、Build Command 清空、关闭 Git 自动构建）
-- [ ] 输出目录是 `dist`，且包含 `dist/pagefind/`
-- [ ] 平台 Node 版本满足要求；EdgeOne 选 24，其余选 26
-- [ ] pnpm 版本与 `pnpm@11.28.2` 一致
-- [ ] 双仓已配置 `CONTENT_REPO_URL`、`CONTENT_REPO_REF`、`GIT_TERMINAL_PROMPT=0`
-- [ ] 私有内容仓的 Token 放在**主题仓**，派发用的 `DISPATCH_TOKEN` 放在**内容仓**
+## 下一步
+
+选择具体部署平台：
+
+- [Vercel](/guide/deploy/vercel/)
+- [Cloudflare Pages](/guide/deploy/cloudflare/)
+- [EdgeOne Pages](/guide/deploy/edgeone/)
+- [Netlify](/guide/deploy/netlify/)
+- [GitHub Pages](/guide/deploy/github/)
+- [服务器](/guide/deploy/server/)
+- [Docker](/guide/deploy/docker/)
+- [本地构建](/guide/deploy/local/)

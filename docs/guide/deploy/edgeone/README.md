@@ -4,79 +4,86 @@ createTime: 2026/08/31 21:54:00
 permalink: /guide/deploy/edgeone/
 ---
 
-EdgeOne Pages 是腾讯云提供的静态托管服务，国内访问延迟较低，免费额度对个人博客通常够用。读者主要在中国大陆时，可以优先考虑。
+本文介绍 EdgeOne Pages 平台的具体设置。构建位置选择与平台构建命令的开关说明，详见[部署总览](/guide/deploy/overview/)。
 
-## 为什么推荐 EdgeOne Pages
-
-- 国内边缘节点覆盖好，访问延迟显著低于 Vercel / Netlify / Cloudflare 的海外节点
-- 免费额度对个人博客通常够用
-- 支持从 GitHub 导入仓库，推送后自动构建
-- 自动签发 SSL，无需备案也可绑定域名（但国内节点加速需备案域名）
+EdgeOne Pages 是腾讯云提供的静态托管服务，国内节点访问延迟较低。读者群体若主要分布在中国大陆，可优先考虑该方案。
 
 ## 前置条件
 
-- 代码已托管在 GitHub
-- 注册[腾讯云账号](https://cloud.tencent.com/)
-- 站点配置中的 `site` 已设置为正式域名（单仓改 `src/config/siteConfig.ts`，双仓改内容仓的 `config/site.yaml`）
+- 代码已推送到 GitHub 仓库；
+- 拥有腾讯云账号并开通相关服务；
+- `site` 已设置为正式域名。单仓修改 `src/config/siteConfig.ts`，双仓修改内容仓的 `config/site.yaml`。
 
 ## 部署步骤
 
 ::: steps
 
-1. 登录[腾讯云控制台](https://console.cloud.tencent.com/)，搜索 **EdgeOne Pages**（或在 EdgeOne 产品页左侧导航进入）。
+1. **进入服务控制台**
 
-2. 点击 **创建项目 → 导入 Git 仓库**，首次使用会跳转 GitHub 授权页，点击 **Authorize** 完成授权。
+   登录[腾讯云控制台](https://console.cloud.tencent.com/)，搜索并进入 **EdgeOne Pages**。
 
-3. 从仓库列表中选择你的 Shirone 仓库与生产分支（`main`）。
+2. **导入代码仓库**
 
-4. 配置构建设置：
+   点击 **创建项目** -> **导入 Git 仓库**。初次使用时将跳转至 GitHub 进行账号授权。
 
-   | 配置项 | 值 |
+3. **选择仓库与分支**
+
+   选中 Shirone 仓库，生产分支指定为 `main`。
+
+4. **配置构建参数**
+
+   填写以下构建配置信息：
+
+   | 配置项 | 设定值 |
    | --- | --- |
-   | 框架预设 | `Astro` 或「静态网站」 |
+   | 框架预设 | `Astro` 或“静态网站” |
    | 构建命令 | `pnpm build` |
    | 输出目录 | `dist` |
    | Node.js 版本 | `24` |
 
-   **注意：构建命令必须显式指定为 `pnpm build`。** 不要使用默认的 `npm run build`——Shirone 通过 `preinstall` 钩子强制使用 pnpm（`only-allow pnpm`），npm 构建会在安装依赖阶段直接失败。
+   构建命令必须显式填写为 `pnpm build`。主题的 `preinstall` 钩子会强制校验包管理器，使用 npm 安装依赖将导致构建直接失败。
 
-5. 点击 **部署**，等待构建完成（约 3-5 分钟）。
+5. **执行首次部署**
+
+   点击确认部署，等待构建流程完成（约 3 至 5 分钟）。
 
 :::
 
-部署完成后你会获得默认域名 `<random>.edgeone.app`。此后推送 `main` 自动触发重新部署，控制台可查看构建历史与实时日志。
+部署完成后平台会分配一个形如 `<random>.edgeone.app` 的默认访问域名。推送到 `main` 分支会自动触发重新部署。
 
 ## 自定义域名
 
-1. 进入项目 **域名管理 → 自定义域名**，添加你的域名（如 `blog.yourdomain.com`）。
-2. 按提示在域名服务商添加 `CNAME` 记录。
-3. SSL 证书自动颁发。
+1. 进入项目管理页面，依次点击 **域名管理** -> **自定义域名**，添加目标域名；
+2. 按照控制台指引在域名 DNS 解析服务商处添加对应的 `CNAME` 记录；
+3. 解析生效后，SSL 证书将由平台自动签发。
 
-::: tip 备案与加速节点
-- 未备案域名：可正常访问，走海外/边缘节点
-- 已备案域名：可启用中国境内加速节点，国内访问速度最佳
-:::
+未备案域名依然可以正常绑定使用，流量将调度至海外或边缘节点加速；已备案域名可直接启用境内全功能加速节点。
 
 ## 预览部署
 
-每次推送非生产分支会自动生成预览环境，可在合并前验证文章渲染效果——对涉及 MDX 组件、Mermaid 图表等增强语法的文章尤其有用。
+推送到非生产分支会自动生成带有独立域名的预览环境，便于在合并分支前检查 MDX 组件渲染或 Mermaid 图表展示是否正常。
 
 ## 常见问题
 
 ::: collapse
-- 构建失败：`npm ERR!` 或 `only-allow pnpm`
+- 构建报错：`only-allow pnpm`
 
-  构建命令未使用 pnpm。改回 `pnpm build`；若平台镜像的 pnpm 版本过旧导致 lockfile 校验失败，把构建命令改为 `npm i -g pnpm@11.28.2 && pnpm build`。EdgeOne 没有文档化的 `PNPM_VERSION` 变量；Node.js 24 也不内置 corepack，不要写 `corepack enable`。
+  构建命令未指定为 pnpm。请在构建配置中改回 `pnpm build`。若因平台镜像内置的 pnpm 版本过旧导致 lockfile 校验失败，可将构建命令调整为 `npm i -g pnpm@11.28.2 && pnpm build`。EdgeOne 目前未提供 `PNPM_VERSION` 环境变量，且 Node.js 24 不内置 corepack。
 
-- 构建失败：Node 版本不匹配
+- 构建报错：Node 版本不匹配
 
-  确认 Node.js 版本设置为 `24`。EdgeOne 目前最高提供 Node.js 24，Shirone 在 Node.js 24 下可以正常构建；如果选了不存在的 26，构建环境反而会回退或直接失败。
+  确认 Node.js 版本已显式选定为 `24`。EdgeOne 控制台目前最高支持 Node 24，Shirone 在 Node 24 环境下可以正常完成构建。
 
-- 双仓模式（Shirone-Content）
+- 双仓模式下如何配置内容源
 
-  在项目环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式），需要固定分支时再设置 `CONTENT_REPO_REF=main`。`pnpm build` 已经包含 `content:sync`，构建命令不要再重复写 `pnpm content:sync &&`。站点配置优先放在内容仓的 `config/site.yaml`。也可以参考主题仓库 `deploy.yml.example` 的方案 D：由 GitHub Actions 触发 EdgeOne 的 Deploy Hook。
+  在项目的环境变量设置中添加 `CONTENT_REPO_URL`，若需固定分支可添加 `CONTENT_REPO_REF`。构建命令保持为 `pnpm build`，切勿重复拼接 `pnpm content:sync &&`。详见[内容源配置](/guide/content-separation/content-sources/)。
 
-- 搜索不可用
+- 全文搜索功能不可用
 
-  与所有平台同理：Pagefind 索引由 `pnpm build` 生成于 `dist/pagefind/`，若使用自定义 CI 上传产物，务必包含整个 `dist` 目录。
+  核对上传发布的产物目录是否包含完整的 `dist/`，特别是其中的 `dist/pagefind/` 文件夹。
 :::
+
+## 下一步
+
+- [部署总览](/guide/deploy/overview/)：对比其他托管平台
+- [部署钩子](/guide/content-separation/deploy-hooks/)：双仓更新后通过 Webhook 触发重建

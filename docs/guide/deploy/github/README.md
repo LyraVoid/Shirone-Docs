@@ -4,50 +4,46 @@ createTime: 2026/08/31 21:52:00
 permalink: /guide/deploy/github/
 ---
 
-GitHub Pages 可以免费托管静态站点，也能直接从仓库发布，但对 Shirone 来说**不是首选**：
+本文介绍 GitHub Pages 平台的具体设置。构建位置选择与平台构建命令的开关说明，详见[部署总览](/guide/deploy/overview/)。
 
-- 托管在 `*.github.io` 时必须配置 `base` 路径，所有内部链接都要以此为前缀，容易出错；
-- 构建走 GitHub Actions，公共 runner 资源有限，Shirone 的多步构建（内容同步、字体子集、Pagefind 索引）耗时明显长于 Vercel / EdgeOne；
-- 构建产物总量上限 1 GB，站点内容增长后容易触顶；
-- 国内访问质量不佳。
+GitHub Pages 支持免费托管静态站点，但部署 Shirone 时存在以下限制：
 
-如果仍选择 GitHub Pages（例如项目本身已经在 GitHub 上），按以下步骤操作。
+- 部署至 `*.github.io/<repo>` 子路径时必须配置 `base`，所有站内链接均会自动带上前缀；
+- 构建依托 GitHub Actions 执行，公共 Runner 运行耗时明显长于 Vercel 或 EdgeOne；
+- 部署产物存在 1 GB 的总体积上限；
+- 中国大陆网络环境下的访问质量存在波动。
 
-> [!IMPORTANT]
-> **路径严格一致性准则**
-> `base` 路径必须与 GitHub 仓库名（包括大小写）完全保持一致，前后必须包含斜杠（例如 `/my-blog/`）。
+若项目本身已存放在 GitHub 平台，依然可以通过 GitHub Pages 完成发布。
 
 ## 第一步：配置 site 与 base
 
-编辑 `src/config/siteConfig.ts`：
+编辑 `src/config/siteConfig.ts`。双仓模式下需修改内容仓中的 `config/site.yaml`。
 
-**场景 A：部署到 `https://<username>.github.io`**
+**部署至根域名 `https://<username>.github.io`**
 
 ```ts title="src/config/siteConfig.ts"
 export const siteConfig = {
   site: 'https://<username>.github.io',
   base: '/',
-  // ...
 }
 ```
 
-**场景 B：部署到 `https://<username>.github.io/<repo>`**
+**部署至仓库子路径 `https://<username>.github.io/<repo>`**
 
 ```ts title="src/config/siteConfig.ts"
 export const siteConfig = {
   site: 'https://<username>.github.io/<repo>',
   base: '/<repo>',
-  // ...
 }
 ```
 
-::: warning base 的影响
-配置 `base` 后，站点内所有链接、RSS、Sitemap、OG 图片都会带上该前缀。Shirone 的路由基于 `base` 生成，一般无需手动改文章链接，但**改动 base 后必须重新构建**，且浏览器旧缓存可能导致链接 404。
-:::
+`base` 参数必须与 GitHub 仓库名严格保持一致（区分英文字母大小写），且首尾均需保留正斜杠。
 
-## 第二步：创建 GitHub Actions 工作流
+> 修改 `base` 参数后必须重新执行构建。该参数直接影响站内链接、RSS 订阅源、Sitemap 索引以及社媒分享图片的生成路径。
 
-在 `.github/workflows/` 下新建 `deploy.yml`：
+## 第二步：创建工作流
+
+在仓库根目录下新建 `.github/workflows/deploy.yml`：
 
 ```yaml title=".github/workflows/deploy.yml"
 name: Deploy to GitHub Pages
@@ -70,28 +66,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 11.28.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 26
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
 
-      - name: Build
-        run: pnpm build
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -102,51 +91,53 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
 ```
 
-::: warning 关键参数
-`node-version: 26`（Node.js 26 LTS）和 `pnpm/action-setup` 不可省略——GitHub runner 默认的 Node 与 npm 环境无法满足 Shirone 的构建要求。
-:::
+`node-version: 26` 与 `pnpm/action-setup` 步骤均不可省略，GitHub Actions Runner 默认的 Node.js 版本不符合主题最低要求。
 
 ## 第三步：启用 Pages
 
-::: steps
+1. 进入 GitHub 仓库设置，点击 **Settings** -> **Pages**；
+2. 在 **Build and deployment** 下将 **Source** 切换为 **GitHub Actions**；
+3. 推送一次代码至 `main` 分支，在仓库 **Actions** 标签页确认工作流执行成功。
 
-1. 进入仓库 **Settings → Pages**。
-2. **Source** 选择 **GitHub Actions**，保存。
-3. 推送一次 `main`，在 **Actions** 标签页观察构建进度。
+构建完成后即可访问 `https://<username>.github.io/<repo>`。
 
-:::
+## 自定义域名
 
-完成后访问 `https://<username>.github.io/<repo>` 即可看到站点。
+1. 在仓库 **Settings** -> **Pages** -> **Custom domain** 中填入个人域名并保存；
+2. 在域名服务商处添加一条 `CNAME` 解析记录，指向 `<username>.github.io`；
+3. 勾选 **Enforce HTTPS** 启用安全连接；
+4. 将配置文件中的 `base` 改回 `/`，并将 `site` 更新为绑定的自定义域名。
 
-## 使用自定义域名（可选）
+## 双仓模式
 
-::: steps
+内容仓推送更新后，由内容仓工作流向主题仓发送派发事件，主题仓按 commit SHA 拉取内容后再行构建。完整配置流程见[跨仓自动构建](/guide/content-separation/ci-dispatch/)，部署步骤请直接参考 `deploy.yml.example` 中的变体 B。
 
-1. 在仓库 **Settings → Pages → Custom domain** 填入你的域名。
-2. 在域名服务商处添加 `CNAME` 记录指向 `<username>.github.io`。
-3. 勾选 **Enforce HTTPS**。
+所需配置的仓库密钥：
 
-:::
-
-使用自定义域名（根域名或子域名）时，`base` 应改回 `/`，`site` 改为自定义域名。
+- 内容仓密钥：`DISPATCH_TOKEN`；
+- 主题仓密钥：`CONTENT_REPO_TOKEN`。
 
 ## 常见问题
 
 ::: collapse
-- 页面空白或资源 404
+- 访问页面空白或静态资源报 404
 
-  通常是 `base` 配置与实际访问路径不匹配。确认 `siteConfig.ts` 中的 `base` 与仓库名（含大小写）完全一致，并清理构建缓存后重新部署。
+  `base` 参数与实际部署路径不符。请核查 `base` 是否与仓库名称完全一致，清理构建缓存后重新部署。
 
-- Actions 构建超时
+- Actions 构建频繁超时
 
-  Shirone 构建步骤较多，免费 runner 偶尔超时。可在 workflow 中加入缓存（参考主题仓库 `deploy.yml.example` 的 `actions/cache` 配置，缓存 `.astro` 与缩略图目录）显著加速后续构建。
+  Shirone 构建流水线包含较多优化步骤。可参考 `deploy.yml.example` 中的 `actions/cache` 配置项，为缩略图与静态缓存添加持久化存储以提升后续构建速度。
 
-- 双仓模式怎么部署
+- 全文搜索功能不可用
 
-  参考主题仓库的 `.github/workflows/deploy.yml.example`：内容仓推送后通过 `repository_dispatch`（事件名 `content-updated`）通知主题仓重新构建，其方案 B 即 GitHub Pages 部署写法。主题仓需配置 `CONTENT_REPO_TOKEN`，内容仓需配置 `DISPATCH_TOKEN`；站点配置优先放在内容仓的 `config/site.yaml`，而不是 `src/config/siteConfig.ts`。
+  核对部署生成的产物目录中是否包含完整的 `dist/pagefind/` 文件夹，并确认 `actions/upload-pages-artifact` 上传的是包含全部子文件的整个 `dist` 目录。
 :::
+
+## 下一步
+
+- [部署总览](/guide/deploy/overview/)：对比其他托管平台
+- [跨仓自动构建](/guide/content-separation/ci-dispatch/)：配置双仓自动发布流程

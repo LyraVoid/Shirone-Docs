@@ -4,91 +4,81 @@ createTime: 2026/08/31 21:57:00
 permalink: /guide/deploy/local/
 ---
 
-本地构建是所有部署方式的底层原语：理解了它，其他平台（Vercel、EdgeOne、服务器、Docker）的构建环节都只是同一件事在不同环境里的执行。
+本地构建是所有其他静态部署方案的底座基础：执行构建输出 `dist/` 产物后，可直接交给任意静态资源托管服务。本文介绍构建流程与产物分发方式，平台侧设置说明详见[部署总览](/guide/deploy/overview/)。
 
-## 为什么需要本地构建
+该方案适合需要对生成物进行绝对控制、离线环境编写，或在上线发布前需要本地复现平台构建问题的场景。
 
-- **完全控制**：构建时机、产物内容、上传目标全部由你决定
-- **离线可用**：无网络时也能写作与构建
-- **产物复用**：一次构建，可同时分发到任意多个平台
-- **排查利器**：平台构建失败时，本地复现是最快的定位手段
-
-::: tip 双仓模式
-如果内容在独立仓库，先在 `.env` 中设置 `CONTENT_DIR`（本地内容仓路径）或 `CONTENT_REPO_URL`（远程仓），`pnpm build` 会自动执行 `content:sync`。站点配置优先改内容仓的 `config/site.yaml`，单仓才改 `src/config/siteConfig.ts`。
-:::
-
-## 构建流程
+## 构建步骤
 
 ::: steps
 
-1. **安装依赖环境**
+1. **安装项目依赖**
 
-   使用 lockfile 锁定版本，保证依赖与环境严格一致：
    ```bash
    pnpm install --frozen-lockfile
    ```
 
-2. **执行完整生产构建**
+2. **执行完整构建**
 
-   依次执行内容同步、多尺寸缩略图生成、Astro 静态渲染、字体子集裁剪与 Pagefind 索引构建：
    ```bash
    pnpm build
    ```
 
-3. **本地启动生产预览**
+3. **本地预览产物**
 
-   在本地启动生产环境 HTTP 服务器验证构建产物与路由：
    ```bash
    pnpm preview
    ```
-   浏览器访问 `http://localhost:4321` 进行全面验收。
+
+   在浏览器中打开 `http://localhost:4321`，核对页面渲染、全文搜索与 RSS 订阅源。
 
 :::
 
-::: info pnpm build 内部做了什么
-Shirone 的构建不止 `astro build`，完整链路为：
+双仓模式下，需预先在 `.env` 中设置 `CONTENT_DIR` 或 `CONTENT_REPO_URL`，`pnpm build` 在执行期间会自动同步内容仓。详见[内容源配置](/guide/content-separation/content-sources/)。
 
-1. `content:sync` — 同步内容仓 / 校验 frontmatter（内容与配置问题在这一步暴露）
-2. 图标生成、瞬间缩略图生成
-3. `astro build` — 渲染全部静态页面
-4. 字体子集化 — 按实际用到的字符裁剪字体文件
-5. Pagefind — 生成全文搜索索引（`dist/pagefind/`）
-6. 字体完整性检查
+## pnpm build 做了什么
 
-因此**不要**用 `astro build` 替代 `pnpm build`，否则会缺失搜索索引等关键产物。
-:::
+| 构建子阶段 | 核心任务 |
+| --- | --- |
+| `content:sync` | 同步物化内容仓文件，编译生成配置桥接文件 |
+| 图片处理 | 生成多规格缩略图，转换并优化现代图片格式 |
+| `astro build` | 静态编译渲染全站 HTML 页面与静态资产 |
+| `pagefind` | 提取文章文本，生成全站离线搜索索引 `dist/pagefind/` |
+| `fonts:check` | 验证字体子集化产物是否完整覆盖页面文本字符 |
+
+切勿使用 `astro build` 代替 `pnpm build`，否则将缺失 Pagefind 离线搜索索引。
 
 ## 产物结构
 
-```file-tree title="本地构建产物 (dist/)"
+```file-tree title="dist/"
 dist/
-├── index.html          # 首页及各页面 HTML
-├── pagefind/           # 全文搜索索引（必需）
-├── assets/             # 指纹化的 JS/CSS/图片/字体
-├── rss.xml             # RSS 订阅
-├── sitemap-index.xml   # 站点地图
-└── favicon.ico 等
+├── index.html
+├── pagefind/           # 全文搜索索引，发布时不可遗漏
+├── assets/             # 包含哈希指纹的 JS、CSS、图片与子集字体
+├── rss.xml
+├── sitemap-index.xml
+└── favicon.ico
 ```
 
-上传部署时**必须整个目录**一起分发，尤其不能遗漏 `pagefind/`。
+部署或分发时需将整个目录完整打包上传。
 
-## 分发产物的方式
+## 分发方式
 
-### 上传到虚拟主机 / 服务器
+### 自建服务器
 
 ```bash
-# rsync（增量，推荐）
-rsync -avz --delete dist/ user@server:/var/www/shirone/
-
-# scp（全量）
-scp -r dist/* user@server:/var/www/shirone/
+rsync -avz --delete dist/ user@server:/var/www/shirone/dist/
 ```
 
-服务器端 Nginx 配置见 [服务器部署](/guide/deploy/server/)。
+配套 Nginx 配置文件详见[服务器部署](/guide/deploy/server/)。
 
-### 推送到平台静态托管
+### Vercel
 
-以 Wrangler（Cloudflare Pages）为例，本地构建产物可直接上传，不消耗平台构建额度：
+```bash
+pnpm dlx vercel@latest deploy dist --prod
+```
+
+### Cloudflare Pages
 
 ```bash
 pnpm add -g wrangler
@@ -96,51 +86,51 @@ wrangler login
 wrangler pages deploy dist --project-name=shirone-blog
 ```
 
-Vercel 亦支持类似做法：`vercel deploy dist --prod`。
+### 对象存储与 CDN
 
-::: warning 交付产物前先确认平台已关闭构建
-使用 `vercel deploy dist` 或 `wrangler pages deploy` 上传的是现成产物，目标平台不能再重复执行构建：
-
-- **Vercel**：在项目后台（Settings -> Build & Output Settings）将 Framework Preset 改为 `Other`、清空 Build Command，并断开 Git 自动构建。否则云端残留的 `pnpm build` 会尝试对 `dist/` 再次构建，直接报错 `Command "pnpm build" exited with 1`。
-
-- **Cloudflare Pages**：Cloudflare 项目不支持既连 Git 又用 Wrangler 直传。CLI 交付必须单独新建一个 **Direct Upload** 项目（创建时不连 Git、不填任何构建命令），对已连 Git 的项目执行 `wrangler pages deploy` 会报错拒绝。
-
-- **Netlify**：手动交付直接运行 `netlify deploy --prod --dir=dist` 即可，不要加 `--build` 参数（否则会根据 `netlify.toml` 在本地再重新跑一次构建）。
-:::
-
-### 对象存储 + CDN
-
-阿里云 OSS、腾讯云 COS 均支持静态网站托管。以 COS 为例：
+阿里云 OSS、腾讯云 COS 等对象存储服务均原生支持静态网站托管。以腾讯云 COS CLI 为例：
 
 ```bash
-# 使用 coscmd（pip 安装）
 coscmd upload -rs dist/ /
 ```
 
-开启「静态网站」属性、绑定自定义域名与 CDN 后即可对外服务。
+在云控制台开启静态网站托管属性、绑定自定义域名并配置 CDN 加速即可上线。
+
+::: warning 交付产物前先关闭平台构建
+分发上传的是已构建好的静态产物，托管平台切勿重复执行构建：
+
+- **Vercel**：将 Framework Preset 选为 `Other`，清空 Build Command，断开 Git 自动构建触发器，避免报错 `Error: Command "pnpm build" exited with 1`；
+- **Cloudflare Pages**：CLI 上传需在控制台单独创建 Direct Upload 项目，不可直接向已关联 Git 的项目推送；
+- **Netlify**：执行 `netlify deploy --prod --dir=dist` 时切勿携带 `--build` 参数。
+
+各平台的具体操作入口详见对应平台指南。
+:::
 
 ## 验证清单
 
-部署到任何目标前，建议逐项确认：
-
-- [ ] `pnpm preview` 中首页、文章页、归档、搜索均正常
-- [ ] `dist/pagefind/` 目录存在且非空
-- [ ] 控制台无构建警告（尤其是 frontmatter 校验错误）
-- [ ] 站点配置中 `site` 指向正式域名（单仓 `siteConfig.ts`，双仓 `config/site.yaml`）
-- [ ] RSS（`dist/rss.xml`）中的链接可正确跳转
+- [ ] 在 `pnpm preview` 环境下核对首页、文章详情、归档页与全文搜索均工作正常
+- [ ] 产物目录中 `dist/pagefind/` 存在且包含索引碎片文件
+- [ ] 构建终端输出中无 frontmatter 类型校验错误
+- [ ] `site` 已指定为正式生产域名（单仓修改 `siteConfig.ts`，双仓修改 `config/site.yaml`）
+- [ ] `dist/rss.xml` 文件中的文章永久链接均可正常跳转访问
 
 ## 常见问题
 
 ::: collapse
-- 构建成功但搜索报 404
+- 构建成功但搜索功能报 404
 
-  产物中缺少 `pagefind/`。原因几乎都是构建命令被换成了 `astro build`。回到 `pnpm build`。
+  生成物中缺失 `pagefind/` 文件夹。通常是误将构建命令替换成了 `astro build`，请改回执行 `pnpm build`。
 
-- 本地预览正常、线上异常
+- 本地预览正常但线上展示异常
 
-  对比两个环境的差异：`site`/`base` 配置、部署平台是否完整上传了 `dist/`（含隐藏文件）、平台是否对 HTML 做了额外缓存。
+  对比排查生产域名的 `site` 与 `base` 配置、检查上传到服务器的 `dist/` 是否包含全部资源（包括隐藏文件），以及确认 CDN 或反向代理是否缓存了 HTML 响应。
 
-- 想跳过某些构建步骤加速
+- 如何缩短本地构建耗时
 
-  写作预览用 `pnpm dev` 即可，无需完整构建。只有最终发布才需要 `pnpm build` 的完整链路。
+  日常写作预览请直接使用 `pnpm dev`，无需每次运行耗时较长的完整构建。只有在发布上线前才需要执行 `pnpm build`。
 :::
+
+## 下一步
+
+- [部署总览](/guide/deploy/overview/)：横向对比各个托管平台
+- [构建优化](/guide/optimize-build/)：深入了解构建缓存与性能调优

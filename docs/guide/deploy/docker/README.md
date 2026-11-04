@@ -4,27 +4,25 @@ createTime: 2026/08/31 21:56:00
 permalink: /guide/deploy/docker/
 ---
 
-Docker 部署把构建环境固定在镜像里。同一份镜像可以在不同服务器运行，版本回滚和迁移都不依赖宿主机的 Node 版本。
+本文介绍基于 Docker 的容器化部署方案。构建位置选择与平台构建命令的开关说明，详见[部署总览](/guide/deploy/overview/)。
 
-## 架构说明
+Docker 将构建与运行环境封装在镜像内部，可在任意服务器上一致运行，不依赖宿主机是否安装匹配版本的 Node.js。
 
-Shirone 是纯静态站点，容器化采用经典的**多阶段构建**：
+## 镜像结构
+
+构建采用多阶段镜像构建（Multi-stage Build）：
 
 ```mermaid
 flowchart LR
-    A["node:26-alpine<br/>构建阶段"] -->|仅拷贝 dist/| B["nginx:alpine<br/>运行阶段"]
+    A["node:26-alpine<br/>构建阶段"] -->|仅复制 dist/| B["nginx:alpine<br/>运行阶段"]
 ```
 
-- **构建阶段**：Node 26 + pnpm 环境执行完整 `pnpm build`（含 Pagefind 索引）
-- **运行阶段**：只保留 Nginx 与静态产物，最终镜像不到 50 MB，无 Node 运行时
+- 构建阶段：基于 Node 26 与 pnpm 运行完整的 `pnpm build` 命令；
+- 运行阶段：仅保留轻量级 Nginx 与编译好的静态文件，镜像体积小于 50 MB，无额外 Node 运行时开销。
 
-## 准备文件
-
-在项目根目录创建三个文件。
+## 准备三个文件
 
 ### .dockerignore
-
-排除无关文件，减小构建上下文、加速构建：
 
 ```text title=".dockerignore"
 .git
@@ -38,26 +36,28 @@ tests
 public/assets/moments/thumbnails
 ```
 
+切勿将 `scripts/` 加入排除名单。`pnpm build` 在执行期间会调用 `scripts/content/sync.mjs` 及字体检查脚本，缺少此目录会导致镜像构建直接失败。
+
 ### Dockerfile
 
 ```dockerfile title="Dockerfile"
-# ---------- 构建阶段 ----------
+# 构建阶段
 FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-# Node.js 25+ 已不再内置 corepack，直接安装仓库锁定的 pnpm 版本
+# Node.js 26 不再内置 corepack，直接安装指定版本
 RUN npm install -g pnpm@11.28.2
 
-# 先复制依赖清单，充分利用镜像层缓存
+# 先复制依赖清单以复用镜像层缓存
 COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
-# 再复制源码并构建
+# 再复制源码并执行构建
 COPY . .
 RUN pnpm build
 
-# ---------- 运行阶段 ----------
+# 运行阶段
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -68,27 +68,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-::: tip 层缓存技巧
-依赖清单与源码分两次 `COPY`，使得只有依赖变更时才会重新执行 `pnpm install`。日常改文章重新构建时，安装步骤直接命中缓存，构建时间大幅缩短。
-:::
-
-::: tip 双仓模式
-上面的 Dockerfile 默认只构建当前仓库。若使用 Shirone-Content 双仓模式，需要在构建阶段把 `CONTENT_REPO_URL` 传给 `pnpm build`。不要把带 Token 的 URL 写进 `ARG`/`ENV`，否则可能留在镜像层历史中；推荐用 BuildKit secret：
-
-```dockerfile
-# syntax=docker/dockerfile:1
-RUN --mount=type=secret,id=content_repo_url \
-    CONTENT_REPO_URL="$(cat /run/secrets/content_repo_url)" pnpm build
-```
-
-```bash
-echo "https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git" > .content-repo-url
-docker build --secret id=content_repo_url,src=.content-repo-url -t shirone-blog .
-rm .content-repo-url
-```
-
-也可以在镜像外先由 CI 构建好 `dist/`，再用 Nginx 镜像直接托管产物。
-:::
+将依赖清单与项目源码拆分为两次 `COPY` 操作，使得仅在依赖变动时重新安装包，日常的文章或页面微调可直接命中 Docker 构建缓存。
 
 ### nginx.conf
 
@@ -118,41 +98,40 @@ server {
 }
 ```
 
-> [!WARNING]
-> **构建阶段内存分配预警**
-> Shirone 构建包含字体子集化与 Pagefind 索引生成，内存峰值较高。请为 Docker 分配至少 4 GB 内存，或在命令中添加 `--memory=4g`。
+> 构建阶段需要运行字体子集化与 Pagefind 全文索引，内存峰值较高。建议为 Docker 容器分配至少 4 GB 运行内存。
+
+## 双仓模式
+
+在镜像构建过程中，需要将内容源信息传入 `pnpm build`。切勿将包含令牌的仓库地址直接写在 `ARG` 或 `ENV` 指令中，避免凭据泄漏至镜像历史层。推荐使用 Docker BuildKit Secret：
+
+```dockerfile
+# syntax=docker/dockerfile:1
+RUN --mount=type=secret,id=content_repo_url \
+    CONTENT_REPO_URL="$(cat /run/secrets/content_repo_url)" pnpm build
+```
+
+```bash
+echo "https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git" > .content-repo-url
+docker build --secret id=content_repo_url,src=.content-repo-url -t shirone-blog .
+rm .content-repo-url
+```
+
+亦可选择在 CI 中预先编译输出 `dist/`，随后仅通过纯 Nginx 基础镜像进行打包与分发。
 
 ## 构建与运行
 
-::: steps
+```bash
+docker build -t shirone-blog .
 
-1. **构建生产 Docker 镜像**
+docker run -d --name shirone-blog \
+  -p 8080:80 \
+  --restart unless-stopped \
+  shirone-blog
+```
 
-   利用多阶段缓存机制在本地或 CI 构建镜像：
-   ```bash
-   docker build -t shirone-blog .
-   ```
+访问 `http://localhost:8080` 验证页面展示与全文搜索功能。
 
-2. **启动并后台运行容器**
-
-   将容器 80 端口映射至宿主机指定端口（如 8080）并启用自动重启策略：
-   ```bash
-   docker run -d --name shirone-blog -p 8080:80 --restart unless-stopped shirone-blog
-   ```
-
-   - `-d`：后台守护进程运行
-   - `-p 8080:80`：主机 8080 端口映射到容器 80 端口
-   - `--restart unless-stopped`：容器崩溃或宿主机重启后自动拉起
-
-3. **验证容器服务**
-
-   在浏览器中访问 `http://localhost:8080`，验证全站页面路由与 Pagefind 离线搜索。
-
-:::
-
-## 使用 Docker Compose
-
-推荐用 Compose 管理，配置即文件、可纳入版本控制：
+### Docker Compose
 
 ```yaml title="docker-compose.yml"
 services:
@@ -166,37 +145,33 @@ services:
 ```
 
 ```bash
-docker compose up -d      # 构建并启动
-docker compose up -d --build   # 内容更新后重新构建部署
+docker compose up -d
+docker compose up -d --build   # 内容更新后重新构建并启动
 ```
 
-## 更新部署
-
-文章更新后的标准流程：
+## 更新与回滚
 
 ```bash
-git pull                    # 拉取最新内容
-docker compose up -d --build   # 重建镜像并滚动替换容器
+git pull
+docker compose up -d --build
 ```
 
-旧镜像会保留在本地，需要时可以切回旧版本：
+历史镜像依然保留在本地磁盘。若需紧急回滚，可为旧镜像设置标签并更新 Compose 配置文件中的 `image`：
 
 ```bash
-docker tag <old-image-id> shirone-blog:rollback
-# 将 docker-compose.yml 中的 image 临时改为 shirone-blog:rollback 后执行
-docker compose up -d shirone
+docker images                      # 查询历史镜像 ID
+docker tag <旧镜像ID> shirone-blog:rollback
+docker compose up -d               # 确保 image 已指向 shirone-blog:rollback
 ```
 
-## 对外暴露：反代与 HTTPS
+## 反向代理与 HTTPS
 
-生产环境通常不在容器上直接暴露 80/443，而是由宿主机的 Nginx / Caddy 反代：
+生产环境中通常在宿主机通过 Nginx 或 Caddy 对容器端口进行反向代理：
 
 ```nginx title="宿主机 /etc/nginx/conf.d/blog.conf"
 server {
     listen 443 ssl;
     server_name your-domain.com;
-
-    # SSL 证书配置省略（可用 certbot 自动管理）
 
     location / {
         proxy_pass http://127.0.0.1:8080;
@@ -206,22 +181,29 @@ server {
 }
 ```
 
+SSL 证书可借助 certbot 进行自动化签发与续期，步骤详见[服务器部署](/guide/deploy/server/#第四步-https)。
+
 ## 常见问题
 
 ::: collapse
-- 构建失败：`only-allow pnpm` 或依赖安装报错
+- 构建报错：`only-allow pnpm`
 
-  使用了 `npm install` 而非 pnpm，或没有安装仓库锁定的 pnpm。严格按 Dockerfile 写法：`npm install -g pnpm@11.28.2` + `pnpm install --frozen-lockfile`。注意 Node.js 25+ 已不再内置 corepack，不要只写 `corepack enable`。
+  使用了 npm 安装依赖，或未锁定安装指定版本的 pnpm。请严格遵循 Dockerfile 中的书写规则：先执行 `npm install -g pnpm@11.28.2`，再执行 `pnpm install --frozen-lockfile`。
 
-- 构建阶段 OOM
+- 构建阶段内存不足（OOM）
 
-  Shirone 构建含字体子集化与 Pagefind 索引，内存峰值较高。为 Docker 分配至少 4 GB 内存，或使用构建参数 `--memory=4g`（docker build）。
+  确保为 Docker 守护进程分配了至少 4 GB 内存，或在构建时添加参数 `docker build --memory=4g`。
 
-  **搜索不可用（404 on /pagefind/*）**
+- 全文搜索功能不可用
 
-  Pagefind 索引由 `pnpm build` 末尾生成，确认构建阶段命令没有被精简为单独的 `astro build`——那样会跳过索引步骤。
+  检查 Dockerfile 中的构建指令是否被改写为了单命令 `astro build`。直接调用 `astro build` 会跳过 Pagefind 索引生成。需确保生成产物中包含 `/pagefind/` 目录。
 
-- 镜像里能放评论服务等动态功能吗
+- 是否建议在容器内部署评论服务
 
-  不建议。静态容器保持无状态更易维护；评论（Twikoo/Waline 等）作为独立容器部署，Nginx 反代区分路径。
+  不建议。评论系统（Twikoo、Waline 等）建议作为独立服务容器部署，由宿主机 Nginx 按照路径分发反向代理，保持博客静态容器的纯粹无状态特性。
 :::
+
+## 下一步
+
+- [服务器部署](/guide/deploy/server/)：Nginx 配置、证书管理与自动发布
+- [部署总览](/guide/deploy/overview/)：对比其他托管平台

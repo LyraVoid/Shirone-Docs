@@ -4,70 +4,86 @@ createTime: 2026/08/31 21:54:00
 permalink: /en/guide/deploy/edgeone/
 ---
 
-EdgeOne Pages is a static site hosting platform by Tencent Cloud providing optimized edge delivery for visitors in mainland China.
+This guide covers EdgeOne Pages platform configuration. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Highlights
+EdgeOne Pages is Tencent Cloud's static hosting platform, providing reduced network latency for readers in mainland China.
 
-- Low latency for readers in China via optimized edge nodes
-- A free tier that is usually enough for a personal static blog
-- GitHub import with builds on push
-- Automatic SSL certificates
+## Requirements
 
-## Prerequisites
+- Source code is pushed to a GitHub repository;
+- An active Tencent Cloud account;
+- `site` is set to your production domain (edit `src/config/siteConfig.ts` in single-repo mode, or `config/site.yaml` in the content repo).
 
-- Code hosted on GitHub
-- A Tencent Cloud account
-- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo)
-
-## Deployment Steps
+## Deploy
 
 ::: steps
 
-1. In the [Tencent Cloud Console](https://console.cloud.tencent.com/), search for **EdgeOne Pages**.
+1. **Open console**
 
-2. Click **Create Project → Import Git Repository** and authorize GitHub access.
+   Log into the [Tencent Cloud console](https://console.cloud.tencent.com/) and search for **EdgeOne Pages**.
 
-3. Select your Shirone repository and production branch (`main`).
+2. **Import repository**
 
-4. Configure build settings:
+   Click **Create project** -> **Import Git repository**. Initial access redirects to GitHub for authorization.
+
+3. **Select repository and branch**
+
+   Select the Shirone repository and specify the production branch as `main`.
+
+4. **Set build parameters**
+
+   Configure the following parameters:
 
    | Setting | Value |
    | --- | --- |
-   | Framework | `Astro` |
-   | Build Command | `pnpm build` |
-   | Output Directory | `dist` |
-   | Install Command | `pnpm install` |
-   | Node.js Version | `24` |
+   | Framework preset | `Astro` or "Static site" |
+   | Build command | `pnpm build` |
+   | Output directory | `dist` |
+   | Node.js version | `24` |
 
-   EdgeOne currently offers Node.js 24 as its highest selectable version. Shirone builds correctly on Node.js 24. Do not select 26: it is not available on this platform.
+   Set the build command explicitly to `pnpm build`. The theme's `preinstall` hook enforces pnpm usage; builds attempting to use npm fail during dependency installation.
 
-5. For dual-repo mode, add `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`.
+5. **Execute deployment**
 
-6. Click **Confirm and Deploy**.
+   Click deploy and wait for the build process to finish (approximately 3 to 5 minutes).
 
 :::
 
-## Custom Domains and ICP
+Once deployment completes, EdgeOne assigns a domain in the format `<random>.edgeone.app`. Subsequent pushes to `main` automatically trigger new deployments.
 
-- You can bind custom international domains directly with global acceleration.
-- For mainland China edge node acceleration, custom domains require an active ICP filing in China.
+## Custom domain
 
-## FAQ
+1. Open project management, go to **Domain management** -> **Custom domain**, and add your domain;
+2. Follow console prompts to create the corresponding `CNAME` record with your DNS provider;
+3. Once DNS records resolve, SSL certificates are issued automatically.
+
+Domains without ICP filing remain usable via overseas or edge nodes. Domains with ICP registration can leverage full mainland acceleration nodes.
+
+## Preview deployments
+
+Pushes to non-production branches generate isolated preview environments with distinct URLs, allowing you to review MDX components, Mermaid diagrams, and complex layouts before merging.
+
+## Troubleshooting
 
 ::: collapse
-- Build failure: `npm ERR!` or `only-allow pnpm`
+- Build fails with `only-allow pnpm`
 
-  Ensure the build command uses pnpm (`pnpm build`). If the platform image has an outdated pnpm version causing a lockfile mismatch, change the build command to `npm i -g pnpm@11.28.2 && pnpm build`. EdgeOne has no documented `PNPM_VERSION` variable, and Node.js 24 does not bundle corepack.
+  The build command is not using pnpm. Update the build configuration to `pnpm build`. If the image's bundled pnpm version is too old to validate the lockfile, adjust the build command to `npm i -g pnpm@11.28.2 && pnpm build`. EdgeOne does not currently provide a `PNPM_VERSION` variable, and Node.js 24 does not bundle corepack.
 
-- Build failure: Node.js version incompatibility
+- Build fails due to Node version mismatch
 
-  Confirm Node.js is configured to `24`. EdgeOne does not offer Node.js 26; selecting a nonexistent version can fall back or fail outright.
+  Confirm that the Node.js version is explicitly set to `24`. Node 24 is the current maximum supported version on EdgeOne, and Shirone builds reliably in this environment.
 
-- Dual-Repo Mode (Shirone-Content)
+- How to configure the content source in dual-repo mode
 
-  Set `CONTENT_REPO_URL` (private repos: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF=main`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; do not prepend `pnpm content:sync &&`. Site config belongs in the content repo's `config/site.yaml`. You can also refer to Option D in the theme repo's `deploy.yml.example`: triggering EdgeOne's Deploy Hook via GitHub Actions.
+  Add `CONTENT_REPO_URL` to project environment variables, and optionally `CONTENT_REPO_REF` when pinning branches. Keep the build command as `pnpm build`; do not prepend `pnpm content:sync &&`. See [Content Sources](/en/guide/content-separation/content-sources/).
 
-- Search feature is unavailable
+- Search is non-functional
 
-  Pagefind index files are output to `dist/pagefind/`. Ensure the entire `dist` output directory is uploaded to EdgeOne Pages.
+  Ensure that deployed artifacts contain the complete `dist/` directory, including the `dist/pagefind/` folder.
 :::
+
+## Next steps
+
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers
+- [Deployment Hooks](/en/guide/content-separation/deploy-hooks/): trigger rebuilds via webhook after content updates

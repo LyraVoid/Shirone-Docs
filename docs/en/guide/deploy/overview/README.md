@@ -4,76 +4,81 @@ createTime: 2026/11/03 10:00:00
 permalink: /en/guide/deploy/overview/
 ---
 
-Shirone builds to a fully static site in `dist/`. Deployment options differ only in **who builds**, **who hosts the output**, and **how a content update triggers a rebuild**.
+Shirone builds to a static site output in `dist/`. Choosing a deployment method comes down to two decisions: **who executes the build**, and **how content updates trigger rebuilds**.
 
-## Decide two things first
+## Step 1: choose where to build
 
-### 1. Single repo or dual repo
-
-| Mode | Content location | Site config | Best for |
+| Method | Builder | Primary strength | Notes |
 | --- | --- | --- | --- |
-| Single repo | `src/content/` in the theme repo | `src/config/siteConfig.ts` | Public content, fewer moving parts |
-| Dual repo | `content/`, `data/`, `assets/`, `public/` in a content repo | `config/site.yaml` in the content repo (preferred) | Private content, independent theme upgrades |
+| Platform Git integration | Platform build machine | Minimal setup; pushes trigger builds | Limited by platform Node/pnpm support and monthly build quotas |
+| Platform Deploy Hook | Platform build machine | Content repo can trigger builds independently | Builds the latest branch HEAD, not guaranteed to match a specific push |
+| GitHub Actions | GitHub Actions Runner | Tightly controlled versions; builds specific commit SHAs | Requires cross-repo dispatch secrets and access tokens |
+| Local build | Local development machine | Total control over artifacts; works offline | Artifacts must be distributed manually or via scripts |
+| Docker | Local machine or CI container | Complete environment isolation; simple rollbacks | Images must bundle matching pnpm and include the `scripts/` folder |
 
-In dual-repo mode, `content:sync` resolves the content source from `CONTENT_DIR`, `CONTENT_REPO_URL`, or `shirone.content.json`. `pnpm build` already runs this step, so keep the platform build command as `pnpm build`.
+## Step 2: match the host settings
 
-### 2. Where to build
+Configuration mismatches are the leading cause of deployment failures, typically occurring when the build runner conflicts with platform expectations.
 
-| Method | Build location | Pros | Watch out for |
-| --- | --- | --- | --- |
-| Platform Git integration | Platform builder | Least setup, push to deploy | Platform Node/pnpm limits and build quotas |
-| GitHub Actions + platform hook | GitHub runner | Controlled versions, content validation first | Extra dispatch configuration |
-| Local build | Your machine | Full control, works offline | Manual upload |
-| Docker | Local or CI | Isolated, rollback-friendly | Correct pnpm install; do not exclude `scripts/` |
+**The host builds** (Git integration, Deploy Hook, Docker in-image builds):
 
-::: warning Build location and platform settings must match
-The choice of where to build directly dictates how the hosting platform should be configured. Mismatched settings will cause build or deployment errors:
+- Keep the build command as `pnpm build` and output directory as `dist` in the platform dashboard;
+- For dual-repo setups, configure `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0` as platform environment variables;
+- Do not prepend `pnpm content:sync` to build commands; `pnpm build` runs sync internally.
 
-- **Using Platform Git integration / Deploy Hook**: The build runs on the platform. The platform must keep the build command `pnpm build` and configure environment variables like `CONTENT_REPO_URL`.
+**Actions or a local build delivers `dist/`**:
 
-- **Delivering artifacts via GitHub Actions or local build**: The platform serves purely as static hosting. You **must clear the Build Command**, change Framework Preset to `Other`, and disconnect automatic Git builds. Because the uploaded `dist/` directory does not contain `package.json`, any residual build command on the platform will fail and exit (typically `Error: Command "pnpm build" exited with 1`).
+- The host functions strictly as static asset hosting; disable platform builds;
+- In platform settings, change Framework Preset to `Other`, clear Build Command and Output Directory, and disable Git auto-deploy triggers;
+- The uploaded `dist/` contains no `package.json`, causing leftover build commands to fail with `Error: Command "pnpm build" exited with 1`.
 
-Choose one deployment method; trigger a new deployment after updating the settings.
-:::
+Choose only one of these approaches. After switching, trigger a new deployment for settings to take effect.
 
-## Platform comparison
+## Platform reference
 
-The table below serves as a reference when using "platform-managed builds"; if delivering `dist/` directly via Actions or local build, please disable the build command on the platform side as instructed above.
+The table below applies to "the host builds" scenarios. If GitHub Actions or local builds deliver artifacts directly, disable platform builds as described above.
 
-| Platform | Node version | Build command | Output | Notes |
+| Platform | Node version requirement | Build command | Output directory | Platform notes |
 | --- | --- | --- | --- | --- |
-| [Vercel](/en/guide/deploy/vercel/) | `26.x` in project settings | `pnpm build` | `dist` | Does not read `NODE_VERSION` |
-| [Netlify](/en/guide/deploy/netlify/) | `NODE_VERSION=26` | `pnpm build` | `dist` | pnpm comes from `packageManager`/mise |
-| [Cloudflare Pages](/en/guide/deploy/cloudflare/) | `NODE_VERSION=26` | `pnpm build` | `dist` | Also set `PNPM_VERSION=11.28.2`; must be Pages, not Workers |
-| [EdgeOne Pages](/en/guide/deploy/edgeone/) | `24` | `pnpm build` | `dist` | 24 is the highest selectable version; it builds fine |
-| [GitHub Pages](/en/guide/deploy/github/) | `26.13.0` | `pnpm build` | `dist` | Set `base` for subpath deployments |
-| [Server](/en/guide/deploy/server/) | Any | `pnpm build` | `dist` | Nginx; do not cache HTML |
-| [Docker](/en/guide/deploy/docker/) | `node:26-alpine` | `pnpm build` | `dist` | Do not exclude `scripts/` in `.dockerignore` |
-| [Local build](/en/guide/deploy/local/) | `26.13.0` | `pnpm build` | `dist` | The primitive behind every other method |
+| [Vercel](/en/guide/deploy/vercel/) | Select `26.x` in project settings | `pnpm build` | `dist` | Ignores `NODE_VERSION` environment variable |
+| [Netlify](/en/guide/deploy/netlify/) | Set `NODE_VERSION=26` | `pnpm build` | `dist` | pnpm version determined by `packageManager` in `package.json` |
+| [Cloudflare Pages](/en/guide/deploy/cloudflare/) | Set `NODE_VERSION=26` | `pnpm build` | `dist` | Also set `PNPM_VERSION=11.28.2`; project type must be Pages |
+| [EdgeOne Pages](/en/guide/deploy/edgeone/) | Select `24` in console | `pnpm build` | `dist` | Edge hosting from Tencent Cloud; supports up to Node 24 |
+| [GitHub Pages](/en/guide/deploy/github/) | Declare `26.13.0` in Actions | `pnpm build` | `dist` | Set `base` configuration when deploying to repository subpaths |
+| [Server](/en/guide/deploy/server/) | Unrestricted on host | `pnpm build` | `dist` | Nginx static hosting; HTML should disable caching |
+| [Docker](/en/guide/deploy/docker/) | Use `node:26-alpine` | `pnpm build` | `dist` | Never exclude `scripts/` in `.dockerignore` |
+| [Local build](/en/guide/deploy/local/) | Use `26.13.0` locally | `pnpm build` | `dist` | Foundational base for all other distribution workflows |
 
-> Node.js 26 no longer bundles corepack. To install pnpm manually, use `npm install -g pnpm@11.28.2`; do not rely on bare `corepack enable` on Node 26.
+Node.js 26 no longer bundles corepack. To install pnpm manually, run `npm install -g pnpm@11.28.2`.
 
-## Dual-repo update flow
+## Where dual-repo content comes from
 
-The recommended flow is "content repo validates → dispatch → theme repo builds":
+There are two primary methods for syncing dual-repo content:
 
-1. The content repo receives a push under `content/`, `config/`, `data/`, `assets/`, `public/`, etc.;
-2. Its `trigger-build.yml` calls `content-validate.yml`;
-3. On success it sends `repository_dispatch` with event `content-updated` and a `sha` payload;
-4. The theme repo checks out that content revision and runs `pnpm build`;
-5. The selected option deploys to Vercel, GitHub Pages, a server, or a platform deploy hook.
+- **Host builds**: the host uses `CONTENT_REPO_URL` to fetch the remote content repo; see [Content Sources](/en/guide/content-separation/content-sources/#common-scenarios).
+- **GitHub Actions builds**: content pushes trigger events, prompting the theme repo to check out content into `.content-src/` before building; see [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/).
 
-Use the official `.github/workflows/deploy.yml.example` in the theme repo and `.github/workflows/trigger-build.yml.example` in the content repo instead of hand-written simplified workflows. See [Cross-repo CI dispatch](/en/guide/content-separation/ci-dispatch/).
+To trigger host rebuilds after pushing to the content repo, see [Deployment Hooks](/en/guide/content-separation/deploy-hooks/).
 
-If the platform builds directly, use a [Deploy Hook](/en/guide/content-separation/deploy-hooks/): the content repo POSTs to the platform, which checks out the theme repo and builds. Hooks normally build the branch HEAD, not necessarily the exact triggering commit; use Actions dispatch when exact SHA builds matter.
+## Pre-flight checklist
 
-## Pre-deploy checklist
+- [ ] `site` points to production URL, and `base` matches actual subpath
+- [ ] Build command is explicitly set to `pnpm build`, not `astro build` or `npm run build`
+- [ ] Output directory is `dist`, containing the complete `dist/pagefind/` folder
+- [ ] Platform Node.js version meets requirements (Node 24 on EdgeOne, Node 26 elsewhere)
+- [ ] Platform builds are disabled and build commands cleared when Actions or local builds deliver `dist/`
+- [ ] Dual-repo setups have `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0` configured
+- [ ] `DISPATCH_TOKEN` is saved in the content repo, and `CONTENT_REPO_TOKEN` in the theme repo
 
-- [ ] `site` is the production domain and `base` matches the real path
-- [ ] Build command is `pnpm build`, not `astro build`
-- [ ] If delivering `dist/` via Actions or locally: Platform builds are disabled (Framework Preset = `Other`, Build Command cleared, Git auto-build disconnected)
-- [ ] Output is `dist` and includes `dist/pagefind/`
-- [ ] Platform Node version is supported: 24 on EdgeOne, 26 elsewhere
-- [ ] pnpm matches `pnpm@11.28.2`
-- [ ] Dual repo sets `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0`
-- [ ] `CONTENT_REPO_TOKEN` lives in the **theme repo**; `DISPATCH_TOKEN` lives in the **content repo**
+## Next steps
+
+Pick a target platform:
+
+- [Vercel](/en/guide/deploy/vercel/)
+- [Cloudflare Pages](/en/guide/deploy/cloudflare/)
+- [EdgeOne Pages](/en/guide/deploy/edgeone/)
+- [Netlify](/en/guide/deploy/netlify/)
+- [GitHub Pages](/en/guide/deploy/github/)
+- [Server](/en/guide/deploy/server/)
+- [Docker](/en/guide/deploy/docker/)
+- [Local build](/en/guide/deploy/local/)

@@ -4,43 +4,46 @@ createTime: 2026/08/31 21:52:00
 permalink: /en/guide/deploy/github/
 ---
 
-GitHub Pages allows free hosting integrated directly with your GitHub repository.
+This guide covers GitHub Pages platform configuration. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-> [!IMPORTANT]
-> **Exact Repository Matching**
-> The `base` path must match your GitHub repository name exactly (case-sensitive) and must include leading and trailing slashes (e.g. `/my-blog/`).
+GitHub Pages can host static websites at zero cost, but involves specific trade-offs when deploying Shirone:
 
-## Step 1: Configure site and base
+- Deploying to a repository subpath `*.github.io/<repo>` requires setting `base`, which prefixes all internal paths;
+- Builds run on GitHub Actions; public runners take noticeably longer than Vercel or EdgeOne;
+- Published artifacts are capped at 1 GB total;
+- Network performance from mainland China can be unstable.
 
-Edit `src/config/siteConfig.ts`:
+If your code already resides on GitHub, Pages remains a practical option.
 
-**Scenario A: Deploying to `https://<username>.github.io`**
+## Step 1: set site and base
+
+Edit `src/config/siteConfig.ts`. In dual-repo mode, edit `config/site.yaml` in the content repo.
+
+**Deploying to root domain `https://<username>.github.io`**
 
 ```ts title="src/config/siteConfig.ts"
 export const siteConfig = {
   site: 'https://<username>.github.io',
   base: '/',
-  // ...
 }
 ```
 
-**Scenario B: Deploying to `https://<username>.github.io/<repo>`**
+**Deploying to repository subpath `https://<username>.github.io/<repo>`**
 
 ```ts title="src/config/siteConfig.ts"
 export const siteConfig = {
   site: 'https://<username>.github.io/<repo>',
   base: '/<repo>',
-  // ...
 }
 ```
 
-::: warning Impact of base
-When `base` is configured, internal links, RSS, Sitemap, and open graph assets will use this prefix. Always rebuild the project after modifying `base`.
-:::
+`base` must match the repository name exactly (including character casing), and must include leading and trailing slashes.
 
-## Step 2: Create GitHub Actions Workflow
+> Rebuild the site after modifying `base`. This parameter directly determines link paths, RSS feeds, sitemap entries, and social share images.
 
-Create `.github/workflows/deploy.yml`:
+## Step 2: create the workflow
+
+Create `.github/workflows/deploy.yml` in your repository root:
 
 ```yaml title=".github/workflows/deploy.yml"
 name: Deploy to GitHub Pages
@@ -63,28 +66,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 11.28.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 26
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
 
-      - name: Build
-        run: pnpm build
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -95,44 +91,53 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
 ```
 
-## Step 3: Enable Pages
+Neither `node-version: 26` nor `pnpm/action-setup` can be omitted, as the default GitHub Actions runner Node.js version does not satisfy the theme's minimum engine requirement.
 
-::: steps
+## Step 3: enable Pages
 
-1. In repository settings, navigate to **Settings → Pages**.
-2. Under **Build and deployment → Source**, select **GitHub Actions**.
-3. Push to `main` branch to trigger the deployment.
+1. Navigate to repository settings, click **Settings** -> **Pages**;
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**;
+3. Push a commit to `main`, and verify the workflow completes under the **Actions** tab.
 
-:::
+Once completed, the site becomes accessible at `https://<username>.github.io/<repo>`.
 
-## Custom Domains
+## Custom domain
 
-::: steps
+1. Enter your custom domain under **Settings** -> **Pages** -> **Custom domain** and save;
+2. Add a `CNAME` record in your DNS provider pointing to `<username>.github.io`;
+3. Check **Enforce HTTPS** to ensure secure traffic;
+4. In your configuration, set `base` back to `/` and update `site` to the custom domain.
 
-1. Set your domain in **Settings → Pages → Custom domain**.
-2. Add a `CNAME` record pointing to `<username>.github.io` at your DNS provider.
-3. Enable **Enforce HTTPS**.
-4. When using a custom domain at root level, set `base` back to `/` and update `site` in `siteConfig.ts`.
+## Dual-repo setup
 
+Following content updates, the content repo workflow dispatches an event to the theme repo, which fetches the content commit SHA before running the build. See [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/); use Variant B of `deploy.yml.example` for the deploy configuration.
 
-:::
-## FAQ
+Required repository secrets:
+
+- Content repo: `DISPATCH_TOKEN`;
+- Theme repo: `CONTENT_REPO_TOKEN`.
+
+## Troubleshooting
 
 ::: collapse
-- Blank page or 404 on asset files
+- Pages render blank or static assets return 404
 
-  Ensure `base` in `siteConfig.ts` matches your GitHub repository name exactly (including casing).
+  `base` does not match the actual deployed subpath. Confirm that `base` matches the repository name exactly, clear build caches, and redeploy.
 
-- GitHub Actions workflow timeout
+- Actions builds time out
 
-  Incorporate build cache into your workflow (refer to `.github/workflows/deploy.yml.example` caching `.astro` and thumbnail directories) to accelerate subsequent builds.
+  Shirone contains extensive optimization steps. Refer to the `actions/cache` configuration in `deploy.yml.example` to cache thumbnails and reduce subsequent build times.
 
-- How to deploy in Dual-Repo mode
+- Search is non-functional
 
-  Refer to `.github/workflows/deploy.yml.example` Option B: the content repo triggers theme repo builds via `repository_dispatch` with event `content-updated`. Put `CONTENT_REPO_TOKEN` in the theme repo and `DISPATCH_TOKEN` in the content repo; site config belongs in the content repo's `config/site.yaml`, rather than `src/config/siteConfig.ts`.
+  Ensure that `dist/pagefind/` exists in the output directory, and that `actions/upload-pages-artifact` uploads the complete `dist/` tree.
 :::
+
+## Next steps
+
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers
+- [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/): set up automated dual-repo deployment

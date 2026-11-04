@@ -1,61 +1,44 @@
 ---
-title: 服务器部署
+title: 部署到服务器
 createTime: 2026/08/31 21:55:00
 permalink: /guide/deploy/server/
 ---
 
-将 Shirone 部署到自己的服务器，可以获得最大的控制权：自定义缓存策略、无平台构建额度限制、与现有服务共用资源。
+本文介绍自建服务器的静态托管设置。构建位置选择与发布频率规划，详见[部署总览](/guide/deploy/overview/)。
 
-::: tip 适合谁
-有一台自己的服务器、能接受少量命令行操作的用户。如果你希望推送代码后由平台完成构建和发布，可以看 [Vercel](/guide/deploy/vercel/) 或 [EdgeOne Pages](/guide/deploy/edgeone/)，它们的配置更少。
-:::
+该方案适合已持有云服务器或 VPS、并具备基础命令行运维习惯的用户。服务器仅负责提供静态资源托管服务，完整的站点构建流程推荐在本地开发机或 GitHub Actions 中执行。
 
-## 部署思路
-
-Shirone 构建产物是**纯静态文件**。服务器部署只涉及两件事：
-
-1. 把 `dist/` 目录放到服务器上
-2. 用 Nginx（或其他 Web 服务器）对外提供访问
-
-构建可以在本地、CI 或服务器上完成。本页以「本地构建 + rsync 上传」为主，这种方式对服务器压力较小，也更容易排查问题。
-
-## 第一步：本地构建
+## 第一步：构建
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
+pnpm preview   # 本地访问 http://localhost:4321 校验产物
 ```
 
-产物位于 `dist/`。部署前先本地预览确认无误：
+双仓模式下需预先配置内容源，详见[内容源配置](/guide/content-separation/content-sources/)。
 
-```bash
-pnpm preview   # http://localhost:4321
-```
-
-::: warning 部署前检查
-确认站点配置中的 `site` 已设置为正式域名（影响 RSS、Sitemap、OG 图），`base` 为 `/`。单仓模式改 `src/config/siteConfig.ts`；双仓模式优先改内容仓的 `config/site.yaml`，它会在构建时覆盖 `src/user/user-config.ts`。
-:::
+执行正式部署前，确保 `site` 已设置为正式域名，`base` 设定为 `/`。
 
 ## 第二步：上传产物
 
-**rsync（推荐，增量传输）**
+以下示例将产物同步至 `/var/www/shirone/dist/`，与后续的自动部署工作流模板保持一致。首次部署前需先在服务器上创建目标目录：
 
 ```bash
-rsync -avz --delete dist/ user@your-server:/var/www/shirone/
+ssh user@your-server "mkdir -p /var/www/shirone/dist"
 ```
 
-- `-a` 保留权限与时间戳，`-v` 显示进度，`-z` 压缩传输
-- `--delete` 同步删除远端多余文件，保证产物与本地一致
-
-**scp（无 rsync 环境时）**
+执行产物同步：
 
 ```bash
-scp -r dist/* user@your-server:/var/www/shirone/
+# 增量同步（推荐）
+rsync -avz --delete dist/ user@your-server:/var/www/shirone/dist/
+
+# 未安装 rsync 时的备用方案
+scp -r dist/* user@your-server:/var/www/shirone/dist/
 ```
 
-> [!IMPORTANT]
-> **Nginx 缓存策略关键准则**
-> HTML 文件必须配置 `Cache-Control: no-cache`，以便访客能实时拉取最新发布的文章；带哈希指纹的静态资源（`/assets/*`）则配置 1 年永久缓存。
+`--delete` 参数会自动清理服务器目录中多余的陈旧文件，保证线上文件与本地构建完全一致。上传时必须完整包含 `dist/pagefind/` 目录。
 
 ## 第三步：配置 Nginx
 
@@ -64,309 +47,121 @@ server {
     listen 80;
     server_name your-domain.com;
 
-    root /var/www/shirone;
+    root /var/www/shirone/dist;
     index index.html;
 
-    # 静态资源指纹化命名，可长期强缓存
+    # 包含哈希指纹的静态资源，启用长期缓存
     location /assets/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 
-    # Pagefind 搜索索引，内容更新才变化
+    # 搜索索引文件，随内容更新动态变动
     location /pagefind/ {
         expires 24h;
     }
 
-    # HTML 不缓存，保证内容更新即时可见
+    # HTML 文件禁止缓存，确保新发布的文章即刻可见
     location / {
         try_files $uri $uri/ =404;
         add_header Cache-Control "no-cache";
     }
 
-    # 开启压缩
     gzip on;
     gzip_types text/css application/javascript application/json image/svg+xml;
     gzip_min_length 1024;
 }
 ```
 
-测试并重载：
+测试并重新加载 Nginx 配置：
 
 ```bash
 nginx -t && systemctl reload nginx
 ```
 
-::: info 为什么不用 try_files 回退到 index.html？
-Shirone 是纯静态 SSG，每个页面都有对应的物理 HTML 文件，不存在客户端路由回退需求。`try_files $uri $uri/ =404` 让错误链接正确返回 404，对 SEO 更友好。
-:::
+Shirone 为纯静态博客，每个路由页面均有对应的实体 HTML 文件生成，无需像单页应用那样将 404 回退至 `index.html`。`try_files $uri $uri/ =404` 能够确保错误的失效链接返回符合规范的 404 状态码。
 
-## 第四步：启用 HTTPS
+## 第四步：HTTPS
 
 ```bash
-# Ubuntu/Debian
 apt install certbot python3-certbot-nginx
 certbot --nginx -d your-domain.com
 ```
 
-Certbot 会自动改写 Nginx 配置并设置证书自动续期定时任务。
+Certbot 会自动修改 Nginx 配置文件添加 SSL 监听段，并配置自动续期定时任务。
 
-## 自动化：部署脚本
+## 自动部署
 
-将构建与上传封装为脚本，避免重复敲命令：
+推荐使用主题仓内置的 `deploy.yml.example` 部署模板，无需自行编写精简工作流。
 
-```bash title="deploy.sh"
-#!/usr/bin/env bash
-set -euo pipefail
+1. 将模板复制为 `.github/workflows/deploy.yml`；
+2. 双仓模式下修改文件开头的 `CONTENT_REPOSITORY` 为个人内容仓；
+3. 取消文件末尾“变体 C：自有服务器”相关的注释代码；
+4. 在主题仓的 **Settings** -> **Secrets and variables** -> **Actions** 中添加以下密钥：
 
-REMOTE="user@your-server"
-DEST="/var/www/shirone"
+   | 密钥名称 | 对应内容说明 |
+   | --- | --- |
+   | `DEPLOY_HOST` | 服务器公网 IP 地址或解析域名 |
+   | `DEPLOY_USER` | 用于部署的系统用户，建议创建专用无提权账号 |
+   | `DEPLOY_SSH_KEY` | 用于 SSH 认证的私钥全文 |
+   | `DEPLOY_DIR` | 服务器站点根路径，例如 `/var/www/shirone`。模板会自动同步至 `$DEPLOY_DIR/dist/` |
 
-pnpm install --frozen-lockfile
-pnpm build
-rsync -avz --delete dist/ "$REMOTE:$DEST/"
-echo "Deployed at $(date '+%Y-%m-%d %H:%M:%S')"
-```
+双仓模式下还需准备两个方向相反的 GitHub 访问令牌：
 
-```bash
-chmod +x deploy.sh
-./deploy.sh
-```
+- 内容仓密钥：`DISPATCH_TOKEN`，需具备主题仓的 `Contents: Read and write` 权限；
+- 主题仓密钥：`CONTENT_REPO_TOKEN`，需具备内容仓的 `Contents: Read` 权限。
 
-## 进阶：CI 自动部署
+具体申请与绑定流程参阅[申请个人访问令牌](/guide/content-separation/pat/)。
 
-通过配置工作流，只要将代码或文章推送到仓库的 `main` 分支，即可全自动完成依赖安装、静态构建并通过 SSH 增量同步到服务器。
-
-### 1. 配置 GitHub 密钥
-
-在 GitHub 仓库中，进入 **Settings** -> **Secrets and variables** -> **Actions**，点击 **New repository secret** 配置以下敏感变量：
-
-| 密钥名 | 说明 | 示例值 |
-| :--- | :--- | :--- |
-| `SERVER_HOST` | 服务器公网 IP 或域名 | `1.2.3.4` 或 `vps.your-domain.com` |
-| `SERVER_PORT` | 服务器 SSH 端口（可选，默认 22） | `22` |
-| `SERVER_USER` | 用于部署的系统用户名（建议创建专用非 root 用户） | `deploy` |
-| `SERVER_SSH_KEY` | 用于部署的 SSH 私钥文本 | `-----BEGIN OPENSSH PRIVATE KEY----- ...` |
-| `SERVER_TARGET` | 服务器站点根目录绝对路径 | `/var/www/shirone` |
-
-> [!TIP] 双仓内容分离架构额外配置
-> 双仓模式下需要两个不同仓库的密钥，不要混淆：
-> - 内容仓：`DISPATCH_TOKEN`，对==主题代码仓==授予 `Contents: Read and write`，用于发送 `repository_dispatch`。
-> - 主题代码仓：`CONTENT_REPO_TOKEN`，对==私有内容仓==授予 `Contents: Read`，用于 checkout / 拉取内容。
->
-> 若使用 `config/site.yaml` 覆盖站点配置，记得它位于内容仓，`pnpm build` 会自动同步；单仓才直接改 `src/config/siteConfig.ts`。
-
----
-
-### 2. 服务器权限与密钥配置
-
-为了保障服务器安全，建议创建专用的低权限 `deploy` 用户并仅授权访问网站目录：
+### 准备部署用户和密钥
 
 ::: steps
-1. **创建部署专用用户并授权目录**
+
+1. **创建专用用户与目录**
 
    ```bash
-   # 1. 创建专门用于部署的系统用户（禁用密码登录）
    sudo adduser --disabled-password --gecos "" deploy
-
-   # 2. 创建站点根目录并分配所有权给 deploy 用户
-   sudo mkdir -p /var/www/shirone
+   sudo mkdir -p /var/www/shirone/dist
    sudo chown -R deploy:deploy /var/www/shirone
    ```
 
-2. **生成专用的部署 SSH 密钥对**
-
-   切换到 `deploy` 用户并生成专属密钥对：
+2. **生成 SSH 密钥对**
 
    ```bash
-   # 切换为 deploy 用户
    sudo su - deploy
-
-   # 生成无密码 SSH 密钥对
    ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/id_ed25519 -N ""
-
-   # 将公钥写入授权列表
    cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
    chmod 700 ~/.ssh
    chmod 600 ~/.ssh/authorized_keys
+   ```
 
-   # 查看并复制私钥内容（填入 GitHub Secret: SERVER_SSH_KEY）
+3. **获取私钥内容**
+
+   ```bash
    cat ~/.ssh/id_ed25519
    ```
+
+   将终端输出的私钥字符串完整复制，填入主题仓的 `DEPLOY_SSH_KEY` 仓库密钥中。
+
 :::
-
----
-
-### 3. 创建自动化工作流文件
-
-#### 模式一：双仓内容分离架构 <Badge text="官方推荐" type="tip" />
-
-在双仓模式下，由内容仓发送触发信号，主题代码仓执行拉取与部署：
-
-::: tabs
-@tab 内容仓库触发流
-```yaml title=".github/workflows/trigger-build.yml"
-name: Trigger Theme Build
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - "content/**"
-      - "config/**"
-      - "data/**"
-      - "assets/**"
-      - "public/**"
-      - "shirone.content.json"
-  workflow_dispatch:
-
-concurrency:
-  group: trigger-build
-  cancel-in-progress: true
-
-jobs:
-  validate:
-    uses: LyraVoid/Shirone/.github/workflows/content-validate.yml@main
-    with:
-      theme_repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
-      theme_ref: main
-
-  dispatch:
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch build event to theme repository
-        uses: peter-evans/repository-dispatch@v4
-        with:
-          token: ${{ secrets.DISPATCH_TOKEN }}
-          repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME # 替换为你的主题代码仓路径
-          event-type: content-updated
-          client-payload: '{"sha": "${{ github.sha }}"}'
-```
-
-@tab 主题代码仓部署流
-```yaml title=".github/workflows/deploy.yml"
-name: Deploy to Server (Decoupled)
-
-on:
-  push:
-    branches: [main]
-  repository_dispatch:
-    types: [content-updated]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: deploy
-  cancel-in-progress: true
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Theme Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.13.0
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Sync Private Content & Build
-        env:
-          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
-          CONTENT_REPO_REF: ${{ github.event.client_payload.sha || 'main' }}
-          BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
-        run: |
-          pnpm anime:sync --if-stale
-          pnpm build
-
-      - name: Deploy to Server via rsync
-        uses: easingthemes/ssh-deploy@v5
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-avz --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
-          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: ${{ secrets.SERVER_TARGET }}
-```
-:::
-
----
-
-#### 模式二：标准单仓架构
-如果你的文章与代码存放在同一个仓库中，直接在代码仓库新建 `.github/workflows/deploy.yml`：
-
-```yaml title=".github/workflows/deploy.yml"
-name: Deploy to Server
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.13.0
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Static Site
-        run: pnpm build
-
-      - name: Deploy to Server via rsync
-        uses: easingthemes/ssh-deploy@v5
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-avz --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
-          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: ${{ secrets.SERVER_TARGET }}
-```
 
 ## 常见问题
 
 ::: collapse
-- 更新后访问到旧内容
+- 更新推送后线上依然展示旧内容
 
-  排查顺序：rsync 是否成功（看脚本输出）→ Nginx `root` 路径是否正确 → 浏览器/CDN 缓存（HTML 已设置 `no-cache` 时不该出现）。
+  依次排查：rsync 同步命令是否正常执行完毕、Nginx 的 `root` 指向是否为真实产物目录、客户端浏览器或外部 CDN 是否强缓存了 HTML 响应。在 HTML 明确配置了 `no-cache` 的前提下，原因通常集中在目录指向或传输步骤。
 
-- 服务器上直接构建可以吗
+- 是否可以直接在服务器上执行构建
 
-  可以（服务器装 Node 26 + pnpm 后 `pnpm build`），但会占用大量 CPU 与内存，小规格 VPS 容易 OOM。推荐本地或 CI 构建，服务器只负责托管静态文件。
+  技术上可行，但服务器必须预装 Node 26 与匹配的 pnpm 版本，且全量构建涉及较多 CPU 与内存开销，在低规格 VPS 上容易触发 OOM 终止。强烈建议在本地机或 CI 环境中构建后仅分发 `dist/`。
 
-- 要不要用面板（宝塔 / 1Panel）
+- 使用宝塔面板或 1Panel 时如何配置
 
-  可以。创建静态站点后把 `dist/` 内容放到站点根目录即可，面板的 SSL 与缓存配置同样适用。需要保持的规则不变：根目录指向 `dist` 内容、HTML 不缓存、指纹化资源长缓存。
+  在面板中创建静态站点，将站点根目录指定为上传后的 `dist/` 所在路径。SSL 证书与反向代理均可沿用面板内置功能，核心运维规则保持一致：站点目录指向 `dist` 内容、HTML 禁用缓存、哈希静态资源启用长缓存。
 :::
+
+## 下一步
+
+- [部署总览](/guide/deploy/overview/)：对比其他托管平台
+- [跨仓自动构建](/guide/content-separation/ci-dispatch/)：配置双仓自动化部署

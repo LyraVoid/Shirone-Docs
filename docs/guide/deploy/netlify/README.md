@@ -4,41 +4,49 @@ createTime: 2026/08/31 21:51:00
 permalink: /guide/deploy/netlify/
 ---
 
-Netlify 是老牌静态托管平台，与 Vercel 定位相近：Git 推送自动构建、免费 SSL、每个 PR 自动生成预览链接。
+本文介绍 Netlify 平台的具体设置。构建位置选择与平台构建命令的开关说明，详见[部署总览](/guide/deploy/overview/)。
 
 ## 前置条件
 
-- 代码已托管在 GitHub / GitLab / Bitbucket / Azure DevOps
-- 站点配置中的 `site` 已设置为正式域名（单仓改 `src/config/siteConfig.ts`，双仓改内容仓的 `config/site.yaml`）
+- 代码已推送到 GitHub、GitLab、Bitbucket 或 Azure DevOps 仓库；
+- `site` 已设置为正式域名。单仓修改 `src/config/siteConfig.ts`，双仓修改内容仓的 `config/site.yaml`。
 
-::: tip 单仓 vs 双仓
-双仓模式需在 Netlify 环境变量中配置 `CONTENT_REPO_URL`（私有仓使用 `https://x-access-token:<TOKEN>@github.com/...` 形式）、可选的 `CONTENT_REPO_REF`，以及 `GIT_TERMINAL_PROMPT=0`。`pnpm build` 已包含 `content:sync`，构建命令保持 `pnpm build` 即可。
-:::
+双仓模式需在平台环境变量中声明 `CONTENT_REPO_URL`（私有仓需携带访问令牌）、可选的 `CONTENT_REPO_REF`，以及 `GIT_TERMINAL_PROMPT=0`。各变量定义详见[内容源配置](/guide/content-separation/content-sources/)。
 
 ## 方式一：控制台导入
 
 ::: steps
 
-1. 登录 [Netlify 控制台](https://app.netlify.com/)，点击 **Add a new site → Import an existing project**。
+1. **导入项目**
 
-2. 选择 Git 提供商并授权，从列表中选择你的 Shirone 仓库。
+   登录 [Netlify 控制台](https://app.netlify.com/)，依次点击 **Add a new site** -> **Import an existing project**。
 
-3. 确认构建设置：
+2. **选择代码仓库**
 
-   | 配置项 | 值 |
+   选择 Git 托管提供商并完成授权，选中 Shirone 仓库。
+
+3. **确认构建配置**
+
+   核对以下构建参数：
+
+   | 配置项 | 设定值 |
    | --- | --- |
    | Build command | `pnpm build` |
    | Publish directory | `dist` |
 
-4. 在 **Environment variables** 中添加 `NODE_VERSION = 26`（满足 Node.js ≥ 26.13.0）。
+4. **添加环境变量**
 
-5. 点击 **Deploy** 完成首次部署。
+   在 **Environment variables** 中添加 `NODE_VERSION = 26`。双仓模式需在此补充上述三个内容源环境变量。
+
+5. **执行部署**
+
+   点击 **Deploy** 按钮启动首次构建。
 
 :::
 
-## 方式二：netlify.toml 声明式配置
+## 方式二：netlify.toml
 
-在仓库根目录创建 `netlify.toml`，将构建配置固化到代码中，避免依赖控制台设置：
+将构建参数显式固化在仓库根目录下的配置文件中，避免强依赖控制台界面手动设置：
 
 ```toml title="netlify.toml"
 [build]
@@ -49,44 +57,45 @@ Netlify 是老牌静态托管平台，与 Vercel 定位相近：Git 推送自动
   NODE_VERSION = "26"
 ```
 
-提交后重新推送，Netlify 会自动读取该文件并应用配置。
+提交并推送到代码仓后，Netlify 会自动读取该文件并应用对应的构建规则。
 
-## 方式三：CLI 部署
+## 方式三：CLI
 
 ```bash
 pnpm add -g netlify-cli
-
-netlify login   # 按提示在浏览器中授权
-netlify init    # 关联 Git 仓库，自动生成 netlify.toml
-netlify deploy --build --prod   # 构建并部署到生产
+netlify login
+netlify init
+netlify deploy --build --prod
 ```
 
-`netlify init` 会向仓库添加部署密钥，此后 `git push` 即可触发自动构建。
+`netlify init` 会自动关联线上站点并配置部署公钥，之后执行 `git push` 即可触发平台自动构建。
 
-::: tip 已经构建好 dist 时的快速上传
-加上 `--build` 参数会让 Netlify CLI 在本地按配置再跑一次完整构建。如果你刚才已经运行过 `pnpm build`，直接上传现成产物更快：`netlify deploy --prod --dir=dist`（注意产物目录里必须包含 `dist/pagefind/` 搜索索引）。
+::: tip 已经构建好 dist 时
+`--build` 参数会命令 Netlify CLI 在本地重新执行一次完整构建。若本地已预先执行过 `pnpm build`，直接分发已有产物更为高效：
+
+```bash
+netlify deploy --prod --dir=dist
+```
+
+上传的产物目录中必须完整包含 `dist/pagefind/` 文件夹。
 :::
 
 ## 预览部署
 
-导入项目后，所有对非生产分支的推送、以及每个 Pull Request，都会自动生成独立的预览站点（`<branch>--<site-name>.netlify.app`）。写作时可以先把草稿推到分支，在预览链接中检查排版，再合并到 `main` 发布。
+导入项目后，推送到非主分支或针对仓库创建 Pull Request 均会自动生成独立的预览站点。可在将文章合并到 `main` 分支前，通过预览链接检查图文排版效果。
 
 ## 自定义域名
 
-::: steps
-
-1. **添加域名**：进入 **Site settings → Domain management → Add a domain**，输入你的域名。
-2. **配置 DNS**：按提示添加 DNS 记录（Netlify DNS 托管或外部 CNAME 均可）。
-3. **签发 SSL**：SSL 证书由 Let's Encrypt 自动签发与续期，无需手动操作。
-
-:::
+1. 进入项目设置，依次点击 **Site settings** -> **Domain management** -> **Add a domain**，输入目标域名；
+2. 按照页面提示在域名服务商处添加对应的 DNS 解析记录；
+3. SSL 证书将由 Let's Encrypt 自动签发并定期续期。
 
 ## 常见问题
 
 ::: collapse
-- 构建失败：pnpm 版本不符
+- 构建失败：pnpm 版本不匹配
 
-  `NODE_VERSION` 只控制 Node，不控制 pnpm。Netlify 优先读取 `package.json` 的 `packageManager`（本仓库为 `pnpm@11.28.2`），新构建镜像也可能通过 mise 安装 pnpm；若日志里的 pnpm 版本仍不匹配，直接改构建命令：
+  `NODE_VERSION` 仅指定 Node.js 版本。Netlify 默认优先读取 `package.json` 中的 `packageManager`（当前仓库锁定为 `pnpm@11.28.2`）。若版本依然不符，可将构建命令调整为：
 
   ```toml
   [build]
@@ -94,13 +103,20 @@ netlify deploy --build --prod   # 构建并部署到生产
     publish = "dist"
   ```
 
-  Node.js 26 已不再内置 corepack，`corepack enable` 会直接找不到命令。若必须用 corepack，先执行 `npm i -g corepack`，再 `corepack enable`。
+- 构建失败：找不到 `corepack` 命令
 
-- 构建产物体积超限
+  Node.js 26 不再内置 corepack。若需使用 corepack，可在构建命令前手动执行 `npm i -g corepack && corepack enable`，或直接通过 npm 全局安装 pnpm。
 
-  Netlify 单次部署限制产物 10k 文件、站点总大小视套餐而定。Shirone 的字体子集化与缩略图机制已尽量控制体积，若仍超限，检查 `public/` 中是否误放了原始大图。
+- 单次部署文件数超出平台上限
 
-- 国内访问速度
+  Netlify 对单次部署的文件总数与站点总大小设有上限。请核查 `public/` 目录下是否误放了未压缩的大体积原始图片。
 
-  Netlify 在中国大陆的访问质量不稳定。若你的主要读者在国内，建议优先考虑 [EdgeOne Pages](/guide/deploy/edgeone/)。
+- 中国大陆访问质量不稳定
+
+  Netlify 的边缘 CDN 在中国大陆的网络延迟存在波动。若博客读者主要位于国内，建议对比评估 [EdgeOne Pages](/guide/deploy/edgeone/)。
 :::
+
+## 下一步
+
+- [部署总览](/guide/deploy/overview/)：对比其他托管平台
+- [跨仓自动构建](/guide/content-separation/ci-dispatch/)：使用 GitHub Actions 构建并交付

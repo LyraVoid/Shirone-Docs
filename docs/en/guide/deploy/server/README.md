@@ -1,321 +1,167 @@
 ---
-title: Server Deployment
+title: Deploy to a Server
 createTime: 2026/08/31 21:55:00
 permalink: /en/guide/deploy/server/
 ---
 
-Deploying Shirone on your own VPS or dedicated server provides full control over caching headers, web server configurations, and storage.
+This guide covers server-side static hosting configuration. For decisions on build locations and deployment schedules, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Core Concept
+This approach suits users with a dedicated server or VPS who are comfortable with command-line administration. The server functions exclusively as a static file server; site builds run on your local machine or in GitHub Actions.
 
-Shirone produces pure static HTML, CSS, JavaScript, and asset files in `dist/`. Server deployment consists of:
-
-1. Copying `dist/` to your server.
-2. Serving files using Nginx or Caddy.
-
-## Step 1: Build Locally
+## Step 1: build
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
+pnpm preview   # verify locally at http://localhost:4321
 ```
 
-The output files are generated in `dist/`. Preview locally to confirm:
+For dual-repo setups, configure the content source first; see [Content Sources](/en/guide/content-separation/content-sources/).
+
+Before deploying, ensure `site` is set to your production domain and `base` is `/`.
+
+## Step 2: upload the output
+
+The commands below sync artifacts to `/var/www/shirone/dist/`, matching the automated deployment template. Create the directory on your server before initial deployment:
 
 ```bash
-pnpm preview
+ssh user@your-server "mkdir -p /var/www/shirone/dist"
 ```
 
-## Step 2: Upload Files to Server
-
-Using `rsync` over SSH:
+Sync artifacts:
 
 ```bash
-rsync -avz --delete dist/ user@your-server-ip:/var/www/shirone/
+# Incremental sync (recommended)
+rsync -avz --delete dist/ user@your-server:/var/www/shirone/dist/
+
+# Fallback when rsync is unavailable
+scp -r dist/* user@your-server:/var/www/shirone/dist/
 ```
 
-> [!IMPORTANT]
-> **Crucial Caching Rule**
-> Set `Cache-Control: no-cache` on HTML pages to ensure updates take effect immediately, while setting 1-year immutable caching on hashed assets under `/assets/*`.
+`--delete` removes extraneous files on the server to ensure consistency with local builds. Uploaded files must include the complete `dist/pagefind/` directory.
 
-## Step 3: Nginx Configuration
-
-Create an Nginx configuration file (e.g., `/etc/nginx/conf.d/shirone.conf`):
+## Step 3: configure Nginx
 
 ```nginx title="/etc/nginx/conf.d/shirone.conf"
 server {
     listen 80;
     server_name your-domain.com;
 
-    root /var/www/shirone;
+    root /var/www/shirone/dist;
     index index.html;
 
-    # Gzip compression
-    gzip on;
-    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
-
-    # Static asset caching
+    # Fingerprinted static assets: long-term caching
     location /assets/ {
         expires 1y;
-        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header Cache-Control "public, immutable";
     }
 
-    # SPA and clean URL routing fallback
+    # Search index: dynamic per content update
+    location /pagefind/ {
+        expires 24h;
+    }
+
+    # HTML files: no caching, ensuring immediate visibility for new posts
     location / {
-        try_files $uri $uri/ $uri.html /index.html =404;
+        try_files $uri $uri/ =404;
+        add_header Cache-Control "no-cache";
     }
 
-    error_page 404 /404.html;
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
 }
 ```
 
-Reload Nginx:
+Test and reload Nginx:
 
 ```bash
-sudo nginx -t
-sudo systemctl reload nginx
+nginx -t && systemctl reload nginx
 ```
 
-## Step 4: SSL Certificate
+Shirone is a static site where every route corresponds to a generated physical HTML file; 404 responses do not need single-page application fallback to `index.html`. Using `try_files $uri $uri/ =404` ensures invalid URLs return proper 404 HTTP status codes.
 
-Obtain a free Let's Encrypt certificate using Certbot:
+## Step 4: HTTPS
 
 ```bash
-sudo certbot --nginx -d your-domain.com
+apt install certbot python3-certbot-nginx
+certbot --nginx -d your-domain.com
 ```
 
-## Advanced: CI Automated Deployment (GitHub Actions)
+Certbot rewrites Nginx configuration to add SSL listeners and sets up automated certificate renewal tasks.
 
-Configure a GitHub Actions workflow to automatically install dependencies, build the static site, and perform incremental rsync over SSH on every push to `main`.
+## Automated deployment
 
-### 1. Configure GitHub Repository Secrets
+Use the theme repo's `deploy.yml.example` workflow template rather than writing custom workflows.
 
-In your GitHub repository, navigate to **Settings** -> **Secrets and variables** -> **Actions**, and add the following repository secrets:
+1. Copy the template to `.github/workflows/deploy.yml`;
+2. For dual-repo setups, update `CONTENT_REPOSITORY` to your content repo;
+3. Uncomment the section corresponding to "Variant C: your own server";
+4. Add the following repository secrets under **Settings** -> **Secrets and variables** -> **Actions**:
 
-| Secret Name | Description | Example Value |
-| :--- | :--- | :--- |
-| `SERVER_HOST` | Server public IP or domain name | `1.2.3.4` or `vps.your-domain.com` |
-| `SERVER_PORT` | Server SSH port (optional, default: 22) | `22` |
-| `SERVER_USER` | Deployment SSH user (dedicated non-root recommended) | `deploy` |
-| `SERVER_SSH_KEY` | SSH Private Key content (`id_ed25519`) | `-----BEGIN OPENSSH PRIVATE KEY----- ...` |
-| `SERVER_TARGET` | Absolute path to the web root directory | `/var/www/shirone` |
+   | Secret | Value |
+   | --- | --- |
+   | `DEPLOY_HOST` | Server public IP address or domain |
+   | `DEPLOY_USER` | Deployment system user (dedicated non-privileged account recommended) |
+   | `DEPLOY_SSH_KEY` | Full private key text |
+   | `DEPLOY_DIR` | Server web root, e.g., `/var/www/shirone`. The template syncs into `$DEPLOY_DIR/dist/` |
 
-> [!TIP] Content Separation Setup
-> Dual-repo mode needs two secrets in two different repositories:
-> - Content repo: `DISPATCH_TOKEN`, with `Contents: Read and write` on the ==theme repo==, used for `repository_dispatch`.
-> - Theme repo: `CONTENT_REPO_TOKEN`, with `Contents: Read` on the ==private content repo==, used to check it out.
->
-> Site config belongs in the content repo's `config/site.yaml`; only single-repo setups edit `src/config/siteConfig.ts` directly.
+Dual-repo setups also require two access tokens configured in opposite directions:
 
----
+- Content repo secret: `DISPATCH_TOKEN`, with `Contents: Read and write` on the theme repo;
+- Theme repo secret: `CONTENT_REPO_TOKEN`, with `Contents: Read` on the content repo.
 
-### 2. Server-Side Permissions & SSH Setup
+See [Access Tokens](/en/guide/content-separation/pat/) for token generation and configuration.
 
-For security, avoid using `root` directly. Set up a dedicated low-privilege `deploy` user:
+### Prepare the deploy user and key
 
 ::: steps
-1. **Create Dedicated Deployment User**
+
+1. **Create dedicated user and directory**
 
    ```bash
-   # Create a dedicated deployment user without password login
    sudo adduser --disabled-password --gecos "" deploy
-
-   # Create site directory and grant ownership
-   sudo mkdir -p /var/www/shirone
+   sudo mkdir -p /var/www/shirone/dist
    sudo chown -R deploy:deploy /var/www/shirone
    ```
 
-2. **Generate Dedicated Deployment SSH Key**
+2. **Generate SSH key pair**
 
    ```bash
-   # Switch to deploy user
    sudo su - deploy
-
-   # Generate passwordless Ed25519 key pair
    ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/id_ed25519 -N ""
-
-   # Append public key to authorized_keys
    cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
    chmod 700 ~/.ssh
    chmod 600 ~/.ssh/authorized_keys
+   ```
 
-   # Copy the private key content to SERVER_SSH_KEY Secret
+3. **Copy private key**
+
+   ```bash
    cat ~/.ssh/id_ed25519
    ```
+
+   Copy the entire private key output and paste it into the theme repo's `DEPLOY_SSH_KEY` secret.
+
 :::
 
----
-
-### 3. Create GitHub Actions Workflow File
-
-#### Mode 1: Dual-Repo Content Separation <Badge text="Recommended" type="tip" />
-
-In the decoupled dual-repo setup, the workflow coordinates between **Content Dispatch** and **Theme Deployment**:
-
-::: tabs
-@tab Content Repo Trigger
-```yaml title=".github/workflows/trigger-build.yml"
-name: Trigger Theme Build
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - "content/**"
-      - "config/**"
-      - "data/**"
-      - "assets/**"
-      - "public/**"
-      - "shirone.content.json"
-  workflow_dispatch:
-
-concurrency:
-  group: trigger-build
-  cancel-in-progress: true
-
-jobs:
-  validate:
-    uses: LyraVoid/Shirone/.github/workflows/content-validate.yml@main
-    with:
-      theme_repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
-      theme_ref: main
-
-  dispatch:
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch build event to theme repository
-        uses: peter-evans/repository-dispatch@v4
-        with:
-          token: ${{ secrets.DISPATCH_TOKEN }}
-          repository: YOUR_GITHUB_USERNAME/YOUR_THEME_REPO_NAME
-          event-type: content-updated
-          client-payload: '{"sha": "${{ github.sha }}"}'
-```
-
-@tab Theme Code Repo Deploy
-```yaml title=".github/workflows/deploy.yml"
-name: Deploy to Server (Decoupled)
-
-on:
-  push:
-    branches: [main]
-  repository_dispatch:
-    types: [content-updated]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: deploy
-  cancel-in-progress: true
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Theme Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.13.0
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Sync Private Content & Build
-        env:
-          CONTENT_REPO_URL: "https://x-access-token:${{ secrets.CONTENT_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/my-blog-content.git"
-          CONTENT_REPO_REF: ${{ github.event.client_payload.sha || 'main' }}
-          BILI_SESSDATA: ${{ secrets.BILI_SESSDATA }}
-        run: |
-          pnpm anime:sync --if-stale
-          pnpm build
-
-      - name: Deploy to Server via rsync
-        uses: easingthemes/ssh-deploy@v5
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-avz --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
-          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: ${{ secrets.SERVER_TARGET }}
-```
-:::
-
----
-
-#### Mode 2: Standard Monolithic Repository
-If your content and theme code live in the same repository, create `.github/workflows/deploy.yml`:
-
-```yaml title=".github/workflows/deploy.yml"
-name: Deploy to Server
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 26.13.0
-          cache: "pnpm"
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build Static Site
-        run: pnpm build
-
-      - name: Deploy to Server via rsync
-        uses: easingthemes/ssh-deploy@v5
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-avz --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SERVER_HOST }}
-          REMOTE_PORT: ${{ secrets.SERVER_PORT || '22' }}
-          REMOTE_USER: ${{ secrets.SERVER_USER }}
-          TARGET: ${{ secrets.SERVER_TARGET }}
-```
-
-## FAQ
+## Troubleshooting
 
 ::: collapse
-- Visiting old content after update
+- Site displays outdated content after updating
 
-  Check in sequence: verify rsync upload succeeded, verify Nginx `root` path points to the new `dist`, and clear browser cache (HTML should have `Cache-Control: no-cache`).
+  Check the following in order: verify that rsync completed without errors, confirm that Nginx `root` points to the correct directory, and ensure that browsers or intermediate CDNs are not aggressively caching HTML. With `no-cache` configured on HTML, issues usually stem from path configuration or transfer steps.
 
-- Can I build directly on the server
+- Can I build directly on the server?
 
-  Yes (with Node 26 and pnpm installed), but full builds consume significant CPU and memory. Small VPS instances may hit OOM. Building locally or via CI and copying static files to the server is recommended.
+  Yes, provided that Node 26 and matching pnpm are installed. However, site builds have significant CPU and memory footprints, which frequently trigger out-of-memory errors on smaller VPS instances. We recommend building locally or in CI and uploading only `dist/`.
 
-- Can I use management panels (1Panel / aaPanel)
+- How do I configure control panels like BaoTa or 1Panel?
 
-  Yes. Create a standard static website and place `dist/` contents into the site root directory. Keep the core rules: no-cache on HTML and 1-year immutable caching on hashed assets.
+  Create a static website within the panel and set its web root to the uploaded `dist/` directory. SSL certificates and reverse proxies can use standard panel controls. Core rules remain identical: point web root to `dist`, disable caching on HTML, and enable long caching for fingerprinted assets.
 :::
+
+## Next steps
+
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers
+- [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/): configure automated dual-repo deployment

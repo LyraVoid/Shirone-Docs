@@ -4,59 +4,26 @@ createTime: 2026/08/31 21:50:00
 permalink: /en/guide/deploy/vercel/
 ---
 
-Vercel requires little configuration: it builds on Git push, provides a global edge network and preview deployments, and its free tier is usually enough for a personal blog.
+This guide covers Vercel platform configuration. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Prerequisites
+Vercel can build directly from Git repositories, or receive prebuilt static `dist/` artifacts. Choose one workflow.
 
-- Code hosted on GitHub, GitLab, or Bitbucket
-- `site` set to your official domain (e.g., `https://your-domain.com`), keeping `base` as `/`. Single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo
+## Requirements
 
-::: tip Single Repo vs Dual Repo
-For single repository setups where content is located directly in `src/content/`, follow this guide directly. For dual repository setups using Shirone-Content, set these Vercel environment variables:
+- Source code is pushed to GitHub, GitLab, or Bitbucket;
+- `site` is set to your production domain (edit `src/config/siteConfig.ts` in single-repo mode, or `config/site.yaml` in the content repo).
 
-- `CONTENT_REPO_URL`: private repos use `https://x-access-token:<TOKEN>@github.com/...`
-- `CONTENT_REPO_REF`: optional, defaults to `main`
-- `GIT_TERMINAL_PROMPT`: `0`
-
-`pnpm build` already runs `content:sync`; keep the build command as `pnpm build`.
-:::
-
-## Choose the build location first
-
-Vercel supports two setups. Pick one:
-
-| Setup | Who builds | How the content repo triggers it | Vercel configuration |
-| --- | --- | --- | --- |
-| Git integration / Deploy Hook | Vercel builder | Content repo POSTs `VERCEL_DEPLOY_HOOK` | Set `CONTENT_REPO_URL`, `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT` |
-| GitHub Actions | Theme repo Actions | `repository_dispatch` event | Disable Vercel's Git auto-build; Actions runs `vercel deploy dist --prod` |
-
-Keeping both causes duplicate deployments. With Deploy Hook, Vercel builds the content branch HEAD. Use GitHub Actions when you need to build an exact commit.
-
-::: warning When choosing GitHub Actions mode, you must clear Vercel's build command
-Actions or CLI mode uploads pre-built pure static artifacts from `dist/` (without source code or `package.json`). If your Vercel project was previously connected to Git, the project settings might still retain the Framework Preset (`Astro`) and Build Command (`pnpm build`). Vercel will attempt to run the build again on the uploaded static files, resulting in an error:
-
-```text
-Error: Command "pnpm build" exited with 1
-```
-
-**Simply disconnecting the Git integration is not enough**: The Build Command is stored independently in project settings and will still trigger even without Git connected. You must go to **Settings -> Build & Output Settings** and update:
-
-| Setting | Value | Description |
-| --- | --- | --- |
-| Framework Preset | `Other` | Removes Astro project detection |
-| Build Command | Cleared and Override toggled OFF | Do not run any cloud build |
-| Output Directory | Cleared and Override toggled OFF | Serve uploaded directory directly as site root |
-
-After making these changes, re-run the Actions deployment. As long as `Running "vercel build"` no longer appears in the Vercel deployment log, the configuration is working correctly.
-:::
-
-## Method 1: Git Integration (Recommended)
+## Option 1: Git integration (the host builds)
 
 ::: steps
 
-1. Visit [vercel.com/new](https://vercel.com/new) and import your Shirone repository.
+1. **Import repository**
 
-2. Vercel will automatically detect the Astro project. Verify the build settings:
+   Visit [vercel.com/new](https://vercel.com/new) and import the Shirone repository.
+
+2. **Confirm build settings**
+
+   Vercel detects Astro and suggests default settings; confirm the following parameters:
 
    | Setting | Value |
    | --- | --- |
@@ -65,7 +32,9 @@ After making these changes, re-run the Actions deployment. As long as `Running "
    | Output Directory | `dist` |
    | Install Command | `pnpm install` |
 
-3. Expand **Environment Variables** and add variables directly on the import screen. For dual-repo mode, set at least `CONTENT_REPO_URL`; add `CONTENT_REPO_REF` if you need to pin a branch, and set `GIT_TERMINAL_PROMPT=0`. You can also use **Import .env** or add them later under **Deployments → Environments**.
+3. **Add environment variables**
+
+   Skip for single-repo mode. For dual-repo mode, expand **Environment Variables** and add:
 
    | Key | Value |
    | --- | --- |
@@ -73,54 +42,61 @@ After making these changes, re-run the Actions deployment. As long as `Running "
    | `CONTENT_REPO_REF` | `main` (optional) |
    | `GIT_TERMINAL_PROMPT` | `0` |
 
-   ![Adding environment variables on the Vercel import screen](/images/deploy/vercel/01-import-environment.png)
+   Public content repos can use `https://github.com/<OWNER>/<CONTENT_REPO>.git` directly without tokens.
 
-4. The Node.js version is not part of the import form. After the project is created, go to **Settings → General → Node.js Version** and select `26.x`. Vercel does **not** read a `NODE_VERSION` environment variable; it selects Node from project settings or `package.json` `engines.node`. This repo requires `>=26.13.0`, so Node 26 is selected automatically in most cases.
+4. **Select Node.js version**
 
-5. Click **Deploy**. The initial build takes approximately 2-5 minutes, producing a `*.vercel.app` domain.
+   After project initialization, navigate to **Settings** -> **General** -> **Node.js Version** and select `26.x`. Vercel does not read the `NODE_VERSION` environment variable.
 
-   ![Vercel project overview after deployment](/images/deploy/vercel/02-project-overview.png)
+5. **Deploy**
+
+   Click **Deploy**. Initial full site builds take approximately 2 to 5 minutes.
 
 :::
 
-Every subsequent push to the production branch (`main`) will trigger a production deployment. Pushes to other branches generate preview deployments for reviewing rendered articles before merging.
+![Environment variables on the Vercel import screen](/images/deploy/vercel/01-import-environment.png)
 
-## Change environment variables after deployment
+![Vercel project overview after deployment](/images/deploy/vercel/02-project-overview.png)
 
-If a variable was missed during import, or the token needs to change, open **Deployments** -> **Environments** in the project sidebar, choose the environment to edit (Production, Preview, or Development), and add or update the variables. Redeploy after saving so the new values are available to the build.
+Subsequent pushes to `main` trigger production deployments, while pushes to other branches generate preview deployments with isolated preview URLs.
 
-![Environments under Vercel Deployments](/images/deploy/vercel/03-environments.png)
+### Change environment variables later
 
-## Method 2: Vercel CLI
+If variables were omitted during setup or tokens need rotation, navigate to **Deployments** -> **Environments**, select Production, Preview, or Development, modify the value, and redeploy.
 
-Useful when you prefer not to authorize Git integrations or wish to deploy directly from your local terminal:
+![Environments under Deployments](/images/deploy/vercel/03-environments.png)
+
+## Option 2: deliver dist from Actions or a local build
+
+Build with GitHub Actions or locally, then upload static files directly to Vercel. See [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/) or [Local Build](/en/guide/deploy/local/).
+
+Before uploading, configure the Vercel project as pure static hosting:
+
+1. Go to **Settings** -> **Build & Output Settings**;
+2. Change **Framework Preset** to `Other`;
+3. Turn off the **Build Command** override switch and clear its text field;
+4. Turn off the **Output Directory** override switch and clear its text field;
+5. Navigate to **Settings** -> **Git**, and disconnect the repository or disable automatic deployments.
+
+Disconnecting Git alone is not sufficient; build commands remain stored in project settings and must be cleared manually.
+
+Deploy using the CLI:
 
 ```bash
-pnpm add -g vercel
-
-vercel          # First run: log in and link project
-vercel --prod   # Deploy to production
+pnpm dlx vercel@latest deploy dist --prod
 ```
 
-The CLI automatically detects the Astro configuration. When prompted `Want to override the settings? [y/N]`, choose `N`.
+Initial runs require logging in and linking your project.
 
-::: warning Note
-The CLI uploads the source code and runs the build on Vercel servers. If you only want to deploy pre-built local artifacts from `dist/`, refer to the Local Build guide.
-:::
+## Custom domain
 
-::: warning Ensure Vercel build is disabled before deploying dist
-Before deploying artifacts using `vercel deploy dist --prod`, verify that the project is configured as described above: Framework Preset set to `Other`, Build Command cleared, and Git auto-build disconnected. Many deployment failures occur because `pnpm build` remains in the project settings, causing the cloud environment to attempt building pure static artifacts again.
-:::
+1. Go to **Settings** -> **Domains** and bind your custom domain;
+2. Configure an `A` record pointing to `76.76.21.21`, or a `CNAME` record pointing to `cname.vercel-dns.com`;
+3. Once DNS propagation finishes, SSL certificates are issued automatically.
 
-## Custom Domains
+## vercel.json
 
-1. Go to **Settings → Domains** in your Vercel project and add your domain.
-2. Add an `A` record pointing to `76.76.21.21` or a `CNAME` record pointing to `cname.vercel-dns.com` at your DNS provider.
-3. Once DNS propagates, Vercel automatically provisions an SSL certificate.
-
-## Customizing via vercel.json
-
-The repository root includes `vercel.json` to customize platform behavior, such as caching static assets:
+The repository root includes a default `vercel.json` for configuring asset cache headers:
 
 ```json title="vercel.json"
 {
@@ -138,15 +114,24 @@ The repository root includes `vercel.json` to customize platform behavior, such 
 ## Troubleshooting
 
 ::: collapse
-- Build Failure: Unsupported Node Version
+- Deployment log reports `Command "pnpm build" exited with 1`
 
-  If the log reports `Unsupported engine` or syntax errors, check **Settings → General → Node.js Version** and select `26.x`. Setting a `NODE_VERSION` environment variable has no effect on Vercel.
+  The project uses artifact upload, but Vercel still attempts to run a build command. Follow Option 2 to clear Build Command and Output Directory, then redeploy. When logs no longer show `Running "vercel build"`, the setting is active.
 
-- Build Timeout
+- Build fails due to outdated Node version
 
-  Shirone build includes content synchronization, icon generation, thumbnail rendering, font subsetting, and Pagefind indexing. If builds timeout, enable build cache in Vercel settings or use GitHub Actions to build and deploy artifacts via `vercel deploy dist --prod`.
+  Go to **Settings** -> **General** -> **Node.js Version** and select `26.x`. Setting `NODE_VERSION` as an environment variable has no effect on Vercel.
 
-- Search Unavailable
+- Build times out
 
-  Pagefind indices are generated at `dist/pagefind/` at the end of `pnpm build`. Ensure this directory is included in your deployed artifacts.
+  Shirone builds encompass content synchronization, image optimization, font subsetting, and Pagefind search indexing. If builds time out repeatedly, build with GitHub Actions and upload prebuilt output instead; see [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/).
+
+- Search is non-functional
+
+  Ensure that the deployed directory includes the complete `dist/pagefind/` folder. Custom CI configurations often miss this directory due to file filters.
 :::
+
+## Next steps
+
+- [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/): build using Actions and deliver to Vercel
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers

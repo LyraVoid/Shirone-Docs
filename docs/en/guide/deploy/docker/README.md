@@ -4,16 +4,23 @@ createTime: 2026/08/31 21:56:00
 permalink: /en/guide/deploy/docker/
 ---
 
-Docker deployment fixes the build environment in an image. The same image can run on different servers, and version rollbacks and migrations do not depend on the host's Node version.
+This guide covers containerized deployment using Docker. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Multi-Stage Build Architecture
+Docker encapsulates build and runtime environments within a portable image, ensuring consistency across servers without depending on the host's local Node.js setup.
 
-Shirone is a static site. Containerization uses a multi-stage Docker build:
+## Image structure
 
-- **Build Stage**: Node 26 + pnpm environment executes `pnpm build` (including Pagefind search index generation).
-- **Runtime Stage**: Lightweight Nginx Alpine image serves static files from `dist/`, resulting in an image under 50 MB with no Node runtime overhead.
+Builds leverage multi-stage container builds:
 
-## Setup Files
+```mermaid
+flowchart LR
+    A["node:26-alpine<br/>build stage"] -->|copy dist/ only| B["nginx:alpine<br/>runtime stage"]
+```
+
+- Build stage: uses Node 26 and pnpm to run the full `pnpm build` pipeline;
+- Runtime stage: bundles only lightweight Nginx and static files, keeping image size below 50 MB with no Node runtime overhead.
+
+## Three files
 
 ### .dockerignore
 
@@ -24,26 +31,33 @@ dist
 .astro
 .vscode
 .github
+docs
+tests
+public/assets/moments/thumbnails
 ```
+
+Never exclude `scripts/`. `pnpm build` executes `scripts/content/sync.mjs` and font validation scripts during builds; missing this directory causes build failures.
 
 ### Dockerfile
 
 ```dockerfile title="Dockerfile"
-# Build Stage
+# Build stage
 FROM node:26-alpine AS builder
 
 WORKDIR /app
 
-# Node.js 25+ no longer bundles corepack; install the pinned pnpm directly
+# Node.js 26 no longer bundles corepack
 RUN npm install -g pnpm@11.28.2
 
+# Copy package manifests first to leverage layer caching
 COPY package.json pnpm-lock.yaml .npmrc ./
 RUN pnpm install --frozen-lockfile
 
+# Copy remaining source files and execute build
 COPY . .
 RUN pnpm build
 
-# Runtime Stage
+# Runtime stage
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -54,38 +68,41 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
+Separating dependency manifests from source code into two `COPY` operations ensures packages reinstall only when dependencies change. Day-to-day writing updates hit cached layers directly.
+
 ### nginx.conf
 
 ```nginx title="nginx.conf"
 server {
     listen 80;
-    server_name localhost;
-
+    server_name _;
     root /usr/share/nginx/html;
     index index.html;
 
     gzip on;
-    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
 
     location /assets/ {
         expires 1y;
-        add_header Cache-Control "public, max-age=31536000, immutable";
+        add_header Cache-Control "public, immutable";
+    }
+
+    location /pagefind/ {
+        expires 24h;
     }
 
     location / {
-        try_files $uri $uri/ $uri.html /index.html =404;
+        try_files $uri $uri/ =404;
     }
-
-    error_page 404 /404.html;
 }
 ```
 
-> [!WARNING]
-> **Memory Allocation for Build Stage**
-> Shirone runs font subsetting and search indexing during build. Allocate at least 4 GB RAM to Docker or pass `--memory=4g` to prevent out-of-memory (OOM) errors.
+> Font subsetting and Pagefind indexing cause memory usage to peak during builds. Allocate at least 4 GB of RAM to Docker.
 
-::: tip Dual-repo mode
-The Dockerfile above builds the current repo only. For Shirone-Content, pass `CONTENT_REPO_URL` to `pnpm build` at build time. Do not bake a token-bearing URL into `ARG`/`ENV`; use a BuildKit secret:
+## Dual-repo setup
+
+When building within container images, pass content source parameters to `pnpm build`. Never store URLs containing access tokens in `ARG` or `ENV` instructions to avoid exposing credentials in image layers. Use Docker BuildKit secrets:
 
 ```dockerfile
 # syntax=docker/dockerfile:1
@@ -95,53 +112,98 @@ RUN --mount=type=secret,id=content_repo_url \
 
 ```bash
 echo "https://x-access-token:<TOKEN>@github.com/<OWNER>/<CONTENT_REPO>.git" > .content-repo-url
-docker build --secret id=content_repo_url,src=.content-repo-url -t shirone:latest .
+docker build --secret id=content_repo_url,src=.content-repo-url -t shirone-blog .
 rm .content-repo-url
 ```
 
-Keep `scripts/` in the build context: `pnpm build` runs `scripts/content/sync.mjs` and the font checker.
-:::
+Alternatively, prebuild `dist/` in CI and serve it using a bare Nginx image.
 
-## Build and Run
+## Build and run
 
-::: steps
+```bash
+docker build -t shirone-blog .
 
-1. **Build Production Docker Image**
+docker run -d --name shirone-blog \
+  -p 8080:80 \
+  --restart unless-stopped \
+  shirone-blog
+```
 
-   Leverage multi-stage caching to build the lightweight static image:
-   ```bash
-   docker build -t shirone:latest .
-   ```
+Open `http://localhost:8080` to verify pages and search functionality.
 
-2. **Run Container in Background**
+### Docker Compose
 
-   Map container port 80 to host port 8080 with auto-restart policy:
-   ```bash
-   docker run -d -p 8080:80 --name shirone-blog shirone:latest
-   ```
+```yaml title="docker-compose.yml"
+services:
+  shirone:
+    build: .
+    image: shirone-blog:latest
+    container_name: shirone-blog
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+```
 
-3. **Verify Deployment**
+```bash
+docker compose up -d
+docker compose up -d --build   # rebuild and restart after content updates
+```
 
-   Open `http://localhost:8080` in your browser to confirm page loading and search indexing.
+## Update and roll back
 
-:::
+```bash
+git pull
+docker compose up -d --build
+```
 
-## FAQ
+Previous image builds remain on local disk. For rollbacks, tag the previous image ID and update `image` in the Compose file:
+
+```bash
+docker images                      # find previous image ID
+docker tag <OLD_IMAGE_ID> shirone-blog:rollback
+docker compose up -d               # ensure image points to shirone-blog:rollback
+```
+
+## Reverse proxy and HTTPS
+
+Production setups typically run Nginx or Caddy on the host machine to proxy container ports:
+
+```nginx title="host /etc/nginx/conf.d/blog.conf"
+server {
+    listen 443 ssl;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+SSL certificates can be managed automatically using certbot. See [Deploy to a Server](/en/guide/deploy/server/#step-4-https).
+
+## Troubleshooting
 
 ::: collapse
-- Build failure: `only-allow pnpm` or dependency installation error
+- Build fails with `only-allow pnpm`
 
-  Occurs when running `npm install` instead of pnpm, or when the pinned pnpm is missing. Follow the Dockerfile strictly: run `npm install -g pnpm@11.28.2` and `pnpm install --frozen-lockfile`. Node.js 25+ no longer bundles corepack, so a bare `corepack enable` will fail.
+  Dependencies were installed with npm, or pnpm does not match the pinned version. Adhere to the Dockerfile: run `npm install -g pnpm@11.28.2` followed by `pnpm install --frozen-lockfile`.
 
-- Out of Memory (OOM) during build phase
+- Out of memory during the build
 
-  Shirone performs automated font subsetting and Pagefind search indexing during build, requiring higher peak memory. Allocate at least 4 GB memory to Docker, or pass `--memory=4g` to `docker build`.
+  Allocate at least 4 GB of RAM to Docker, or invoke builds with `docker build --memory=4g`.
 
-- Search feature returns 404 on `/pagefind/*`
+- Search is non-functional
 
-  Pagefind indexes are compiled at the end of `pnpm build`. Ensure your build command is `pnpm build` and not bare `astro build` (which bypasses search indexing).
+  Check whether the build command was simplified to `astro build`. Running `astro build` alone skips the Pagefind index. Ensure `/pagefind/` exists in the output directory.
 
-- Should dynamic backend features like comments be embedded in this image
+- Can comment services be hosted inside the container?
 
-  Not recommended. Keep the static blog container completely stateless. Deploy dynamic backends (Twikoo, Waline) as separate microservice containers behind an Nginx reverse proxy.
+  Not recommended. Comment backends (Twikoo, Waline) should be deployed as independent services and proxied via path rules on the host Nginx, maintaining the stateless nature of the static blog container.
 :::
+
+## Next steps
+
+- [Deploy to a Server](/en/guide/deploy/server/): Nginx configuration, certificates, and automated deployment
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers

@@ -4,41 +4,49 @@ createTime: 2026/08/31 21:51:00
 permalink: /en/guide/deploy/netlify/
 ---
 
-Netlify is an established static hosting platform offering Git-based continuous deployment, free SSL certificates, and automated deploy previews for pull requests.
+This guide covers Netlify platform configuration. For decisions on build locations and managing platform build commands, see [Deployment Overview](/en/guide/deploy/overview/).
 
-## Prerequisites
+## Requirements
 
-- Code hosted on GitHub, GitLab, Bitbucket, or Azure DevOps
-- `site` set to your official domain (single repo: `src/config/siteConfig.ts`; dual repo: `config/site.yaml` in the content repo)
+- Source code is pushed to GitHub, GitLab, Bitbucket, or Azure DevOps;
+- `site` is set to your production domain (edit `src/config/siteConfig.ts` in single-repo mode, or `config/site.yaml` in the content repo).
 
-::: tip Single repo vs dual repo
-For dual-repo mode, set `CONTENT_REPO_URL` (private: `https://x-access-token:<TOKEN>@github.com/...`), optional `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0`. `pnpm build` already runs `content:sync`; keep the build command as `pnpm build`.
-:::
+For dual-repo setups, configure `CONTENT_REPO_URL` (with an access token for private repos), optionally `CONTENT_REPO_REF`, and `GIT_TERMINAL_PROMPT=0` as platform environment variables. See [Content Sources](/en/guide/content-separation/content-sources/).
 
-## Method 1: Netlify Dashboard
+## Option 1: import from the dashboard
 
 ::: steps
 
-1. Log in to the [Netlify App](https://app.netlify.com/) and click **Add a new site → Import an existing project**.
+1. **Import project**
 
-2. Select your Git provider, authorize Netlify, and select your Shirone repository.
+   Log into the [Netlify dashboard](https://app.netlify.com/) and click **Add a new site** -> **Import an existing project**.
 
-3. Confirm build settings:
+2. **Select repository**
+
+   Choose your Git provider, grant permissions, and select the Shirone repository.
+
+3. **Confirm build settings**
+
+   Verify the following parameters:
 
    | Setting | Value |
    | --- | --- |
    | Build command | `pnpm build` |
    | Publish directory | `dist` |
 
-4. Under **Environment variables**, add `NODE_VERSION = 26` (to satisfy Node.js ≥ 26.13.0).
+4. **Add environment variables**
 
-5. Click **Deploy** to start the initial build.
+   Add `NODE_VERSION = 26`. For dual-repo mode, configure the three content source variables as well.
+
+5. **Deploy**
+
+   Click **Deploy** to initiate the build.
 
 :::
 
-## Method 2: netlify.toml Configuration
+## Option 2: netlify.toml
 
-Create a `netlify.toml` file in your repository root to version-control build configurations:
+Commit build settings to the repository root to avoid relying on manual dashboard setup:
 
 ```toml title="netlify.toml"
 [build]
@@ -49,42 +57,45 @@ Create a `netlify.toml` file in your repository root to version-control build co
   NODE_VERSION = "26"
 ```
 
-Commit and push this file; Netlify will automatically detect and apply the configuration.
+Push this file to your repository; Netlify reads and applies these settings on the next build.
 
-## Method 3: Netlify CLI
+## Option 3: CLI
 
 ```bash
 pnpm add -g netlify-cli
-
-netlify login   # Authenticate via browser
-netlify init    # Link Git repo and generate configuration
-netlify deploy --build --prod   # Build and deploy to production
+netlify login
+netlify init
+netlify deploy --build --prod
 ```
 
-::: tip Fast upload when dist is already built
-Adding the `--build` flag makes the Netlify CLI run a full build locally according to configuration. If you have already executed `pnpm build`, directly uploading the existing artifacts is faster: `netlify deploy --prod --dir=dist` (ensure the output directory contains the `dist/pagefind/` search index).
+`netlify init` links the repository and installs a deploy key so subsequent `git push` commands trigger automatic builds.
+
+::: tip Already built locally?
+`--build` causes the Netlify CLI to re-run the entire build locally. If you already ran `pnpm build`, upload existing artifacts directly:
+
+```bash
+netlify deploy --prod --dir=dist
+```
+
+The uploaded directory must include the complete `dist/pagefind/` folder.
 :::
 
-## Preview Deployments
+## Preview deployments
 
-Every push to non-production branches and every pull request generates an isolated deploy preview URL (`<branch>--<site-name>.netlify.app`), allowing you to review article rendering before merging to `main`.
+After importing, pushes to non-production branches and Pull Requests automatically generate isolated preview sites. Push drafts to a branch, inspect layouts on the preview URL, and merge into `main` when verified.
 
-## Custom Domains
+## Custom domain
 
-::: steps
-
-1. Navigate to **Site settings → Domain management → Add a domain** and enter your domain name.
-2. Configure DNS records according to the instructions (Netlify DNS or external CNAME).
-3. SSL certificates are automatically provisioned and renewed via Let's Encrypt.
-
-:::
+1. Go to **Site settings** -> **Domain management** -> **Add a domain**, and enter your domain;
+2. Configure DNS records according to the Netlify console instructions;
+3. Let's Encrypt provisions and renews SSL certificates automatically.
 
 ## Troubleshooting
 
 ::: collapse
-- Build Failure: Package Manager Mismatch
+- Build fails with a pnpm version mismatch
 
-  `NODE_VERSION` controls Node, not pnpm. Netlify reads `package.json` `packageManager` (this repo pins `pnpm@11.28.2`), and newer images may install pnpm via mise. If the log still shows a mismatched pnpm, change the build command:
+  `NODE_VERSION` specifies only the Node.js runtime. Netlify prefers reading `packageManager` in `package.json` (this repository locks to `pnpm@11.28.2`). If versions still mismatch, adjust the build command in `netlify.toml`:
 
   ```toml
   [build]
@@ -92,9 +103,20 @@ Every push to non-production branches and every pull request generates an isolat
     publish = "dist"
   ```
 
-  Node.js 26 no longer bundles corepack, so bare `corepack enable` fails. If you must use corepack, run `npm i -g corepack` first.
+- Build fails because `corepack` is missing
 
-- Artifact Size Limits
+  Node.js 26 no longer bundles corepack. Run `npm i -g corepack && corepack enable` prior to invocation, or install pnpm globally with npm directly.
 
-  Netlify limits deployments to 10,000 files. Shirone performs font subsetting and thumbnail compression automatically. If file count remains high, check `public/` for unoptimized raw assets.
+- Too many files in a single deployment
+
+  Netlify enforces limits on file counts and site size per deployment. Check `public/` to ensure uncompressed high-resolution images are not included inadvertently.
+
+- High latency from mainland China
+
+  Netlify CDN edge routing from mainland China can fluctuate. If most of your readership is in China, consider [EdgeOne Pages](/en/guide/deploy/edgeone/).
 :::
+
+## Next steps
+
+- [Deployment Overview](/en/guide/deploy/overview/): compare other hosting providers
+- [Cross-Repo CI](/en/guide/content-separation/ci-dispatch/): build using GitHub Actions and deliver
