@@ -73,10 +73,13 @@ The following instructions walk through creating `DISPATCH_TOKEN` (which require
 
 ## Store it in the repository
 
-Access tokens should never be stored in repository files. Store them as repository secrets in GitHub Actions:
+Tokens must be saved in your GitHub repository Actions secrets rather than in project files:
 
 1. Open the target repository, navigate to **Settings** -> **Secrets and variables** -> **Actions**;
-2. Click **New repository secret**;
+2. Click the **New repository secret** button;
+
+![Navigating to repository settings and creating an Actions secret](/images/content-separation/04-deploy/01-dispatch/09-repository-secrets.png)
+
 3. Name it `DISPATCH_TOKEN` or `CONTENT_REPO_TOKEN`, and paste the token string;
 4. Click **Add secret** to save.
 

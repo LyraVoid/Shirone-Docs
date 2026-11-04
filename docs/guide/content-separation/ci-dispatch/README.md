@@ -87,13 +87,13 @@ jobs:
 
 ## 第三步：启用主题仓部署流水线
 
-在主题仓根目录下执行：
+在主题仓根目录下执行复制命令，去掉文件结尾的 `.example` 后缀：
 
 ```bash
 cp .github/workflows/deploy.yml.example .github/workflows/deploy.yml
 ```
 
-将文件开头的 `CONTENT_REPOSITORY` 替换为您个人的内容仓地址：
+首先修改文件开头的 `CONTENT_REPOSITORY`，替换为你个人的内容仓库地址：
 
 ```yaml title=".github/workflows/deploy.yml（需修改部分）"
 env:
@@ -101,20 +101,103 @@ env:
   CONTENT_WORKING_COPY: .content-src
 ```
 
-随后处理文件末尾的部署步骤。模板预设了四种常见方案，取消注释对应方案即可，其余方案保持注释状态：
+随后打开该文件滑动到最底部。模板末尾预置了四种发布方式的代码片段（默认带有 `#` 注释）。请根据你的部署目标选择其中一种，**删掉对应方案前面的 `#` 注释符启用它，并保持其他方案为注释状态**。
 
-| 变体 | 适用场景 |
-| --- | --- |
-| 变体 A | 使用 `vercel deploy dist --prod` 直接交付预构建产物 |
-| 变体 B | 直接发布至 GitHub Pages |
-| 变体 C | 使用 rsync 同步至自建服务器 |
-| 变体 D | 调用托管平台的 Deploy Hook，交由平台执行构建 |
+### 方案 A：发布到 Vercel（直接交付打包网页）
 
-采用变体 A、B、C 时，托管平台仅充当纯静态托管服务，必须在平台控制台关闭平台自带的构建。
+适用于网站托管在 Vercel 平台，但希望由 GitHub Actions 在云端完成编译打包的场景。
 
-采用变体 D 时，托管平台需保留 `pnpm build` 命令，并配置 `CONTENT_REPO_URL`。
+```yaml title=".github/workflows/deploy.yml（方案 A）"
+      - name: Deploy to Vercel
+        run: |
+          pnpm dlx vercel@latest deploy dist --prod --yes \
+            --token "$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+```
 
-两种构建方式不可同时启用，否则单次推送会引发重复构建。各平台的具体设置见[部署总览](/guide/deploy/overview/)与[部署钩子](/guide/content-separation/deploy-hooks/)。
+- **需要配置的密钥 (Secrets)**：在主题仓的 Actions 设置中添加 `VERCEL_TOKEN`、`VERCEL_ORG_ID` 和 `VERCEL_PROJECT_ID`；
+- **平台设置要求**：进入 Vercel 控制台，在项目设置中清空 Build Command 并关闭自动构建，避免 Vercel 重复打包；
+- **详细参考**：[Vercel 部署指南](/guide/deploy/vercel/)。
+
+### 方案 B：发布到 GitHub Pages（免费静态托管）
+
+适用于直接使用 GitHub 提供的免费 Pages 静态网页托管服务。
+
+使用此方案时，先修改 `deploy.yml` 顶部的权限声明，加入 `pages: write` 与 `id-token: write`：
+
+```yaml title=".github/workflows/deploy.yml（顶部 permissions 需修改）"
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+```
+
+随后启用文件末尾对应的 Pages 发布步骤：
+
+```yaml title=".github/workflows/deploy.yml（方案 B）"
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+- **平台设置要求**：在主题代码仓的 Settings -> Pages 页面中，将构建来源（Source）选择为 `GitHub Actions`；
+- **详细参考**：[GitHub Pages 部署指南](/guide/deploy/github/)。
+
+### 方案 C：发布到个人服务器 / VPS（通过 rsync 增量同步）
+
+适用于拥有自己的云服务器或 VPS，并通过 Nginx 提供静态网页访问的场景。
+
+```yaml title=".github/workflows/deploy.yml（方案 C）"
+      - name: Deploy to server
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_DIR: /var/www/shirone
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
+            dist/ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_DIR/dist/"
+```
+
+- **需要配置的密钥 (Secrets)**：在主题仓添加 `DEPLOY_HOST`（服务器 IP）、`DEPLOY_USER`（创建好的用户名）、`DEPLOY_SSH_KEY`（私钥全文）与 `DEPLOY_DIR`（目标目录路径）；
+- **执行效果**：打包完成后通过 SSH 连接服务器，只将本次有变动的网页文件同步上去，并自动清除废弃的旧文件；
+- **详细参考**：[服务器部署指南](/guide/deploy/server/)。
+
+### 方案 D：通知托管平台自行打包（Deploy Hook）
+
+适用于使用 Netlify、EdgeOne 等自带在线打包能力的平台。
+
+在此方案中，GitHub 端不执行网站编译，直接向平台提供的 Webhook 网址发送通知，由平台拉取代码并打包：
+
+```yaml title=".github/workflows/deploy.yml（方案 D）"
+      - name: Trigger platform build
+        env:
+          DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 \
+            --max-time 30 --request POST "$DEPLOY_HOOK"
+```
+
+- **需要配置的密钥 (Secrets)**：在主题仓添加 `DEPLOY_HOOK`（平台给出的 Webhook 触发地址）；
+- **平台设置要求**：托管平台需保留 `pnpm build` 命令，并在平台控制台配置 `CONTENT_REPO_URL` 等环境变量以拉取内容；
+- **详细参考**：[部署钩子指南](/guide/content-separation/deploy-hooks/)。
+
+::: warning 注意
+采用方案 A、B、C 时，托管平台仅接收打包好的 `dist/` 文件，必须在平台关闭自带构建；采用方案 D 时，托管平台需保留构建命令。两套构建模式不能同时启用，否则单次推送会引发重复构建。
+:::
 
 ## 第四步：验证
 
@@ -134,9 +217,7 @@ env:
 
 ## 下一步
 
-- [CI/CD 工作流解析](/guide/development/workflows/)：深入了解工作流架构与质量校验防线
+- [自动打包与部署工作流](/guide/development/workflows/)：深入掌握完整工作流源代码与执行逻辑
 - [部署到服务器](/guide/deploy/server/)：通过 GitHub Actions 构建并增量同步到服务器
-
-[部署总览](/guide/deploy/overview/)：选择部署平台，完成站点上线。
-
-若不想维护 GitHub Actions，可改用[部署钩子](/guide/content-separation/deploy-hooks/)，让托管平台自行拉取构建。
+- [部署总览](/guide/deploy/overview/)：选择部署平台，完成站点上线
+- [部署钩子](/guide/content-separation/deploy-hooks/)：若不想维护 GitHub Actions，可交由托管平台自行拉取构建

@@ -73,11 +73,14 @@ permalink: /guide/content-separation/pat/
 
 ## 配置到仓库
 
-令牌明文不应保存在任何文件内，而是录入至 GitHub 仓库的 Actions 密钥中：
+申请到的令牌字符串需保存到 GitHub 仓库的 Actions 密钥中：
 
 1. 打开目标仓库，进入 **Settings** -> **Secrets and variables** -> **Actions**；
-2. 点击 **New repository secret**；
-3. 名称填写 `DISPATCH_TOKEN` 或 `CONTENT_REPO_TOKEN`，Secret 内容粘贴刚才复制的令牌字符串；
+2. 点击右上角的 **New repository secret** 按钮；
+
+![进入仓库设置并新建 Actions 密钥](/images/content-separation/04-deploy/01-dispatch/09-repository-secrets.png)
+
+3. **Name** 填写 `DISPATCH_TOKEN` 或 `CONTENT_REPO_TOKEN`，**Secret** 粘贴刚才复制的令牌字符串；
 4. 点击 **Add secret** 保存。
 
 详细配置位置与全流程说明请参阅[跨仓自动构建](/guide/content-separation/ci-dispatch/)。
