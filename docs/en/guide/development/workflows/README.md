@@ -259,6 +259,12 @@ jobs:
 - **Notify theme repo (Option 1)**: Transmits the commit version ID to the theme code repository so it pulls the exact new posts;
 - **Trigger platform directly (Option 2)**: Calls hosting platform deploy hooks directly if using platform builds.
 
+::: tip Skip validation to speed up Actions?
+The `validate` job clones the theme repo and installs dependencies on every push, usually taking one to two minutes. If you do not need this pre-check, comment out the `validate` job **and** the `needs: validate` line in the `dispatch` job together — leaving `needs: validate` referencing a commented-out job breaks the workflow.
+
+The workflow then reduces to a single notification step and usually finishes within seconds. The trade-off: invalid frontmatter or `config/` YAML no longer fails fast; the error surfaces mid-build on the theme repo Actions or the hosting platform instead — feedback slows from seconds to minutes, and each failure consumes a full build. To restore validation, uncomment both lines.
+:::
+
 ::: tip Deploy Hooks Note
 Besides notifying theme repo Actions, you can trigger deploy hooks if you host your site on Cloudflare Pages, Vercel, EdgeOne, or Netlify.
 
