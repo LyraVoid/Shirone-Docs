@@ -11,7 +11,7 @@ permalink: /guide/content-separation/pat/
 | `DISPATCH_TOKEN` | 主题仓 `Contents: Read and write` | **内容仓** | 通知主题仓启动自动构建 |
 | `CONTENT_REPO_TOKEN` | 内容仓 `Contents: Read` | **主题仓** | 供主题仓检出私有内容 |
 
-若仅使用部署钩子触发托管平台自身构建、不使用主题仓 Actions 构建，只需配置平台钩子密钥，无需使用 `DISPATCH_TOKEN`，详见[部署钩子](/guide/content-separation/deploy-hooks/)。
+若仅使用部署钩子触发托管平台自身构建、不使用主题仓 Actions 构建，只需配置平台钩子密钥，无需使用 `DISPATCH_TOKEN`，详见[部署钩子](/guide/content-separation/deploy-hooks/)。但内容仓为**私有仓库**时，仍需申请一个仅授予内容仓 `Contents: Read` 权限的令牌，拼入托管平台环境变量 `CONTENT_REPO_URL`（详见[内容源配置](/guide/content-separation/content-sources/)），否则平台构建机无法拉取内容仓。
 
 ## 申请步骤
 
@@ -72,6 +72,11 @@ permalink: /guide/content-separation/pat/
 :::
 
 ## 配置到仓库
+
+令牌的存放位置取决于部署方案：
+
+- **跨仓自动构建**：令牌保存到 GitHub 仓库的 Actions 密钥中（即下文步骤）；
+- **部署钩子 + 平台自身构建**：私有内容仓的只读令牌不经过 GitHub 密钥，直接拼入托管平台环境变量 `CONTENT_REPO_URL`，详见[内容源配置](/guide/content-separation/content-sources/)。
 
 申请到的令牌字符串需保存到 GitHub 仓库的 Actions 密钥中：
 

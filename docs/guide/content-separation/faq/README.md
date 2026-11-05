@@ -26,13 +26,17 @@ HttpError: Resource not accessible by integration
 
 ## 2. 平台构建报错：Authentication failed
 
-**现象**：Cloudflare Pages、Vercel 等托管平台在构建阶段拉取内容仓失败。
+**现象**：Cloudflare Pages、Vercel 等托管平台在构建阶段拉取内容仓失败，常见报错有两种：
 
 ```text
 fatal: Authentication failed for 'https://github.com/...'
 ```
 
-**原因**：`CONTENT_REPO_URL` 缺少访问令牌，或令牌已过期、未授予内容仓读取权限。
+```text
+fatal: could not read Username for 'https://github.com': terminal prompts disabled
+```
+
+**原因**：内容仓为私有仓库，而 `CONTENT_REPO_URL` 缺少访问令牌，或令牌已过期、未授予内容仓读取权限。第二种报错常见于 EdgeOne Pages 等构建机：Git 在无终端交互的环境下无法弹出账号提示，直接失败。
 
 **处理**：
 
@@ -47,7 +51,46 @@ fatal: Authentication failed for 'https://github.com/...'
 
 公开内容仓无需附带令牌。若内容仓为公开属性，请检查仓库地址是否误写成了 SSH 格式（平台构建机通常未预设对应私钥）。
 
-## 3. 改了 YAML 但页面没有变化
+## 3. 平台构建报错：403 Write access to repository not granted
+
+**现象**：平台构建拉取内容仓时失败：
+
+```text
+remote: Write access to repository not granted.
+fatal: unable to access 'https://github.com/用户名/内容仓名.git/': The requested URL returned error: 403
+```
+
+**原因**：报错文案有误导性，问题并不在「写权限」。通常是细粒度令牌（Fine-grained PAT）的 **Repository access** 未勾选**内容仓**（例如误选了主题仓，或仅选择了公开仓库范围），或 **Contents** 权限未设置。细粒度令牌的仓库范围与权限在创建后不可修改，只能重新生成。
+
+**处理**：
+
+1. 重新生成令牌：Repository access 仅勾选**内容仓**，权限设置为 `Contents: Read`；
+2. 本地先行验证，能列出引用（或空仓库时无输出但不报错）即通过：
+
+   ```bash
+   git ls-remote https://x-access-token:<TOKEN>@github.com/用户名/内容仓名.git
+   ```
+
+3. 更新平台环境变量 `CONTENT_REPO_URL` 中的令牌，重新构建。
+
+详细申请流程见[申请个人访问令牌](/guide/content-separation/pat/)。
+
+## 4. 平台构建报错：couldn't find remote ref main
+
+**现象**：平台构建拉取内容仓时失败：
+
+```text
+fatal: couldn't find remote ref main
+```
+
+**原因**：内容仓尚未推送任何提交（远程仓库为空，目标分支不存在），或 `CONTENT_REPO_REF` 指向了不存在的分支。
+
+**处理**：
+
+1. 确认内容仓已完成首次推送，远程存在构建分支；
+2. 核对 `CONTENT_REPO_REF` 与内容仓实际分支名一致（默认 `main`）。
+
+## 5. 改了 YAML 但页面没有变化
 
 **现象**：修改了 `config/site.yaml` 或其他配置文件后，本地预览或线上站点均未呈现预期变更。
 
@@ -81,7 +124,7 @@ fatal: Authentication failed for 'https://github.com/...'
 
 :::
 
-## 4. 新文章没有出现在列表里
+## 6. 新文章没有出现在列表里
 
 按以下顺序依次排查：
 
@@ -91,7 +134,7 @@ fatal: Authentication failed for 'https://github.com/...'
 4. 文章文件未存放在 `content/posts/` 目录下，或者文件名中包含未转义空格；
 5. 在主题仓中执行 `npx astro check`，排查是否存在必填 frontmatter 属性缺失。
 
-## 5. 删掉的文章仍然能访问
+## 7. 删掉的文章仍然能访问
 
 **原因**：本地构建产物或托管平台的构建缓存中残留了旧文件。
 
@@ -105,7 +148,7 @@ pnpm content:sync           # 重新执行同步
 
 托管平台出现同类问题时，清理平台构建缓存后重新部署即可。
 
-## 6. 图片和文件路径怎么写
+## 8. 图片和文件路径怎么写
 
 - 普通图片资源：使用相对路径 `./image.png`，或以网站根目录为基准的绝对路径 `/images/...`；
 - 内容仓内的相对路径规范与主题仓一致，在同步物化后会保持相对位置关系；
@@ -113,7 +156,7 @@ pnpm content:sync           # 重新执行同步
 
 其余标准 Markdown 语法不受内容分离影响。
 
-## 7. 构建成功，但平台部署报错
+## 9. 构建成功，但平台部署报错
 
 **现象**：主题仓 Actions 构建正常，托管平台的部署日志却报错：
 

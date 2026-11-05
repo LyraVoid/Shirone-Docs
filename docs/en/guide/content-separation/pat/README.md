@@ -11,7 +11,7 @@ The dual-repo setup uses at most two GitHub personal access tokens (PATs). They 
 | `DISPATCH_TOKEN` | Theme repo `Contents: Read and write` | **Content repo** | Notify the theme repo to trigger automated builds |
 | `CONTENT_REPO_TOKEN` | Content repo `Contents: Read` | **Theme repo** | Allow the theme repo to check out private content |
 
-If you only use a platform Deploy Hook and never build using theme repo Actions, you only need the platform hook secret. See [Deployment Hooks](/en/guide/content-separation/deploy-hooks/).
+If you only use a platform Deploy Hook and never build using theme repo Actions, you only need the platform hook secret. See [Deployment Hooks](/en/guide/content-separation/deploy-hooks/). However, if your **content repo is private**, you still need a token granting `Contents: Read` on the content repo, embedded into the platform environment variable `CONTENT_REPO_URL` (see [Content Sources](/en/guide/content-separation/content-sources/)); otherwise the platform build machine cannot fetch the content repo.
 
 ## Create a token
 
@@ -72,6 +72,11 @@ The following instructions walk through creating `DISPATCH_TOKEN` (which require
 :::
 
 ## Store it in the repository
+
+Where a token lives depends on your deployment strategy:
+
+- **Cross-repo CI builds**: save the token in GitHub repository Actions secrets (the steps below);
+- **Deploy Hook with platform-side builds**: the read-only token for a private content repo never passes through GitHub secrets — embed it directly into the platform environment variable `CONTENT_REPO_URL`. See [Content Sources](/en/guide/content-separation/content-sources/).
 
 Tokens must be saved in your GitHub repository Actions secrets rather than in project files:
 

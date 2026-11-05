@@ -136,6 +136,14 @@ The content repo root also contains a `shirone.content.json`, but that file only
 - Build fails with Authentication failed on private repository?
 
   Verify that the personal access token in `CONTENT_REPO_URL` has not expired and has `Contents: Read` permission enabled.
+
+- Fetching fails with `403 Write access to repository not granted`?
+
+  Usually the fine-grained token's Repository access does not include the content repo (or the Contents permission was never set). The message has nothing to do with write access — see the [FAQ](/en/guide/content-separation/faq/) for details.
+
+- Fetching fails with `couldn't find remote ref main`?
+
+  The content repo has not been pushed yet, or `CONTENT_REPO_REF` does not match the actual branch name. See the [FAQ](/en/guide/content-separation/faq/).
 :::
 
 ## Next steps

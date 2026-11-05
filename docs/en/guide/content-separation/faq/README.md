@@ -26,13 +26,17 @@ See [Access Tokens](/en/guide/content-separation/pat/) for detailed steps.
 
 ## 2. Host build fails: Authentication failed
 
-**Symptom**: Cloudflare Pages, Vercel, or other hosts fail to clone the content repo during builds.
+**Symptom**: Cloudflare Pages, Vercel, or other hosts fail to clone the content repo during builds. Two error messages are common:
 
 ```text
 fatal: Authentication failed for 'https://github.com/...'
 ```
 
-**Cause**: `CONTENT_REPO_URL` lacks an access token, or the token expired or lacks read access to the content repo.
+```text
+fatal: could not read Username for 'https://github.com': terminal prompts disabled
+```
+
+**Cause**: the content repo is private while `CONTENT_REPO_URL` lacks an access token, or the token expired or lacks read access to the content repo. The second message typically appears on build machines such as EdgeOne Pages: Git cannot prompt for credentials in a non-interactive environment and fails immediately.
 
 **Fix**:
 
@@ -47,7 +51,46 @@ fatal: Authentication failed for 'https://github.com/...'
 
 Public content repositories do not require access tokens. If the content repository is public, ensure the URL does not use SSH formatting (build containers usually have no SSH keys configured).
 
-## 3. YAML changed but the page did not
+## 3. Host build fails: 403 Write access to repository not granted
+
+**Symptom**: the platform build fails while fetching the content repo:
+
+```text
+remote: Write access to repository not granted.
+fatal: unable to access 'https://github.com/OWNER/CONTENT_REPO.git/': The requested URL returned error: 403
+```
+
+**Cause**: the message is misleading — the problem is not missing write access. Usually the fine-grained PAT's **Repository access** does not include the **content repo** (for example, the theme repo was selected by mistake, or the token only covers public repositories), or the **Contents** permission was never set. A fine-grained token's repository scope and permissions cannot be edited after creation; it must be regenerated.
+
+**Fix**:
+
+1. Generate a new token: scope **Repository access** to the **content repo** only, with `Contents: Read`;
+2. Verify locally first. Listing refs (or no output on an empty repo, without errors) means the token works:
+
+   ```bash
+   git ls-remote https://x-access-token:<TOKEN>@github.com/OWNER/CONTENT_REPO.git
+   ```
+
+3. Update the token inside the platform's `CONTENT_REPO_URL` variable and rebuild.
+
+See [Access Tokens](/en/guide/content-separation/pat/) for detailed steps.
+
+## 4. Host build fails: couldn't find remote ref main
+
+**Symptom**: the platform build fails while fetching the content repo:
+
+```text
+fatal: couldn't find remote ref main
+```
+
+**Cause**: the content repo has no commits yet (the remote repository is empty, so the target branch does not exist), or `CONTENT_REPO_REF` points to a non-existent branch.
+
+**Fix**:
+
+1. Confirm the content repo has been pushed at least once and the build branch exists remotely;
+2. Verify that `CONTENT_REPO_REF` matches the actual branch name (default `main`).
+
+## 5. YAML changed but the page did not
 
 **Symptom**: edits to `config/site.yaml` or other configuration files do not appear locally or in production.
 
@@ -81,7 +124,7 @@ Public content repositories do not require access tokens. If the content reposit
 
 :::
 
-## 4. A new post is missing from the list
+## 6. A new post is missing from the list
 
 Check the following in order:
 
@@ -91,7 +134,7 @@ Check the following in order:
 4. File is not placed directly under `content/posts/`, or the filename contains unescaped whitespace;
 5. Run `npx astro check` in the theme repo to detect missing required frontmatter properties.
 
-## 5. A deleted post is still reachable
+## 7. A deleted post is still reachable
 
 **Cause**: stale files remain in local build caches or the hosting platform's build cache.
 
@@ -105,7 +148,7 @@ pnpm content:sync           # re-sync content
 
 If this occurs on a hosting platform, clear its build cache and redeploy.
 
-## 6. How to write image and file paths
+## 8. How to write image and file paths
 
 - Standard image assets: use relative paths such as `./image.png`, or site-root absolute paths such as `/images/...`;
 - Relative path layouts in the content repo match the theme repo and preserve relative hierarchy after syncing;
@@ -113,7 +156,7 @@ If this occurs on a hosting platform, clear its build cache and redeploy.
 
 Other standard Markdown syntax is unaffected by content separation.
 
-## 7. Build succeeds but deployment fails
+## 9. Build succeeds but deployment fails
 
 **Symptom**: the theme repo's Actions build succeeds, but the host's deployment log reports:
 

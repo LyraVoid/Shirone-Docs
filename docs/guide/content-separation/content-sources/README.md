@@ -136,6 +136,14 @@ GIT_TERMINAL_PROMPT=0
 - 私有内容仓库构建时报错 Authentication failed？
 
   检查 `CONTENT_REPO_URL` 中的个人访问令牌（PAT）是否已过期，或者是否未勾选 `Contents: Read` 读取权限。
+
+- 拉取私有仓报 `403 Write access to repository not granted`？
+
+  多为细粒度令牌的 Repository access 未勾选内容仓（或未设置 Contents 权限）。该报错文案与写权限无关，排查步骤详见[常见问题](/guide/content-separation/faq/)。
+
+- 拉取报 `couldn't find remote ref main`？
+
+  内容仓还没有推送任何提交，或 `CONTENT_REPO_REF` 与实际分支名不一致，详见[常见问题](/guide/content-separation/faq/)。
 :::
 
 ## 下一步
