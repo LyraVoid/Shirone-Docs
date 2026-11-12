@@ -45,7 +45,7 @@ export const animeConfig = withUserConfig("anime", {
 | `enable` | `boolean` | `false` | 是否启用 Bangumi 同步提供方 |
 | `userId` | `string` | `""` | 你的 Bangumi 用户名（Username）或数字 UID |
 | `cover.mode` | `"remote" \| "local" \| "none"` | `"remote"` | 封面策略：`remote`（快照存远程链接，访客浏览器直接加载 bgm.tv 图片）、`local`（同步时下载到本地，随站点一起发布）、`none`（不显示封面） |
-| `cover.mirror` | `string` | `""` | 可选的封面镜像前缀（仅 `remote` 模式生效），用于自建反代或加速域名 |
+| `cover.mirror` | `string` | `""` | 可选的封面镜像前缀（仅 `remote` 模式生效），与完整封面 URL 直接拼接，支持反代或图片代理 |
 | `request.pageSize` | `number` | `50` | 单次分页请求条数（限制 10~100） |
 | `request.maxItems` | `number` | `100` | 最多拉取的条目上限 |
 | `request.minDelayMs` | `number` | `200` | 分页请求之间的间隔延迟（毫秒），避免触发平台限流 |
@@ -58,7 +58,7 @@ Bangumi 的封面配置与 Bilibili 对齐，但**默认值不同**：
 - **`local`**：同步时把每张封面下载到 `public/assets/anime/covers/bgm_{条目ID}.{jpg|png|webp}`，快照里存本地路径，图片随网站一起发布。适合追求页面完全不依赖第三方图床、或 bgm.tv 在目标访客地区访问较慢的场景。下载失败时会自动退回远程直链，封面不会缺位。
 - **`none`**：不加载封面，卡片显示主题渐变占位。
 
-与 Bilibili 的差异来源：B 站图床（`hdslb.com`）有严格的防盗链，直链会裂图，所以 Bilibili 提供方默认 `local`；Bangumi 图床没有这层限制，直链可用，因此默认 `remote`、按需本地化。
+与 Bilibili 的差异来源：B 站图床（`hdslb.com`）有 Referer 防盗链，直链需依赖前端 `no-referrer` 绕过且体积较大，所以 Bilibili 提供方默认 `local`（下载时还能压缩为 WebP）；Bangumi 图床没有这层限制，直链开箱即用，因此默认 `remote`、按需本地化。
 
 ## 调用的 API 端点
 
@@ -165,5 +165,5 @@ pnpm anime:sync --provider bangumi
 
 - 想让封面走自己的加速域名
 
-  保持 `cover.mode: "remote"`，并设置 `cover.mirror`（如 `https://your-proxy.example.com`）。Shirone 会把封面链接改写为 `镜像域名/原始路径` 的形式。
+  保持 `cover.mode: "remote"`，并设置 `cover.mirror`。它**与完整封面 URL 直接拼接**，路径式反代（如 `https://your-proxy.com/`）与查询式图片代理（如 `https://wsrv.nl/?url=`）都可以使用。
 :::

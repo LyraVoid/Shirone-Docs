@@ -232,7 +232,7 @@ Covers for both providers are configured via `cover.mode`: `local` (download to 
 
 | Provider | Default | Reason |
 | :--- | :--- | :--- |
-| Bilibili | `local` | The Bilibili image host (hdslb.com) enforces strict anti-hotlinking; external direct links break, so covers must be downloaded |
+| Bilibili | `local` | Hotlink protection on hdslb.com is bypassed by Shirone's built-in `no-referrer` (`remote` works too), but local caching adds WebP compression and zero third-party dependence — more robust |
 | Bangumi | `remote` | The bgm.tv image host has no hotlink protection, so direct links display fine; switch to `local` when needed |
 
 ```yaml title="config/anime.yaml"
@@ -247,9 +247,9 @@ providers:
       # mirror: "https://your-proxy.example.com"  # optional mirror prefix (remote mode)
 ```
 
-With `local` mode enabled, the sync script downloads cover images to `public/assets/anime/covers/` (file names prefixed with `bili_{ID}` and `bgm_{subjectId}` respectively), bundling them with your static assets. This completely avoids broken images caused by Bilibili's anti-hotlinking headers; Bilibili covers are also converted to smaller WebP files (the Bangumi image host does not support server-side conversion, so files are saved in their original format). Failed downloads fall back to the remote URL, so covers never go missing.
+With `local` mode enabled, the sync script downloads cover images to `public/assets/anime/covers/` (file names prefixed with `bili_{ID}` and `bgm_{subjectId}` respectively), bundling them with your static assets. Covers no longer depend on third-party image hosts' hotlink policies or uptime; Bilibili covers are also converted to smaller WebP files (the Bangumi image host does not support server-side conversion, so files are saved in their original format). Failed downloads fall back to the remote URL, so covers never go missing.
 
-With `remote` mode, the snapshot only stores image URLs and visitor browsers load them in real time. Cover visibility then depends on the image host being reachable — use `local` if you want zero third-party dependence.
+With `remote` mode, the snapshot only stores image URLs and visitor browsers load them in real time (Shirone's cover `<img>` tags carry `no-referrer`, which bypasses Bilibili's hotlink protection). Cover visibility then depends on the image host being reachable — use `local` if you want zero third-party dependence.
 
 ---
 

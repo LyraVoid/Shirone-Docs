@@ -49,7 +49,7 @@ export const animeConfig = withUserConfig("anime", {
 | --- | --- | --- | --- |
 | `vmid` | `string` | `""` | Bilibili numeric account UID (required) |
 | `sessdataEnv` | `string` | `"BILI_SESSDATA"` | Name of the environment variable holding private credentials |
-| `cover.mode` | `"local" \| "remote" \| "none"` | `"local"` | Cover image strategy: `local` (downloaded locally to prevent anti-hotlinking issues), `remote`, or `none` |
+| `cover.mode` | `"local" \| "remote" \| "none"` | `"local"` | Cover image strategy: `local` (downloaded locally, recommended), `remote` (direct links), or `none` |
 | `cover.useWebp` | `boolean` | `true` | Convert covers to lightweight WebP |
 | `request.pageSize` | `number` | `30` | Pagination page size |
 | `request.minDelayMs` | `number` | `300` | Delay between pagination requests in milliseconds |
@@ -106,12 +106,18 @@ export const animeConfig = withUserConfig("anime", {
 - `code: 0`: Success
 - `code: 53013` / `-401`: Target follow list is private; requires valid `SESSDATA`.
 
-### Anti-Hotlinking & Local Cover Caching
+### Cover Anti-Hotlinking & Loading Strategies
 
-Bilibili image servers (`hdslb.com`) enforce strict Referer policies that block external hotlinking. Setting `cover.mode: "local"` instructs Shirone to download covers to `public/assets/anime/covers/bili_{id}.webp` during build time:
+Bilibili image servers (`hdslb.com`) check the Referer header: requests carrying a **foreign site's Referer** get a 403, while requests with **no Referer at all** are served normally. Shirone's anime card `<img>` tags ship with `referrerpolicy="no-referrer"` built in, so `remote` mode (direct links) works out of the box — no mirror or proxy required.
 
-- **Zero broken images**: Assets are served from your own domain.
-- **Fast loading**: Converted to optimized WebP format.
+The two common modes:
+
+- **`local` (default, recommended)**: the sync script downloads covers to `public/assets/anime/covers/bili_{id}.webp` at sync time.
+  - **Fast loading**: compressed to lightweight WebP via Bilibili's CDN `@220w_280h.webp` parameter;
+  - **Zero third-party dependence**: covers ship with your site, immune to hotlink-policy changes or network hiccups — snapshots and images stay fully self-contained.
+- **`remote`**: the snapshot stores direct links only (auto-upgraded to HTTPS with the `@220w_280h.webp` compression parameter appended); visitor browsers load them live via `no-referrer`. Sync is faster and no image files land in your repo, but cover availability depends on the Bilibili image host being online.
+
+If the Bilibili image host is slow from your visitors' region, `remote` mode also supports the `cover.mirror` prefix — it is **concatenated directly with the full cover URL**, so both path-style proxies (e.g. `https://your-proxy.com/`) and query-style image proxies (e.g. `https://wsrv.nl/?url=`) work.
 
 ---
 

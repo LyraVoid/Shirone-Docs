@@ -45,7 +45,7 @@ export const animeConfig = withUserConfig("anime", {
 | `enable` | `boolean` | `false` | Whether to enable the Bangumi sync provider |
 | `userId` | `string` | `""` | Your Bangumi username or numeric UID |
 | `cover.mode` | `"remote" \| "local" \| "none"` | `"remote"` | Cover strategy: `remote` (snapshot stores the URL; visitor browsers load images from bgm.tv directly), `local` (downloaded during sync and shipped with the site), `none` (no covers) |
-| `cover.mirror` | `string` | `""` | Optional cover mirror prefix (remote mode only), for self-hosted proxies or CDN domains |
+| `cover.mirror` | `string` | `""` | Optional cover mirror prefix (remote mode only), concatenated directly with the full cover URL — proxies and image CDNs both work |
 | `request.pageSize` | `number` | `50` | Number of entries per page request (10 ~ 100) |
 | `request.maxItems` | `number` | `100` | Maximum total entries to fetch |
 | `request.minDelayMs` | `number` | `200` | Delay between pagination requests in milliseconds to prevent rate limiting |
@@ -58,7 +58,7 @@ The Bangumi cover configuration mirrors Bilibili's, but with a **different defau
 - **`local`**: During sync, each cover is downloaded to `public/assets/anime/covers/bgm_{subjectId}.{jpg|png|webp}` and the snapshot stores a local path, so images ship with the site. Best when you want zero dependence on a third-party image host, or when bgm.tv is slow in your visitors' region. If a download fails, the remote URL is kept as fallback so covers never go missing.
 - **`none`**: Covers are skipped; cards show a themed gradient placeholder.
 
-Why the difference from Bilibili: the Bilibili image host (`hdslb.com`) enforces strict Referer hotlink protection, so direct links break — hence Bilibili defaults to `local`. The Bangumi image host has no such restriction, so `remote` is the default and localization is opt-in.
+Why the difference from Bilibili: the Bilibili image host (`hdslb.com`) enforces Referer hotlink protection, so direct links rely on the frontend's built-in `no-referrer` bypass and full-size images are heavier — hence Bilibili defaults to `local` (which also compresses to WebP on download). The Bangumi image host has no such restriction, so direct links work out of the box and `remote` is the default with localization as opt-in.
 
 ## API Endpoints Used
 
@@ -165,5 +165,5 @@ pnpm anime:sync --provider bangumi
 
 - I want covers served from my own proxy domain
 
-  Keep `cover.mode: "remote"` and set `cover.mirror` (e.g. `https://your-proxy.example.com`). Shirone rewrites cover URLs into the form `mirror-domain/original-path`.
+  Keep `cover.mode: "remote"` and set `cover.mirror`. It is **concatenated directly with the full cover URL**, so both path-style proxies (e.g. `https://your-proxy.com/`) and query-style image proxies (e.g. `https://wsrv.nl/?url=`) work.
 :::

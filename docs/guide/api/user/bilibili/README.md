@@ -49,7 +49,7 @@ export const animeConfig = withUserConfig("anime", {
 | --- | --- | --- | --- |
 | `vmid` | `string` | `""` | 用户的 B 站数字 UID（必填） |
 | `sessdataEnv` | `string` | `"BILI_SESSDATA"` | 读取私密追番凭据的环境变量名称 |
-| `cover.mode` | `"local" \| "remote" \| "none"` | `"local"` | 封面策略：`local`（本地下载缓存，防盗链推荐）、`remote`（直连远程）、`none`（不加载封面） |
+| `cover.mode` | `"local" \| "remote" \| "none"` | `"local"` | 封面策略：`local`（本地下载缓存，推荐）、`remote`（直连远程直链）、`none`（不加载封面） |
 | `cover.useWebp` | `boolean` | `true` | 是否启用 WebP 格式压缩 |
 | `request.pageSize` | `number` | `30` | 分页大小 |
 | `request.minDelayMs` | `number` | `300` | 请求间隔延迟（毫秒） |
@@ -106,12 +106,18 @@ export const animeConfig = withUserConfig("anime", {
 - `code: 0`：请求成功
 - `code: 53013` 或 `-401`：追番列表被用户设置为私密，需要提供合法的 `SESSDATA`
 
-### 封面防盗链与本地化下载
+### 封面防盗链与加载策略
 
-B 站图片服务器（`hdslb.com`）对外部站点有严格的 Referer 防盗链校验。当 `cover.mode: "local"` 时，Shirone 同步脚本会在构建机上自动将图片下载到 `public/assets/anime/covers/bili_{id}.webp`：
+B 站图片服务器（`hdslb.com`）有 Referer 防盗链校验：请求头携带**外部站点 Referer** 时返回 403，但**不携带 Referer 时正常放行**。Shirone 的番剧卡片 `<img>` 标签内置了 `referrerpolicy="no-referrer"`，因此 `remote` 模式（直连远程直链）开箱即用，无需任何镜像或代理。
 
-- **零破图**：所有封面转为站内本地静态资源，不受防盗链限制。
-- **体积优化**：自动转为轻量 WebP 格式，加快页面首屏加载。
+两种常用模式：
+
+- **`local`（默认，推荐）**：同步脚本在构建机上把封面下载到 `public/assets/anime/covers/bili_{id}.webp`。
+  - **体积优化**：经 B 站 CDN 的 `@220w_280h.webp` 参数压缩为轻量 WebP，加快首屏加载；
+  - **零第三方依赖**：封面随站点一起发布，不受 B 站图床防盗链策略调整或网络波动影响，快照与图片完全自包含。
+- **`remote`**：快照只存封面直链（自动升级 HTTPS，并附加 `@220w_280h.webp` 压缩参数），访客浏览器凭 `no-referrer` 实时加载。同步更快、仓库不进图片文件，但封面可用性依赖 B 站图床在线。
+
+若访问 B 站图床较慢，`remote` 模式还支持 `cover.mirror` 镜像前缀——它**与完整封面 URL 直接拼接**，因此路径式反代（如 `https://your-proxy.com/`）与查询式图片代理（如 `https://wsrv.nl/?url=`）都可以使用。
 
 ---
 

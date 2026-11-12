@@ -232,7 +232,7 @@ pnpm anime:sync --if-stale && pnpm build
 
 | 平台 | 默认模式 | 原因 |
 | :--- | :--- | :--- |
-| Bilibili | `local` | B 站图床（hdslb.com）有严格的防盗链校验，外站直链会裂图，必须下载到本地 |
+| Bilibili | `local` | B 站图床（hdslb.com）的防盗链可由 Shirone 内置的 `no-referrer` 绕过（`remote` 亦可用），但本地化还能获得 WebP 体积压缩与零第三方依赖，更稳 |
 | Bangumi | `remote` | bgm.tv 图床没有防盗链，直链可以正常显示；需要时再改为 `local` |
 
 ```yaml title="config/anime.yaml"
@@ -247,9 +247,9 @@ providers:
       # mirror: "https://your-proxy.example.com"  # remote 模式可选镜像前缀
 ```
 
-使用 `local` 模式时，脚本会把封面图片下载到本地 `public/assets/anime/covers/`（文件名分别为 `bili_{ID}` 与 `bgm_{条目ID}` 前缀），随网站静态产物一起发布。这样可以彻底解决 B 站图片防盗链导致的裂图问题；B 站封面还会自动压缩为更省流量的 WebP 格式（Bangumi 图床不支持服务端转换，按原始格式保存）。下载失败时会自动退回远程直链，封面不会缺位。
+使用 `local` 模式时，脚本会把封面图片下载到本地 `public/assets/anime/covers/`（文件名分别为 `bili_{ID}` 与 `bgm_{条目ID}` 前缀），随网站静态产物一起发布。封面从此不依赖第三方图床的防盗链策略与网络状况；B 站封面还会自动压缩为更省流量的 WebP 格式（Bangumi 图床不支持服务端转换，按原始格式保存）。下载失败时会自动退回远程直链，封面不会缺位。
 
-使用 `remote` 模式时，快照里只保存图片链接，访客打开页面时浏览器实时加载。此时页面能否显示封面取决于图床当时是否可达，若追求完全不依赖第三方，请使用 `local`。
+使用 `remote` 模式时，快照里只保存图片链接，访客打开页面时浏览器实时加载（Shirone 的封面 `<img>` 自带 `no-referrer`，可绕过 B 站图床的防盗链）。此时页面能否显示封面取决于图床当时是否可达，若追求完全不依赖第三方，请使用 `local`。
 
 ---
 
