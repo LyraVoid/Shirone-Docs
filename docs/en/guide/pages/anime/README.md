@@ -92,6 +92,8 @@ Edit `src/data/anime.ts` directly (or `data/anime.ts` in your content repository
      bangumi:
        enable: true
        userId: "sai"   # Your Bangumi numeric UID or public username
+       cover:
+         mode: "remote"  # Covers: remote direct link (default) | local download | none
        request:
          pageSize: 50
          maxItems: 300
@@ -104,6 +106,7 @@ Edit `src/data/anime.ts` directly (or `data/anime.ts` in your content repository
      bangumi: {
        enable: true,
        userId: "sai",   // your Bangumi UID
+       cover: { mode: "remote" },
        request: { pageSize: 50, maxItems: 300, minDelayMs: 200 },
      },
    }
@@ -190,7 +193,7 @@ In a dual-repo (content separation) setup, users often ask: **"Why does my site 
 
 Displaying your external watchlist requires two actions:
 1. **Sync Configuration**: Bring `config/anime.yaml` from your content repo into the theme code repo;
-2. **Download Data**: Run the CLI sync command to fetch your watchlist and cover images from Bilibili or Bangumi to local storage.
+2. **Download Data**: Run the CLI sync command to fetch your watchlist from Bilibili or Bangumi to local storage (plus any covers configured as `local`).
 
 Simply saving a YAML file does not trigger network requests. You must execute the sync command to download data locally before building the site.
 
@@ -204,7 +207,7 @@ pnpm anime:sync --if-stale && pnpm build
 How this pipeline executes:
 1. `pnpm anime:sync --if-stale`:
    - Checks whether local cached files exist;
-   - **`--if-stale` cache check**: If local data is still fresh (default: 30 days, configurable via `snapshot.staleAfterDays`), it **skips network requests** and exits cleanly (exit 0) to avoid third-party rate limits. If data is expired or missing, it downloads your latest watchlist and cover images;
+   - **`--if-stale` cache check**: If local data is still fresh (default: 30 days, configurable via `snapshot.staleAfterDays`), it **skips network requests** and exits cleanly (exit 0) to avoid third-party rate limits. If data is expired or missing, it downloads your latest watchlist (and covers configured with `cover.mode: "local"`);
    - If no provider is configured, the command skips safely without interrupting the build.
 2. `&& pnpm build`:
    - Copies the latest articles and configuration files from your content repo;
@@ -217,23 +220,36 @@ How this pipeline executes:
 | `pnpm anime:sync --if-stale && pnpm build` | **Recommended**. Fetch expired data and build the site | GitHub Actions CI/CD, one-command publishing |
 | `pnpm anime:sync` | Force download watchlist data for all enabled providers | Initial setup, manual forced refresh |
 | `pnpm anime:sync --if-stale` | Download data only if cache has expired (> 30 days) | Local pre-check before preview |
-| `pnpm anime:sync --provider bangumi` | Force sync Bangumi data only | Debugging Bangumi sync |
-| `pnpm anime:sync --provider bilibili` | Force sync Bilibili data and cover images | Debugging Bilibili sync & covers |
+| `pnpm anime:sync --provider bangumi` | Force sync Bangumi data only (covers follow `cover.mode`) | Debugging Bangumi sync |
+| `pnpm anime:sync --provider bilibili` | Force sync Bilibili data (cover download included by default) | Debugging Bilibili sync & covers |
 | `pnpm anime:sync --provider all` | Force sync all supported providers | Comprehensive multi-platform check |
 
 ---
 
-## Cover Image Caching & Anti-Hotlinking
+## Cover Strategy (Local Caching & Anti-Hotlinking)
+
+Covers for both providers are configured via `cover.mode`: `local` (download to your site), `remote` (use external links directly), or `none` (no covers). **The defaults differ**:
+
+| Provider | Default | Reason |
+| :--- | :--- | :--- |
+| Bilibili | `local` | The Bilibili image host (hdslb.com) enforces strict anti-hotlinking; external direct links break, so covers must be downloaded |
+| Bangumi | `remote` | The bgm.tv image host has no hotlink protection, so direct links display fine; switch to `local` when needed |
 
 ```yaml title="config/anime.yaml"
 providers:
   bilibili:
     cover:
       mode: "local"   # "local" download into local assets (recommended) | "remote" | "none"
-      useWebp: true
+      useWebp: true   # Bilibili's CDN supports server-side WebP compression
+  bangumi:
+    cover:
+      mode: "remote"  # "remote" direct link (default) | "local" download into local assets | "none"
+      # mirror: "https://your-proxy.example.com"  # optional mirror prefix (remote mode)
 ```
 
-With `local` mode enabled, the sync script downloads cover images to `public/assets/anime/covers/`, bundling them with your static assets. This completely avoids broken images caused by Bilibili's anti-hotlinking headers and converts them to smaller WebP files.
+With `local` mode enabled, the sync script downloads cover images to `public/assets/anime/covers/` (file names prefixed with `bili_{ID}` and `bgm_{subjectId}` respectively), bundling them with your static assets. This completely avoids broken images caused by Bilibili's anti-hotlinking headers; Bilibili covers are also converted to smaller WebP files (the Bangumi image host does not support server-side conversion, so files are saved in their original format). Failed downloads fall back to the remote URL, so covers never go missing.
+
+With `remote` mode, the snapshot only stores image URLs and visitor browsers load them in real time. Cover visibility then depends on the image host being reachable — use `local` if you want zero third-party dependence.
 
 ---
 

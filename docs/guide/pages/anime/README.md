@@ -92,6 +92,8 @@ providers:
      bangumi:
        enable: true
        userId: "sai"   # 你的 Bangumi 数字 UID 或公开用户名
+       cover:
+         mode: "remote"  # 封面：remote 远程直链（默认）| local 下载到本地 | none
        request:
          pageSize: 50
          maxItems: 300
@@ -104,6 +106,7 @@ providers:
      bangumi: {
        enable: true,
        userId: "sai",   // 你的 Bangumi UID
+       cover: { mode: "remote" },
        request: { pageSize: 50, maxItems: 300, minDelayMs: 200 },
      },
    }
@@ -190,7 +193,7 @@ providers:
 
 这是因为把追番记录放到博客上分成了两步：
 1. **同步配置**：把内容仓里的 `config/anime.yaml` 同步到主题代码仓；
-2. **下载数据**：运行抓取命令，从 B 站或 Bangumi 把你的追番记录和封面图片下载到本地。
+2. **下载数据**：运行抓取命令，从 B 站或 Bangumi 把你的追番记录（以及配置为本地化的封面图片）下载到本地。
 
 单纯修改 YAML 文件并不会自动联网抓取数据。必须执行同步命令把数据拉到本地，再打包网站，页面才会更新为你自己的追番列表。
 
@@ -204,7 +207,7 @@ pnpm anime:sync --if-stale && pnpm build
 这一行命令的完整执行流程如下：
 1. `pnpm anime:sync --if-stale`：
    - 检查本地是否已有追番缓存文件；
-   - **`--if-stale` 缓存判断**：如果本地缓存还在有效期内（默认 30 天，可在配置中通过 `snapshot.staleAfterDays` 调整），就会**直接跳过网络请求**正常退出，避免频繁打包被 B 站或 Bangumi 限制访问；如果本地没有缓存或数据已过期，才会联网下载最新的追番列表与封面图片；
+   - **`--if-stale` 缓存判断**：如果本地缓存还在有效期内（默认 30 天，可在配置中通过 `snapshot.staleAfterDays` 调整），就会**直接跳过网络请求**正常退出，避免频繁打包被 B 站或 Bangumi 限制访问；如果本地没有缓存或数据已过期，才会联网下载最新的追番列表（以及配置为 `cover.mode: "local"` 的封面图片）；
    - 如果没有配置任何账号，命令会自动跳过，不影响打包流程。
 2. `&& pnpm build`：
    - 自动把内容仓的最新文章和配置文件同步到代码仓；
@@ -217,23 +220,36 @@ pnpm anime:sync --if-stale && pnpm build
 | `pnpm anime:sync --if-stale && pnpm build` | **推荐**。缓存过期时自动拉取，随后打包网站 | GitHub Actions 等云端部署、本地一键发布 |
 | `pnpm anime:sync` | 强制联网拉取所有已启用平台的追番数据 | 第一次配置追番、手动强制刷新数据 |
 | `pnpm anime:sync --if-stale` | 仅在缓存过期（超过 30 天）或缺失时拉取 | 本地预览前检查数据 |
-| `pnpm anime:sync --provider bangumi` | 仅强制同步 Bangumi 数据 | 单独调试 Bangumi |
-| `pnpm anime:sync --provider bilibili` | 仅强制同步 Bilibili 数据（含封面下载） | 单独调试 B 站与封面下载 |
+| `pnpm anime:sync --provider bangumi` | 仅强制同步 Bangumi 数据（封面按 `cover.mode` 处理） | 单独调试 Bangumi |
+| `pnpm anime:sync --provider bilibili` | 仅强制同步 Bilibili 数据（默认含封面下载） | 单独调试 B 站与封面下载 |
 | `pnpm anime:sync --provider all` | 强制同步所有支持的平台 | 多平台合并检查 |
 
 ---
 
-## 封面下载与防盗链处理
+## 封面加载策略（本地下载与防盗链处理）
+
+两个平台的封面都通过 `cover.mode` 配置，可选 `local`（下载到本地）、`remote`（直接使用外链）、`none`（不显示封面）。**默认值不同**：
+
+| 平台 | 默认模式 | 原因 |
+| :--- | :--- | :--- |
+| Bilibili | `local` | B 站图床（hdslb.com）有严格的防盗链校验，外站直链会裂图，必须下载到本地 |
+| Bangumi | `remote` | bgm.tv 图床没有防盗链，直链可以正常显示；需要时再改为 `local` |
 
 ```yaml title="config/anime.yaml"
 providers:
   bilibili:
     cover:
       mode: "local"   # "local" 下载到本地静态目录（推荐）| "remote" 直接使用外链 | "none" 不显示
-      useWebp: true
+      useWebp: true   # B 站图床支持服务端 WebP 压缩参数
+  bangumi:
+    cover:
+      mode: "remote"  # "remote" 远程直链（默认）| "local" 下载到本地静态目录 | "none" 不显示
+      # mirror: "https://your-proxy.example.com"  # remote 模式可选镜像前缀
 ```
 
-使用 `local` 模式时，脚本会把封面图片下载到本地 `public/assets/anime/covers/`，随网站静态产物一起发布。这样可以彻底解决 B 站图片防盗链导致的裂图问题，并自动压缩为更省流量的 WebP 格式。
+使用 `local` 模式时，脚本会把封面图片下载到本地 `public/assets/anime/covers/`（文件名分别为 `bili_{ID}` 与 `bgm_{条目ID}` 前缀），随网站静态产物一起发布。这样可以彻底解决 B 站图片防盗链导致的裂图问题；B 站封面还会自动压缩为更省流量的 WebP 格式（Bangumi 图床不支持服务端转换，按原始格式保存）。下载失败时会自动退回远程直链，封面不会缺位。
+
+使用 `remote` 模式时，快照里只保存图片链接，访客打开页面时浏览器实时加载。此时页面能否显示封面取决于图床当时是否可达，若追求完全不依赖第三方，请使用 `local`。
 
 ---
 

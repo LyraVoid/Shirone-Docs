@@ -16,7 +16,7 @@ permalink: /guide/content-separation/cli-workflows/
 | `pnpm content:sync` | 手动将内容仓同步至主题代码仓 | 是 | 单次手动同步或查看同步差异 |
 | `pnpm content:validate` | 检查内容目录规范与 YAML 配置语法 | 否（仅拉取临时源） | 推送代码前的语法检查与 CI 校验 |
 | `pnpm content:status` | 输出当前使用的主题与内容源诊断信息 | 否 | 排查读取了哪个仓库或分支 |
-| `pnpm anime:sync` | 同步并下载追番列表与封面缓存 | 是 | 番剧页面初次配置或数据更新 |
+| `pnpm anime:sync` | 同步追番列表（B 站封面默认下载到本地，Bangumi 封面默认远程直链） | 是 | 番剧页面初次配置或数据更新 |
 | `pnpm content:clean` | 清理已同步的内容，还原为示例博客 | 是（自动创建备份） | 重置主题仓或切换测试内容 |
 | `pnpm content:eject` | 将单仓模式迁出为独立的双仓结构 | 是 | 从单仓平滑迁移至双仓架构 |
 | `pnpm content:export` | 将主题仓调试的改动反向同步回内容仓 | 是 | 本地调试后的临时改动回写 |
@@ -106,7 +106,7 @@ pnpm content:status --remote
 
 ### 5. anime:sync（番剧数据同步）
 
-当你在内容仓中启用了番剧追踪页（配置了 `config/anime.yaml`）后，使用此命令下载追番进度与番剧海报快照：
+当你在内容仓中启用了番剧追踪页（配置了 `config/anime.yaml`）后，使用此命令下载追番进度快照。封面处理由 `cover.mode` 决定：B 站默认 `local`（下载海报到本地），Bangumi 默认 `remote`（快照存远程链接）：
 
 ```bash
 # 智能同步：若本地快照未过期则跳过（推荐在构建流程中使用）

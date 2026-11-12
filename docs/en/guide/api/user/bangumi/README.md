@@ -26,6 +26,10 @@ export const animeConfig = withUserConfig("anime", {
     bangumi: {
       enable: true,
       userId: "sai", // Bangumi username or numeric UID
+      cover: {
+        mode: "remote", // Cover strategy: remote direct link (default) | local download | none
+        // mirror: "https://your-image-proxy.example.com", // optional mirror prefix (remote mode)
+      },
       request: {
         pageSize: 50,    // Items per page (10 ~ 100, default 50)
         maxItems: 300,   // Maximum synchronized entries
@@ -40,9 +44,21 @@ export const animeConfig = withUserConfig("anime", {
 | --- | --- | --- | --- |
 | `enable` | `boolean` | `false` | Whether to enable the Bangumi sync provider |
 | `userId` | `string` | `""` | Your Bangumi username or numeric UID |
+| `cover.mode` | `"remote" \| "local" \| "none"` | `"remote"` | Cover strategy: `remote` (snapshot stores the URL; visitor browsers load images from bgm.tv directly), `local` (downloaded during sync and shipped with the site), `none` (no covers) |
+| `cover.mirror` | `string` | `""` | Optional cover mirror prefix (remote mode only), for self-hosted proxies or CDN domains |
 | `request.pageSize` | `number` | `50` | Number of entries per page request (10 ~ 100) |
 | `request.maxItems` | `number` | `100` | Maximum total entries to fetch |
 | `request.minDelayMs` | `number` | `200` | Delay between pagination requests in milliseconds to prevent rate limiting |
+
+### Cover Strategy
+
+The Bangumi cover configuration mirrors Bilibili's, but with a **different default**:
+
+- **`remote` (default)**: Sync only writes the `lain.bgm.tv` cover URL into the snapshot JSON — no image bytes are downloaded. Visitor browsers load the image in real time when opening the page. This works as a default because the Bangumi image host has no Referer hotlink protection, so external sites can display direct links (rendering also adds `no-referrer` and upgrades HTTP to HTTPS automatically). The trade-off: cover availability depends on the bgm.tv image host being reachable at page view time.
+- **`local`**: During sync, each cover is downloaded to `public/assets/anime/covers/bgm_{subjectId}.{jpg|png|webp}` and the snapshot stores a local path, so images ship with the site. Best when you want zero dependence on a third-party image host, or when bgm.tv is slow in your visitors' region. If a download fails, the remote URL is kept as fallback so covers never go missing.
+- **`none`**: Covers are skipped; cards show a themed gradient placeholder.
+
+Why the difference from Bilibili: the Bilibili image host (`hdslb.com`) enforces strict Referer hotlink protection, so direct links break — hence Bilibili defaults to `local`. The Bangumi image host has no such restriction, so `remote` is the default and localization is opt-in.
 
 ## API Endpoints Used
 
@@ -126,6 +142,7 @@ pnpm anime:sync --provider bangumi
 
 - **Snapshot file**: Stored under `src/data/anime-snapshots/bangumi.json`.
 - **Zero-secret builds**: In dual-repo or CI architectures, snapshots can be committed to the content repository. Static builds need no external credentials or network access.
+- **Note**: With the default `cover.mode: "remote"`, the snapshot stores bgm.tv image URLs — the build stays offline, but covers are loaded from bgm.tv by visitor browsers **at page view time**. To make covers fully repo-contained with zero third-party requests, set `cover.mode` to `"local"` (cover images are downloaded during sync into `public/assets/anime/covers/` and committed alongside).
 
 ## FAQ
 
@@ -141,4 +158,12 @@ pnpm anime:sync --provider bangumi
 - Studio name is missing on certain items
 
   Some community wiki entries on Bangumi do not have production company fields populated. Shirone handles missing fields gracefully without breaking the layout.
+
+- Covers load slowly or intermittently
+
+  With the default `cover.mode: "remote"`, covers are fetched from `lain.bgm.tv` by visitor browsers in real time, which can be slow or unstable on some networks. Set `cover.mode` to `"local"` and re-run `pnpm anime:sync --provider bangumi` — covers will be downloaded and shipped with the site, no longer depending on bgm.tv.
+
+- I want covers served from my own proxy domain
+
+  Keep `cover.mode: "remote"` and set `cover.mirror` (e.g. `https://your-proxy.example.com`). Shirone rewrites cover URLs into the form `mirror-domain/original-path`.
 :::

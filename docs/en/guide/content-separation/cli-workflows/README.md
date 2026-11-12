@@ -16,7 +16,7 @@ For everyday writing, you generally only need to remember one command: `pnpm con
 | `pnpm content:sync` | Manually synchronizes content into the theme repo | Yes | Single-run manual sync or diff inspection |
 | `pnpm content:validate` | Validates directory structure and YAML syntax | No (fetches temporary cache only) | Pre-push checks and CI pipelines |
 | `pnpm content:status` | Outputs diagnostics for the active content source | No | Identifying active repository or branch |
-| `pnpm anime:sync` | Synchronizes anime watch lists and cover assets | Yes | Initial anime page setup or data refresh |
+| `pnpm anime:sync` | Sync anime watch lists (Bilibili covers download locally by default; Bangumi covers use remote links by default) | Yes | Initial anime page setup or data refresh |
 | `pnpm content:clean` | Removes synchronized content and restores sample blog | Yes (creates automatic backup) | Resetting theme repo or testing clean state |
 | `pnpm content:eject` | Migrates a single-repo blog to a dual-repo setup | Yes | Transitioning from single to dual repo |
 | `pnpm content:export` | Exports modifications from the theme repo to content repo | Yes | Writing back local adjustments |
@@ -106,7 +106,7 @@ pnpm content:status --remote
 
 ### 5. anime:sync (Anime Data Synchronization)
 
-When using the anime tracking page (`config/anime.yaml`), use this command to download watch list progress and cover art:
+When using the anime tracking page (`config/anime.yaml`), use this command to download watch list snapshots. Cover handling follows `cover.mode`: Bilibili defaults to `local` (cover art downloads to local storage), Bangumi defaults to `remote` (snapshots store remote links):
 
 ```bash
 # Smart sync: skips fetch if local snapshot is still fresh (recommended for CI builds)
