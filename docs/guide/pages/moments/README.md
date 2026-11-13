@@ -4,7 +4,7 @@ createTime: 2026/09/01 00:31:00
 permalink: /guide/pages/moments/
 ---
 
-瞬间（`/moments/`）是比文章更轻的动态流——随手想法、截图分享、进行中的小实验。每个瞬间是一个 Markdown 文件，frontmatter 支持**图片排版数组**与心情、位置等元数据。
+瞬间（`/moments/`）是比文章更轻的动态流——随手想法、截图分享、进行中的小实验。每个瞬间是一个 Markdown 文件，frontmatter 支持**图片排版数组**、心情与位置等元数据，也可以像文章那样加密码。
 
 ## 内容位置
 
@@ -42,6 +42,9 @@ images:                                 # 图片排版数组
 | `tags` | `array` | 否 | 标签，用于瞬间流筛选 |
 | `location` | `string` | 否 | 位置文本（如「在工位上」「江边」） |
 | `images` | `array` | 否 | **图片排版数组**，见下节 |
+| `encrypted` | `boolean` | 否 | 显式声明加密；写了 `true` 却没给密码时构建会报错 |
+| `password` | `string` / `number` | 否 | 填了非空值就启用加密，不必再写 `encrypted` |
+| `passwordHint` | `string` | 否 | 密码框下面的提示语 |
 
 ## 图片排版（images）
 
@@ -79,6 +82,34 @@ images:
 
 推荐集中在 `public/images/moments/<主题>/` 下按组存放，与瞬间的 `日期-主题` 命名对应，便于管理。
 
+## 加密瞬间
+
+瞬间也能加密码，用法和文章一样：frontmatter 里写一个非空的 `password` 就行，`encrypted: true` 只是把意图写明白。
+
+```markdown title="src/content/moments/2026-09-02-private-note.md"
+---
+published: 2026-09-02T21:00:00+08:00
+encrypted: true
+password: "your-super-secret-password"
+passwordHint: "我最喜欢的一部番剧名称"
+tags: [diary]
+---
+
+这条瞬间解锁后才能看到。
+```
+
+正文在构建时就被加密，页面源码里只有密文。发布时间、置顶状态、密码提示，以及给筛选栏用的 `filterTags` 仍然是公开的。
+
+:::: warning 哪些内容会被加密
+- 正文、位置、心情、展示标签和图片清单都会加密；
+- 标签会以 `filterTags` 的形式公开，所以筛选栏里仍然看得到；
+- 图片文件本身还在 `public/` 下，知道地址就能直接打开——敏感图片别用加密瞬间放。
+::::
+
+解锁后会原地展开成普通瞬间卡片。和文章、相册不同，瞬间**不记住解锁状态**：刷新或重新进来都要再输一次密码。锁定的瞬间不会进入站内搜索，但标签筛选仍然有效。
+
+只写了 `encrypted: true` 却忘了给 `password`，构建会直接报 `Encrypted moments require a non-empty password`，不会把正文当明文发出去。
+
 ## 正文写作
 
 瞬间正文支持完整 Markdown，但内容宜轻：
@@ -107,6 +138,7 @@ images:
 | 轻重 | 最轻 | 最重 | 中等 |
 | 结构 | 碎片动态 + 图片流 | 完整长文 | 节点式经历 |
 | 筛选 | mood + tags | 分类 + 标签 | categories |
+| 加密 | 支持，但不记住解锁状态 | 支持，标签页内记住 | 不支持 |
 
 ## 常见问题
 
@@ -126,4 +158,12 @@ images:
 - 能发纯文字瞬间吗
 
   可以——`images` 是可选字段，省略即纯文字动态。
+
+- 加密瞬间刷新后还要再输一次密码吗
+
+  需要。瞬间不记住解锁状态，刷新或重新进来都会回到密码框；文章和相册则会在当前标签页里记住。
+
+- 写了 encrypted: true 但没写 password 会怎样
+
+  构建会直接报错：`Encrypted moments require a non-empty password`。这样就算漏填密码，正文也不会以明文发出去。
 :::

@@ -116,4 +116,19 @@ Shirone automatically sanitizes encrypted posts in generated RSS/Atom feeds:
 
 ### 3. Session Unlock Persistence
 
-Once successfully unlocked, the decrypted state is securely remembered in the browser session. Readers can navigate across the site and return without re-entering their password.
+Once successfully unlocked, the decrypted state is securely remembered in the browser session. Readers can navigate across the site and return without re-entering their password. Moments skip that cache—see below.
+
+---
+
+## Moment Encryption
+
+Moments (`/moments/`) use the same AES-256-GCM + PBKDF2 pipeline, just with fewer fields and a different cache and protection scope:
+
+| Dimension | Posts | Moments |
+| --- | --- | --- |
+| Fields | `encrypted` / `password` / `passwordHint` / `hideHomeContent` | `encrypted` / `password` / `passwordHint` |
+| Scope | `shirone-protected-content:1:<slug>` | `shirone-protected-content:1:moment:<id>` |
+| Unlock cache | Kept for the current tab session | **Not cached**; refreshing or re-entering asks again |
+| Encryption scope | Body, plus homepage summary and RSS sanitization | Body, location, mood, display tags and image list |
+
+Moment tags stay public as `filterTags`, so the filter bar works, and image files remain normal assets under `public/`—encryption only covers the copy and references. See [Moments](/en/guide/pages/moments/#encrypted-moments) for the syntax, example and caveats.

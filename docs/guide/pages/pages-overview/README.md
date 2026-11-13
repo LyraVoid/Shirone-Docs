@@ -10,12 +10,12 @@ Shirone 内置一组独立的个人内容页面：关于、瞬间、友链、相
 
 | 页面 | 地址 | 数据/内容来源 | 行为配置 |
 | --- | --- | --- | --- |
-| 关于 | `/about/` | `src/content/spec/about.md` | 无（纯 Markdown） |
-| 瞬间 | `/moments/` | `src/content/moments/*.md` | 无专属 |
-| 友链 | `/friends/` | `src/data/friends.ts` | 无（数据即内容） |
-| 相册 | `/albums/` | 相册数据 | 支持加密保护 |
-| 番剧 | `/anime/` | `src/data/anime.ts` 或快照 | `animeConfig.ts` |
-| 罗盘 | `/compass/` | `src/data/compass.ts` | 无专属 |
+| 关于 | `/about/` | `src/content/spec/about.md` | `aboutConfig.ts` |
+| 瞬间 | `/moments/` | `src/content/moments/*.md` | `momentsConfig.ts`（支持加密） |
+| 友链 | `/friends/` | `src/data/friends.ts` | `friendsConfig.ts`（含分页） |
+| 相册 | `/albums/` | 相册数据 | `albumsConfig.ts`；支持加密保护 |
+| 番剧 | `/anime/` | `src/data/anime.ts` 或快照 | `animeConfig.ts`（含分页） |
+| 罗盘 | `/compass/` | `src/data/compass.ts` | `compassConfig.ts` |
 | 技能 | `/skills/` | `src/data/skills.ts` | `skillsConfig.ts` |
 | 项目 | `/projects/` | `src/data/projects.ts` | `projectsConfig.ts` |
 | 设备 | `/devices/` | `src/data/devices.ts` | `devicesConfig.ts` |
@@ -25,7 +25,7 @@ Shirone 内置一组独立的个人内容页面：关于、瞬间、友链、相
 
 ## 开关体系：enable 与导航联动
 
-带行为配置的页面（技能、项目、设备、游戏、系列、时间线、番剧）共享同一套开关规则：
+所有独立页面都有对应的 `xxxConfig.ts`，共享同一套开关规则：
 
 ```ts
 enable: true,   // false 时：
@@ -35,7 +35,7 @@ enable: true,   // false 时：
 
 关闭页面**无需修改导航配置**——导航入口与页面 `enable` 联动（见[导航栏配置](/guide/layout/navbar/)中 `more` 分组的条件挂载）。
 
-纯内容页面（关于、瞬间、友链等）没有开关，页面始终存在；不想要时从导航中移除入口即可（预设条目不引用）。
+不同页面能配的东西不一样：关于、罗盘只有开关和标题描述，瞬间多了内容加密，友链和番剧多了列表分页。如果只是不想在导航里看到某一页，把导航条目删掉就行，页面本身还可以继续访问。
 
 ## Config / Data 分层
 

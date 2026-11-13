@@ -149,6 +149,8 @@ Prepend an exclamation mark `!` to the link syntax:
 ![Image alt text](./cover.webp "Optional caption")
 ```
 
+The `title` only becomes a caption when the image sits on its own line. Inline images keep it as a plain hover title. See [Image Grid](/en/guide/writing/markdown/image-grid/) for width and alignment controls.
+
 ### Autolinks
 
 Wrap web or email addresses in angle brackets:

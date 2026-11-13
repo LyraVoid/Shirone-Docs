@@ -4,7 +4,16 @@ createTime: 2026/09/01 00:22:00
 permalink: /en/guide/pages/friends/
 ---
 
-The friends page (`/friends/`) is managed by `src/data/friends.ts`—the data is the content, with no extra behavior config. Entry `tags` aggregate automatically into the filter chips at the top of the page.
+Friend entries live in `src/data/friends.ts`; the page switch, title and page size live in `src/config/friendsConfig.ts`. Entry `tags` aggregate automatically into the filter chips at the top of the page.
+
+```ts title="src/config/friendsConfig.ts"
+export const friendsConfig = withUserConfig("friends", {
+  enable: true,
+  title: "$t:friends",        // i18n defaults
+  description: "$t:friendsBanner",
+  pageSize: 12,               // Friends per page
+})
+```
 
 ## Data Structure
 
@@ -48,16 +57,26 @@ Append one entry to the `friendsData` array—the page and filter chips generate
 
 ## Tag Filtering
 
-The filter chips at the top aggregate from all entries' `tags` (deduplicated). Selecting multiple tags uses **OR matching**—friends hitting any selected tag are shown.
+The filter chips at the top aggregate from all entries' `tags` (deduplicated). Selecting multiple tags uses **OR matching**—friends hitting any selected tag are shown. The search box looks at names, descriptions, hostnames and tags.
 
 Plan a few broad tags (like `Blog`, `Tool`, `Design`); too many tags makes the filter bar crowded.
 
-## Ordering
+## Ordering and Pagination
 
-- `getFriendsList()`: stable order (array declaration order), reproducible for tests
-- `getShuffledFriendsList()`: random order (used by the page as needed) to avoid a fixed ranking
+- `getFriendsList()`: returns entries in array order. The page paginates that list, so the order within a page never changes.
+- `getShuffledFriendsList()`: returns a shuffled copy. The page doesn't use it right now, but you can if you want a random order.
 
-The page displays randomly by default, so visitors see different orders and friend links get fairer exposure.
+The list shows 12 friends per page by default, and a pager appears once there's more than one page. `pageSize` only takes positive integers; leave it out or pass `0`, a negative or a fraction and it falls back to 12:
+
+```yaml title="config/friends.yaml (content repo)"
+pageSize: 12
+```
+
+```ts title="src/config/friendsConfig.ts"
+pageSize: 12,
+```
+
+Search, tag and page number are written into the URL (`?q=` / `?tag=` / `?page=`), so a refresh or a shared link lands on the same view. Changing the search or tag jumps back to page 1. With JavaScript off, the remaining friends are still in the HTML—only the pager buttons stop working.
 
 ## Avatar Tips
 

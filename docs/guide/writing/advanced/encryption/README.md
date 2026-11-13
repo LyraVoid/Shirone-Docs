@@ -116,4 +116,19 @@ Shirone 生成的 RSS / Atom Feed 会对加密文章自动执行安全脱敏：
 
 ### 3. 会话解锁记忆
 
-解密成功后，密码状态会在当前浏览器会话中安全保持。访客切页后再次返回该文章时无需重复输入密码，提升阅读连贯性。
+解密成功后，密码状态会在当前浏览器会话中安全保持。访客切页后再次返回该文章时无需重复输入密码，提升阅读连贯性。瞬间没有这层缓存，见下节。
+
+---
+
+## 瞬间加密
+
+瞬间（`/moments/`）走的是同一套 AES-256-GCM + PBKDF2 加密流程，只是字段少一些，缓存和保护范围也不一样：
+
+| 维度 | 文章 | 瞬间 |
+| --- | --- | --- |
+| 字段 | `encrypted` / `password` / `passwordHint` / `hideHomeContent` | `encrypted` / `password` / `passwordHint` |
+| 作用域 | `shirone-protected-content:1:<slug>` | `shirone-protected-content:1:moment:<id>` |
+| 解锁缓存 | 当前标签页内保留 | **不缓存**，刷新或重新进来都要再输一次密码 |
+| 加密范围 | 正文，并配合首页摘要与 RSS 脱敏 | 正文、位置、心情、展示标签与图片清单 |
+
+瞬间的标签会以 `filterTags` 公开，筛选栏照常可用；图片文件还在 `public/` 里，加密只保护文案和引用。具体写法和注意事项见[瞬间页](/guide/pages/moments/#加密瞬间)。

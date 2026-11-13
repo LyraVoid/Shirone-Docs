@@ -133,8 +133,8 @@ interface ProjectSectionProps {
 
 ## 内容加密与保护体系 <Badge text="Web Crypto API" color="#059669" vertical="middle" /> <Badge text="PasswordGate" type="danger" vertical="middle" />
 
-**组件集**：`EncryptedContent.astro`, `PasswordGate.svelte`, `ProtectedPost.svelte`, `ProtectedAlbum.svelte`  
-**职责**：构建文章与相册的客户端加密解密防线。
+**组件集**：`EncryptedContent.astro`, `PasswordGate.svelte`, `ProtectedPost.svelte`, `ProtectedAlbum.svelte`, `ProtectedMoment.svelte`  
+**职责**：构建文章、相册与瞬间的客户端加密解密防线。
 
 ### 架构流程
 
@@ -148,3 +148,4 @@ flowchart LR
 
 - **零明文泄露**：加密文章在静态 HTML 中仅包含 Base64 密文与 IV，未输入正确密码前绝对不输出解密内容。
 - **状态记忆**：解密成功后可在当前浏览器会话（Session）中安全保持解锁状态。
+- **瞬间加密**：`ProtectedMoment` 用紧凑版 `PasswordGate` 解锁。正文、位置、心情、标签和图片清单都会加密，只有 `filterTags` 保持公开供筛选；解锁后会重新初始化 Markdown 和图片。瞬间不开会话缓存（`cacheSession={false}`），刷新就要重新输密码。

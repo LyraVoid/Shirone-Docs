@@ -130,7 +130,7 @@ links:
 - **评论系统 (`config/comment.yaml`)**：支持 Twikoo、Waline 等评论后端，详见[评论系统配置](/guide/article/comments/)；
 - **番剧追踪 (`config/anime.yaml`)**：配置 Bilibili 或 Bangumi 账号同步追番进度，详见[番剧页配置](/guide/pages/anime/)；
 - **音乐播放器 (`config/music.yaml`)**：配置全局背景音乐歌单，详见[音乐播放器](/guide/plugins/music/)；
-- **友链页面 (`config/friends.yaml`)**：友情链接分组与卡片列表。
+- **友链页面 (`config/friends.yaml`)**：友链页的开关、标题和每页条数；具体友链还在 `data/friends.ts` 里。
 
 ::: tip 追番数据同步提醒
 修改 `config/anime.yaml` 中的账号后，需要运行 `pnpm anime:sync --if-stale` 下载追番数据与封面缓存，页面才会有内容展示。

@@ -133,8 +133,8 @@ interface ProjectSectionProps {
 
 ## Content Encryption Suite
 
-**Components**: `EncryptedContent.astro`, `PasswordGate.svelte`, `ProtectedPost.svelte`, `ProtectedAlbum.svelte`  
-**Purpose**: Secure client-side decryption framework for protected posts and photo albums.
+**Components**: `EncryptedContent.astro`, `PasswordGate.svelte`, `ProtectedPost.svelte`, `ProtectedAlbum.svelte`, `ProtectedMoment.svelte`  
+**Purpose**: Secure client-side decryption framework for protected posts, photo albums and moments.
 
 ### Architecture Flow
 
@@ -148,3 +148,4 @@ flowchart LR
 
 - **Zero-Plaintext Guarantee**: Static HTML contains only Base64 ciphertext and IV; no decrypted content exists in the DOM until authenticated.
 - **Session Persistence**: Authentication state can be safely retained within the current browser session.
+- **Moment Encryption**: `ProtectedMoment` unlocks through the compact `PasswordGate`. The body, location, mood, tags and image list are encrypted, leaving only `filterTags` public for filtering; unlocking re-initializes Markdown and images. Moments skip session caching (`cacheSession={false}`), so a refresh asks for the password again.

@@ -4,7 +4,16 @@ createTime: 2026/09/01 00:22:00
 permalink: /guide/pages/friends/
 ---
 
-友链页（`/friends/`）的数据由 `src/data/friends.ts` 管理——数据即内容，没有额外行为配置。条目中的 `tags` 会自动聚合为页面顶部的筛选 chips。
+友链页（`/friends/`）的数据放在 `src/data/friends.ts`，页面本身的开关、标题和每页条数则在 `src/config/friendsConfig.ts` 里改。条目中的 `tags` 会自动聚合为页面顶部的筛选 chips。
+
+```ts title="src/config/friendsConfig.ts"
+export const friendsConfig = withUserConfig("friends", {
+  enable: true,
+  title: "$t:friends",        // 默认取 i18n 文案
+  description: "$t:friendsBanner",
+  pageSize: 12,               // 每页展示的友链条目数
+})
+```
 
 ## 数据结构
 
@@ -48,16 +57,26 @@ export const friendsData: FriendItem[] = [
 
 ## 标签筛选
 
-页面顶部的筛选 chips 由所有条目的 `tags` 自动聚合（去重后展示）。选中多个标签时为 **OR 命中**——命中任一标签的友链都会显示。
+页面顶部的筛选 chips 由所有条目的 `tags` 自动聚合（去重后展示）。选中多个标签时为 **OR 命中**——命中任一标签的友链都会显示。上方的搜索框可以按名称、简介、域名或标签找。
 
 建议规划少量宽泛标签（如 `Blog`、`Tool`、`Design`），标签过多会让筛选栏拥挤。
 
-## 排序
+## 排序与分页
 
-- `getFriendsList()`：稳定顺序（数组声明顺序），便于测试复现
-- `getShuffledFriendsList()`：随机排序（页面按需调用），避免固定排序
+- `getFriendsList()`：按数组顺序返回，页面也按这个顺序分页，同一页的顺序不会变
+- `getShuffledFriendsList()`：随机打乱一份副本。页面目前没用到，想自己加随机展示时可以拿它试试
 
-页面默认使用随机展示，让每个访客看到的顺序不同，友链曝光更公平。
+默认每页 12 条，超过一页时底部会出现分页器。`pageSize` 只认正整数，不填或填了 `0`、负数、小数，都按 12 处理：
+
+```yaml title="config/friends.yaml（内容仓）"
+pageSize: 12
+```
+
+```ts title="src/config/friendsConfig.ts"
+pageSize: 12,
+```
+
+搜索词、标签和页码都会写进地址栏（`?q=` / `?tag=` / `?page=`），刷新或把链接发给别人，看到的还是同一页。换搜索词或标签时会回到第 1 页。关掉 JavaScript 也能看到第一页之后的友链，只是分页按钮没法点。
 
 ## 头像建议
 

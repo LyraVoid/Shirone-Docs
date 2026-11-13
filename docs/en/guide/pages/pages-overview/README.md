@@ -10,12 +10,12 @@ Shirone ships with a set of standalone personal pages: About, Moments, Friends, 
 
 | Page | URL | Data/Content Source | Behavior Config |
 | --- | --- | --- | --- |
-| About | `/about/` | `src/content/spec/about.md` | None (plain Markdown) |
-| Moments | `/moments/` | `src/content/moments/*.md` | None dedicated |
-| Friends | `/friends/` | `src/data/friends.ts` | None (data is content) |
-| Albums | `/albums/` | Album data | Encryption protected |
-| Anime | `/anime/` | `src/data/anime.ts` or snapshots | `animeConfig.ts` |
-| Compass | `/compass/` | `src/data/compass.ts` | None dedicated |
+| About | `/about/` | `src/content/spec/about.md` | `aboutConfig.ts` |
+| Moments | `/moments/` | `src/content/moments/*.md` | `momentsConfig.ts` (encryption supported) |
+| Friends | `/friends/` | `src/data/friends.ts` | `friendsConfig.ts` (pagination included) |
+| Albums | `/albums/` | Album data | `albumsConfig.ts`; encryption protected |
+| Anime | `/anime/` | `src/data/anime.ts` or snapshots | `animeConfig.ts` (pagination included) |
+| Compass | `/compass/` | `src/data/compass.ts` | `compassConfig.ts` |
 | Skills | `/skills/` | `src/data/skills.ts` | `skillsConfig.ts` |
 | Projects | `/projects/` | `src/data/projects.ts` | `projectsConfig.ts` |
 | Devices | `/devices/` | `src/data/devices.ts` | `devicesConfig.ts` |
@@ -25,7 +25,7 @@ Shirone ships with a set of standalone personal pages: About, Moments, Friends, 
 
 ## Enable System and Navigation Linkage
 
-Pages with behavior configs (Skills, Projects, Devices, Games, Series, Timeline, Anime) share one rule:
+Every standalone page has a matching `xxxConfig.ts`, and they all share one rule:
 
 ```ts
 enable: true,   // when false:
@@ -35,7 +35,7 @@ enable: true,   // when false:
 
 Disabling a page **requires no navbar changes**—nav entries are conditionally mounted on each page's `enable` (see the `more` group section in [Navigation Bar](/en/guide/layout/navbar/)).
 
-Content-only pages (About, Moments, Friends, etc.) have no switch and always exist; to remove one, simply drop its entry from the navigation (stop referencing the preset).
+Pages differ in how much they expose: About and Compass only have the switch and title/description, Moments adds content encryption, and Friends and Anime add list pagination. If you only want to hide a page from the navbar, remove the nav entry—the page itself can stay online.
 
 ## Config / Data Separation
 

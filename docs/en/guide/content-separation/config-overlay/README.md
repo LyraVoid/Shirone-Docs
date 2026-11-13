@@ -130,7 +130,7 @@ Activate specific blog features by adjusting their dedicated YAML files:
 - **Comment System (`config/comment.yaml`)**: Supports Twikoo, Waline, and other backends. See [Comment Settings](/en/guide/article/comments/);
 - **Anime Tracking (`config/anime.yaml`)**: Connects Bilibili or Bangumi accounts. See [Anime Page](/en/guide/pages/anime/);
 - **Music Player (`config/music.yaml`)**: Configures background music playlists. See [Music Player](/en/guide/plugins/music/);
-- **Friends Page (`config/friends.yaml`)**: Manage blogroll links and card categories.
+- **Friends Page (`config/friends.yaml`)**: Page switch, title and items per page; the actual friend entries still live in `data/friends.ts`.
 
 ::: tip Syncing anime data
 After editing accounts in `config/anime.yaml`, run `pnpm anime:sync --if-stale` to download watch lists and cover assets.

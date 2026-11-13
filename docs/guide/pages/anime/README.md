@@ -19,6 +19,7 @@ permalink: /guide/pages/anime/
 ```ts title="src/config/animeConfig.ts"
 export const animeConfig = withUserConfig("anime", {
   enable: true,          // 控制页面是否开启，不发起外部网络连接
+  pageSize: 12,          // 页面每页条数，省略或无效值回退 12
   source: {
     kind: "local",       // "local" 手写数据 | "snapshot" 平台同步
     // provider: "bangumi",
@@ -38,6 +39,9 @@ export const animeConfig = withUserConfig("anime", {
 ```yaml title="config/anime.yaml"
 # 页面总开关
 enable: true
+
+# 页面每页条数（正整数，默认 12）
+pageSize: 12
 
 # 数据源方式：local (读取 data/anime.ts) 或 snapshot (读取平台同步数据)
 source:
@@ -184,6 +188,26 @@ providers:
    ```
 
 :::
+
+---
+
+## 列表分页
+
+番剧列表默认每页 12 条，数据多了会在底部出现分页器。想改每页数量，直接在配置顶层写 `pageSize`：
+
+```yaml title="config/anime.yaml"
+enable: true
+pageSize: 12   # 正整数；不填、0、负数或小数都按 12 处理
+```
+
+```ts title="src/config/animeConfig.ts"
+pageSize: 12,
+```
+
+> [!NOTE]
+> 别把顶层 `pageSize` 和 `providers.*.request.pageSize` 搞混：前者是页面每页显示多少条，后者是同步时一次向平台要多少条，两者互不影响。
+
+搜索词、状态和页码都会写进地址栏（`?q=` / `?status=` / `?page=`），刷新或把链接发给别人，看到的还是同一页。换搜索词或状态时会回到第 1 页。关掉 JavaScript 也能看到第一页之后的番剧，只是分页按钮没法点。
 
 ---
 

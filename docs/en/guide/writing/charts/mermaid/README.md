@@ -48,6 +48,17 @@ stateDiagram-v2
 ```
 ````
 
+## Line Breaks in Labels
+
+Put a `<br>` in a label to wrap long text without stretching the diagram:
+
+````markdown
+```mermaid
+flowchart LR
+    A[First line<br>Second line] --> B[Plain label]
+```
+````
+
 ## Highlights
 
 - **Loaded On Demand**: Mermaid scripts load asynchronously only when diagrams are present in the current article.

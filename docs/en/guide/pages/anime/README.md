@@ -19,6 +19,7 @@ After updating the configuration, **you must run `pnpm anime:sync --if-stale && 
 ```ts title="src/config/animeConfig.ts"
 export const animeConfig = withUserConfig("anime", {
   enable: true,          // Controls whether the page is active; no external connections
+  pageSize: 12,          // Items per page; omitted or invalid values fall back to 12
   source: {
     kind: "local",       // "local" handwritten data | "snapshot" synced data
     // provider: "bangumi",
@@ -38,6 +39,9 @@ export const animeConfig = withUserConfig("anime", {
 ```yaml title="config/anime.yaml"
 # Page master toggle
 enable: true
+
+# Items per page (positive integer, default 12)
+pageSize: 12
 
 # Data source: local (reads data/anime.ts) or snapshot (reads synced data)
 source:
@@ -184,6 +188,26 @@ Edit `src/data/anime.ts` directly (or `data/anime.ts` in your content repository
    ```
 
 :::
+
+---
+
+## List Pagination
+
+The anime list shows 12 entries per page by default, and a pager appears once there's more than one page. To change it, set `pageSize` at the top level of the config:
+
+```yaml title="config/anime.yaml"
+enable: true
+pageSize: 12   # Positive integer; leave it out or pass 0, a negative or a fraction and it falls back to 12
+```
+
+```ts title="src/config/animeConfig.ts"
+pageSize: 12,
+```
+
+> [!NOTE]
+> Don't mix up the top-level `pageSize` with `providers.*.request.pageSize`: the first is how many entries a page shows, the second is how many the sync asks for at a time. They don't affect each other.
+
+Search, status and page number are written into the URL (`?q=` / `?status=` / `?page=`), so a refresh or a shared link lands on the same view. Changing the search or status jumps back to page 1. With JavaScript off, the remaining entries are still in the HTML—only the pager buttons stop working.
 
 ---
 
